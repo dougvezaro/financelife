@@ -1,0 +1,15 @@
+Controle Financeiro Simplificado — app instalável (sem dados)
+
+O que tem nesta pasta
+- index.html ............ o app (limpo, sem nenhum dado)
+- manifest.webmanifest .. a "ficha" do app (nome, ícone, abrir em tela cheia)
+- sw.js ................. faz o app abrir sem internet depois da primeira vez
+- icone-*.png ........... ícones para a Tela de Início
+
+Seus dados NÃO ficam nesta pasta nem no site: ficam só no aparelho de quem usa.
+
+Para testar agora no computador: abra o index.html com dois cliques (funciona como antes).
+O modo "app" (ícone na Tela de Início, sem internet, salvar sozinho no aparelho) só funciona
+depois de publicar a pasta num endereço https — por exemplo, GitHub Pages.
+
+Publique todos os arquivos juntos, sem mudar os nomes (não há subpastas: dá para enviar tudo de uma vez, até pelo celular).
