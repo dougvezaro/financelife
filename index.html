@@ -1653,6 +1653,10 @@
     table.lista-cartoes .num { text-align: right; }
     .lista-cartoes-wrap { border: 1px solid var(--borda-suave) !important; background: var(--superficie) !important; }
   }
+
+  /* Campo invisível do chaveiro (usuário@financas) */
+  .conta-chaveiro { position: absolute !important; width: 1px !important; height: 1px !important; min-height: 0 !important; padding: 0 !important; border: 0 !important;
+    opacity: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; pointer-events: none; }
 </style>
 </head>
 <body>
@@ -1686,7 +1690,8 @@
     <div id="lgErro" class="erro-form" hidden role="alert"></div>
     <form id="lgEntrar" novalidate>
       <h2 id="lgTitulo">Entrar</h2>
-      <label>Usuário<input type="text" id="lg_usuario" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="40"></label>
+      <input type="text" class="conta-chaveiro" data-conta-de="lg_usuario" autocomplete="username" tabindex="-1" aria-hidden="true">
+      <label>Usuário<input type="text" id="lg_usuario" autocomplete="off" data-1p-ignore autocapitalize="none" spellcheck="false" maxlength="40"></label>
       <label>Senha<input type="password" id="lg_senha" autocomplete="current-password" maxlength="200"></label>
       <button type="submit" class="btn primario" id="btnEntrar">Entrar</button>
       <button type="button" class="btn link" id="btnEsqueci">Esqueci a senha</button>
@@ -1694,7 +1699,8 @@
     <form id="lgCriar" novalidate hidden>
       <h2>Crie seu acesso</h2>
       <p class="uso">Antes de começar, escolha um usuário e uma senha. Tudo o que você anotar fica criptografado neste aparelho, e o app pede a senha ao abrir.</p>
-      <label>Usuário<input type="text" id="lc_usuario" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="40" placeholder="Ex.: douglas"></label>
+      <input type="text" class="conta-chaveiro" data-conta-de="lc_usuario" autocomplete="username" tabindex="-1" aria-hidden="true">
+      <label>Usuário<input type="text" id="lc_usuario" autocomplete="off" data-1p-ignore autocapitalize="none" spellcheck="false" maxlength="40" placeholder="Ex.: douglas"></label>
       <label>Senha<input type="password" id="lc_senha" autocomplete="new-password" maxlength="200"></label>
       <label>Confirme a senha<input type="password" id="lc_senha2" autocomplete="new-password" maxlength="200"></label>
       <p class="uso lc-dica">Mínimo de 8 caracteres. Prefira uma frase fácil de lembrar (ex.: “cafe da manha na praia”) e nunca use a senha do banco.</p>
@@ -1704,7 +1710,8 @@
     <form id="lgRecuperar" novalidate hidden>
       <h2>Redefinir a senha</h2>
       <p class="uso">Use o código de recuperação que você guardou ao criar a senha (20 letras e números).</p>
-      <label>Usuário<input type="text" id="lg_usuario2" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="40"></label>
+      <input type="text" class="conta-chaveiro" data-conta-de="lg_usuario2" autocomplete="username" tabindex="-1" aria-hidden="true">
+      <label>Usuário<input type="text" id="lg_usuario2" autocomplete="off" data-1p-ignore autocapitalize="none" spellcheck="false" maxlength="40"></label>
       <label>Código de recuperação<input type="text" id="lg_codigo" autocapitalize="characters" spellcheck="false" autocomplete="off" placeholder="ABCDE-FGHJK-MNPQR-STUVW" maxlength="40"></label>
       <label>Nova senha<input type="password" id="lg_nova" autocomplete="new-password" maxlength="200"></label>
       <label>Confirme a nova senha<input type="password" id="lg_nova2" autocomplete="new-password" maxlength="200"></label>
@@ -7671,7 +7678,7 @@
      fica escondido (os dados continuam no arquivo e voltam a aparecer quando o módulo for ligado).
      Para ver tudo (testes ou uso avançado): localStorage 'controle-financeiro-nivel' = 7. */
   /* Versão do app: atualize a cada entrega (o sw.js usa o mesmo número no nome do cache). */
-  var VERSAO_APP = { numero: '26', data: '2026-11-17', novidade: 'vírgula automática nos valores, cartões com cor do banco, limite e lista, e contas fixas previstas nos próximos meses' };
+  var VERSAO_APP = { numero: '27', data: '2026-11-18', novidade: 'senha do app separada no Chaveiro do iPhone (Face ID)' };
   var CHAVE_VERSAO_VISTA = 'controle-financeiro-versao-vista';
   function textoVersao() { return 'Versão ' + VERSAO_APP.numero + ' · atualizada em ' + dataBR(VERSAO_APP.data) + '.'; }
   /* Procurar atualização: confere se há internet, apaga só a cópia do app (código e ícones; os dados
@@ -7843,6 +7850,33 @@
       var n = ICONES_ABA[b.getAttribute('data-aba')];
       if (!n || b.querySelector('.ico')) return;
       b.prepend(ico(n, 'aba-ic'));
+    });
+  }
+  /* Chaveiro do iPhone (Face ID): o Safari guarda as senhas por site (dougvezaro.github.io), não por app.
+     Para a senha deste app não se misturar com a de outros apps do mesmo site, o usuário vai para o
+     chaveiro como “usuario@financas”, num campo invisível. O campo que você vê continua só com o usuário. */
+  var SUFIXO_CHAVEIRO = '@financas';
+  function ligarContaChaveiro() {
+    Array.prototype.forEach.call(document.querySelectorAll('.conta-chaveiro'), function (h) {
+      var vis = $(h.getAttribute('data-conta-de'));
+      if (!vis) return;
+      var deVisivel = function () { var v = vis.value.trim(); h.value = v ? v + SUFIXO_CHAVEIRO : ''; };
+      var deChaveiro = function () {
+        var v = h.value.trim();
+        if (!v) return;
+        var semSufixo = v.toLowerCase().slice(-SUFIXO_CHAVEIRO.length) === SUFIXO_CHAVEIRO ? v.slice(0, -SUFIXO_CHAVEIRO.length) : v;
+        if (semSufixo && vis.value.trim() !== semSufixo) { vis.value = semSufixo; vis.dispatchEvent(new Event('input', { bubbles: true })); }
+      };
+      vis.addEventListener('input', deVisivel);
+      vis.addEventListener('change', deVisivel);
+      h.addEventListener('input', deChaveiro);
+      h.addEventListener('change', deChaveiro);
+      var form = h.form;
+      if (form) form.addEventListener('submit', function () { if (!vis.value.trim()) deChaveiro(); else deVisivel(); }, true);
+      // O preenchimento automático às vezes não avisa: confere logo depois que a senha muda.
+      var senha = form && form.querySelector('input[type="password"]');
+      if (senha) senha.addEventListener('input', function () { setTimeout(deChaveiro, 0); });
+      deVisivel();
     });
   }
   function esconderSenhas() {
@@ -10885,6 +10919,7 @@
   iniciarTema();
   iniciarOcultar();
   ligarVerSenha();
+  ligarContaChaveiro();
   pintarIcones();
   aplicarModulos();
   ligarEventos();
