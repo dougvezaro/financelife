@@ -3,7 +3,7 @@
    eles ficam no armazenamento do aparelho e nunca são enviados para lugar nenhum.
    Atualização: com internet, a página do app vem sempre da versão publicada (rede primeiro);
    sem internet, abre a última cópia guardada. */
-var CACHE = 'controle-financeiro-v15';
+var CACHE = 'controle-financeiro-v26';
 var ARQUIVOS = ['./', './index.html', './manifest.webmanifest', './icone-180.png', './icone-192.png', './icone-512.png', './icone-maskable-512.png'];
 
 self.addEventListener('install', function (e) {
@@ -19,7 +19,17 @@ self.addEventListener('activate', function (e) {
 });
 self.addEventListener('fetch', function (e) {
   var req = e.request;
-  if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return;
+  var u = new URL(req.url);
+  if (req.method === 'GET' && (u.hostname === 'fonts.googleapis.com' || u.hostname === 'fonts.gstatic.com')) {
+    // Fontes: guardadas no aparelho na primeira vez, para o app continuar bonito sem internet.
+    e.respondWith(caches.open(CACHE).then(function (cache) {
+      return cache.match(req).then(function (s) {
+        return s || fetch(req).then(function (r) { if (r && (r.ok || r.type === 'opaque')) cache.put(req, r.clone()); return r; });
+      });
+    }));
+    return;
+  }
+  if (req.method !== 'GET' || u.origin !== self.location.origin) return;
   if (new URL(req.url).searchParams.has('nocache')) return; // conferência de versão: sempre direto da internet
   if (req.mode === 'navigate') {
     // Página do app: rede primeiro (sempre a versão mais nova); sem internet, a cópia guardada.

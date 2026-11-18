@@ -12,7 +12,13 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icone-180.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icone-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap">
 <title>Controle Financeiro Simplificado</title>
+<script>/* Tema padrão: claro. "auto" segue o sistema; escuro só por escolha. */
+(function () { var t = null; try { t = localStorage.getItem('controle-financeiro-tema'); } catch (e) { /* ok */ }
+  if (t !== 'auto') document.documentElement.setAttribute('data-theme', t === 'dark' ? 'dark' : 'light'); })();</script>
 <style>
   :root {
     --fundo: #F8FAFC; --superficie: #FFFFFF; --sup-2: #F2F5F9; --sup-3: #E7EDF5;
@@ -35,6 +41,7 @@
     --raio: 14px;
     --g-despesa: #DC5656; --g-receita: #16A36A; --g-linha: #0B1F36; --g-fixa: #0B1F36; --g-variavel: #D4A64A; --g-nd: #C9D3DF;
     --g-vista: #2E4A66; --g-parcela: #4A83B8; --g-recorrente: #C3D1E1; --g-tendencia: #DC5656; --g-eixo: #94A3B8; --g-grade: #E7EDF5; --g-ponto: #FFFFFF;
+    --g-cat1: #2A78D6; --g-cat2: #C9962E; --g-cat3: #1BAF7A; --g-cat4: #EB6834; --g-cat5: #6250D6; --g-cat6: #E87BA4; --g-cat-outras: #A9B6C6;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark) {
@@ -58,6 +65,7 @@
     --sombra-alta: 0 20px 44px rgba(0, 0, 0, .6);
     --g-despesa: #E06A6A; --g-receita: #2FB97A; --g-linha: #EAF0F7; --g-fixa: #7FB0DD; --g-variavel: #D4A64A; --g-nd: #3E5470;
     --g-vista: #7FB0DD; --g-parcela: #4A83B8; --g-recorrente: #3E5470; --g-tendencia: #F08A8A; --g-eixo: #6B7E95; --g-grade: #1C3652; --g-ponto: #0E2135;
+    --g-cat1: #3987E5; --g-cat2: #C98500; --g-cat3: #199E70; --g-cat4: #D95926; --g-cat5: #9085E9; --g-cat6: #D55181; --g-cat-outras: #4F6681;
     color-scheme: dark;
     }
   }
@@ -81,6 +89,7 @@
     --sombra-alta: 0 20px 44px rgba(0, 0, 0, .6);
     --g-despesa: #E06A6A; --g-receita: #2FB97A; --g-linha: #EAF0F7; --g-fixa: #7FB0DD; --g-variavel: #D4A64A; --g-nd: #3E5470;
     --g-vista: #7FB0DD; --g-parcela: #4A83B8; --g-recorrente: #3E5470; --g-tendencia: #F08A8A; --g-eixo: #6B7E95; --g-grade: #1C3652; --g-ponto: #0E2135;
+    --g-cat1: #3987E5; --g-cat2: #C98500; --g-cat3: #199E70; --g-cat4: #D95926; --g-cat5: #9085E9; --g-cat6: #D55181; --g-cat-outras: #4F6681;
     color-scheme: dark;
   }
   * { box-sizing: border-box; }
@@ -1074,6 +1083,38 @@
   .nuvem-status.trab { color: var(--pendente); }
   .nuvem-passos { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: .9rem; }
   .nuvem-codigo { font-family: ui-monospace, Menlo, monospace; font-size: .78rem; word-break: break-all; white-space: pre-wrap; max-height: 260px; overflow: auto; background: var(--sup-2); border: 1px solid var(--borda); border-radius: 10px; padding: 10px; user-select: all; -webkit-user-select: all; }
+
+  /* ===== Tipografia e ícones (identidade Wealth · etapa 2) ===== */
+  body { font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+  h1, h2, h3, h4, #tituloSecao, .marca h1, .login-marca strong, .mes-rotulo, .mes-resumo strong, .fat-valor, .cat-valor, .fixa-valor,
+  .hoje-valor, td.valor-cel, .card .valor, #f_valor, .lanc-aba, .fat-titulo h3, .hoje-cab h3, #lgCriar h2, .boas h3 {
+    font-family: "Manrope", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  h1, h2, h3, #tituloSecao { letter-spacing: -.015em; }
+  .mes-sobra strong, .fat-valor { font-weight: 800; letter-spacing: -.025em; }
+  td.valor-cel, .cat-valor, .fixa-valor, .hoje-valor { font-weight: 700; }
+  .ico { width: 1.15em; height: 1.15em; flex: 0 0 auto; vertical-align: -.2em; }
+  .ico-inline { width: 1.05em; height: 1.05em; vertical-align: -.17em; }
+  h3 > .ico { width: 1.05em; height: 1.05em; color: var(--ocre); margin-right: 2px; }
+  .bi-aba .bi-ic { width: 23px; height: 23px; filter: none; opacity: 1; vertical-align: 0; }
+  .bi-aba .ico { width: 23px; height: 23px; }
+  @media (max-width: 900px) {
+    .bi-aba .ico, .bi-aba .bi-ic { filter: none !important; opacity: 1 !important; }
+    .bi-aba.ativa .ico { color: var(--ocre); }
+    .bi-aba.ativa { color: var(--texto); font-weight: 700; }
+  }
+  .bi-mais .ico { width: 28px; height: 28px; stroke-width: 2.2; }
+  .icone-topo .ico { width: 21px; height: 21px; }
+  .chip-cat .ci { display: inline-flex; font-size: 1rem; }
+  .chip-cat .ci .ico { width: 18px; height: 18px; }
+  .chip-cat:not(.ativo) .ci { color: var(--texto-2); }
+  .cat-ic .ico, .fixa-ic .ico, .fat-ic .ico { width: 20px; height: 20px; }
+  .cat-ic, .fixa-ic, .fat-ic { color: var(--primaria); }
+  .fat-ic { background: var(--primaria-suave); }
+  .boas-emoji .ico { width: 26px; height: 26px; color: var(--ocre); }
+  .lanc-aba .ico { width: 18px; height: 18px; vertical-align: -.22em; }
+  .cp-seg .ico { width: 17px; height: 17px; vertical-align: -.2em; }
+  .mes-nota .ico, .mes-apagar .ico { width: 15px; height: 15px; }
+  .desc-sub .ico { width: 14px; height: 14px; vertical-align: -.15em; }
   .vazio-acoes { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 10px; }
   .vazio p { margin: 0; }
   .desc-sub { font-size: .78rem; color: var(--suave); font-weight: 500; margin-top: 2px; }
@@ -1178,6 +1219,440 @@
   .fixa-acoes { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
   .fixa-acoes .btn.link { padding: 4px 6px; font-size: .85rem; }
   @media (max-width: 520px) { .fixa-mes { grid-column: 1 / -1; } }
+
+  /* ===== Componentes (identidade Wealth · etapa 3) ===== */
+  :root {
+    --raio-sm: 8px; --raio-md: 12px; --raio-lg: 16px; --raio-pill: 999px;
+    --altura-btn: 40px; --altura-btn-sm: 32px; --altura-campo: 44px;
+    --esp-1: 4px; --esp-2: 8px; --esp-3: 12px; --esp-4: 16px; --esp-5: 20px; --esp-6: 24px;
+    --anel-foco: 0 0 0 3px color-mix(in srgb, var(--ocre) 45%, transparent);
+    --transicao: background-color .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease, transform .08s ease;
+  }
+  @media (max-width: 600px), (pointer: coarse) { :root { --altura-btn: 44px; --altura-btn-sm: 36px; --altura-campo: 48px; } }
+
+  /* Botões: primário · secundário · ghost (link) · perigo */
+  :where(.btn) { display: inline-flex; }
+  .btn {
+    align-items: center; justify-content: center; gap: 6px;
+    min-height: var(--altura-btn); padding: 0 16px; border-radius: var(--raio-md);
+    font-family: inherit; font-size: .92rem; font-weight: 600; line-height: 1.2;
+    border: 1px solid var(--borda); background: var(--superficie); color: var(--texto);
+    transition: var(--transicao);
+  }
+  .btn:hover { background: var(--sup-2); border-color: var(--primaria-borda); }
+  .btn:active:not(:disabled) { transform: translateY(1px); }
+  .btn:focus-visible { outline: none; box-shadow: var(--anel-foco); border-color: var(--ocre); }
+  .btn:disabled, .btn[aria-disabled="true"] { opacity: .5; cursor: not-allowed; transform: none; }
+  .btn.primario { background: var(--primaria); border-color: var(--primaria); color: var(--sobre-primaria); box-shadow: 0 1px 2px rgba(11,31,54,.12); }
+  .btn.primario:hover:not(:disabled) { background: var(--primaria-escura); border-color: var(--primaria-escura); }
+  .btn.perigo { background: var(--perigo-bg); border-color: var(--perigo-bg); color: var(--sobre-perigo); }
+  .btn.perigo:hover:not(:disabled) { filter: brightness(.94); }
+  .btn.perigo-contorno { background: var(--superficie); border-color: var(--despesa-borda); color: var(--despesa); }
+  .btn.perigo-contorno:hover:not(:disabled) { background: var(--despesa-suave); }
+  .btn.destaque { background: var(--ocre-suave); border-color: var(--ocre); color: var(--texto); }
+  .btn.pequeno { min-height: var(--altura-btn-sm); padding: 0 12px; font-size: .84rem; border-radius: var(--raio-sm); }
+  .btn.link { min-height: 0; justify-content: flex-start; text-align: left; padding: 4px 6px; border: none; background: none; box-shadow: none; color: var(--primaria); font-weight: 600; border-radius: var(--raio-sm); }
+  .btn.link:hover:not(:disabled) { background: var(--primaria-suave); }
+  .btn.link.perigo-txt { color: var(--despesa); }
+  .btn.link.perigo-txt:hover { background: var(--despesa-suave); }
+  .btn .ico { flex: none; }
+
+  /* Campos: padrão · foco · erro · desabilitado */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]), select {
+    min-height: var(--altura-campo); padding: 0 12px; border-radius: var(--raio-md);
+    border: 1px solid var(--borda); background: var(--superficie); color: var(--texto);
+    font-family: inherit; transition: var(--transicao);
+  }
+  textarea { padding: 10px 12px; border-radius: var(--raio-md); border: 1px solid var(--borda); font-family: inherit; transition: var(--transicao); }
+  input:hover:not(:disabled):not(:focus), select:hover:not(:disabled):not(:focus), textarea:hover:not(:disabled):not(:focus) { border-color: var(--primaria-borda); }
+  input:focus, select:focus, textarea:focus,
+  input:focus-visible, select:focus-visible, textarea:focus-visible { outline: none; border-color: var(--ocre); box-shadow: var(--anel-foco); }
+  input:disabled, select:disabled, textarea:disabled, input[readonly] { background: var(--sup-2); color: var(--suave); cursor: not-allowed; opacity: 1; }
+  input[readonly] { cursor: default; }
+  .invalido, input.invalido, select.invalido, textarea.invalido { border-color: var(--despesa) !important; background: var(--despesa-suave-2); }
+  .invalido:focus { box-shadow: 0 0 0 3px color-mix(in srgb, var(--despesa) 25%, transparent) !important; }
+  input[type="checkbox"], input[type="radio"] { accent-color: var(--primaria); width: 18px; height: 18px; }
+  input[type="checkbox"]:focus-visible, input[type="radio"]:focus-visible { box-shadow: var(--anel-foco); }
+  .filtros label, .grade label { font-weight: 500; }
+  .erro-form { border-radius: var(--raio-md); }
+
+  /* Cards e painéis */
+  .card, .painel, .bloco { border-radius: var(--raio-lg); border: 1px solid var(--borda-suave); box-shadow: var(--sombra); }
+  .aviso { border-radius: var(--raio-md); }
+
+  /* Selos (badges): sucesso · alerta · perigo · neutro · info */
+  :where(.selo) { display: inline-flex; }
+  .selo { align-items: center; gap: 4px; padding: 3px 10px; border-radius: var(--raio-pill); font-size: .75rem; font-weight: 600; line-height: 1.3; background: var(--sup-3); color: var(--texto-2); }
+  .selo.receita, .selo.s-pago, .selo.s-recebido { background: var(--receita-suave); color: var(--receita); }
+  .selo.despesa { background: var(--despesa-suave); color: var(--despesa); }
+  .selo.s-pendente { background: var(--pendente-suave); color: var(--pendente); }
+  .selo.s-cancelado { background: var(--sup-3); color: var(--mudo); }
+  .selo.s-concluido { background: var(--primaria-suave); color: var(--primaria); }
+
+  /* Abas */
+  .aba { border-radius: var(--raio-md) var(--raio-md) 0 0; transition: var(--transicao); }
+  .aba:focus-visible { outline: none; box-shadow: var(--anel-foco); }
+  .lanc-aba { border-radius: var(--raio-sm); transition: var(--transicao); }
+  .lanc-aba:focus-visible { outline: none; box-shadow: var(--anel-foco); }
+
+  /* Modais */
+  @media (min-width: 601px) {
+    .modal { border-radius: var(--raio-lg); padding: 20px 22px; border: 1px solid var(--borda-suave); }
+    .modal-topo { margin-bottom: 16px; }
+    .modal-rodape { gap: 10px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--borda-suave); }
+    .grade { gap: 14px; }
+  }
+  .modal-topo h2, .modal h2 { font-weight: 700; letter-spacing: -.01em; }
+  :where(.fechar) { display: inline-flex; }
+  .fechar { width: 36px; height: 36px; border-radius: var(--raio-sm); align-items: center; justify-content: center; transition: var(--transicao); }
+  .fechar:hover { background: var(--sup-2); color: var(--texto); }
+  .fechar:focus-visible { outline: none; box-shadow: var(--anel-foco); }
+  .toast { border-radius: var(--raio-md); }
+  @media (max-width: 600px) { #modalConfirm .modal { border-radius: 20px 20px 0 0; } }
+
+  /* ===== Painel inicial (identidade Wealth · fase 2) ===== */
+  .hoje-saudacao { margin: 0 0 2px; font-family: 'Manrope', 'Inter', sans-serif; font-size: 1.5rem; font-weight: 800; letter-spacing: -.02em; color: var(--texto); }
+  .hoje-saudacao + .hoje-data { font-family: inherit; font-size: .95rem; font-weight: 500; letter-spacing: 0; color: var(--suave); }
+  /* Esconder valores */
+  .mes-sobra { display: flex; flex-wrap: wrap; align-items: center; column-gap: 8px; }
+  .mes-sobra > span { flex: 1 0 100%; }
+  .mes-sobra > strong { min-width: 0; }
+  .olho { flex: none; width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .28); background: rgba(255, 255, 255, .1);
+    color: #FFFFFF; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
+  .olho:hover { background: rgba(255, 255, 255, .2); }
+  .olho .ico { width: 18px; height: 18px; }
+  .barra-mes.compacta .olho { width: 30px; height: 30px; }
+  html.valores-ocultos :is(#mSobra, #mEntrou, #mSaiu, .mes-apagar, .mes-comp-val, .hoje-valor, .cat-valor, .rosca-total, .evo-ref-v, .evo-dica,
+    .card .valor, .valor-cel, .valor-total, .fixa-valor, .fat-valor, .cd-prox-valor, .b-valor, td.num) {
+    filter: blur(7px); user-select: none; -webkit-user-select: none; }
+  html.valores-ocultos .rosca-fatia title { display: none; }
+  /* Comparação com o mês anterior */
+  .mes-comp { position: relative; z-index: 1; display: flex; align-items: center; flex-wrap: wrap; gap: 4px 6px; margin: 12px 0 0; font-size: .84rem; color: rgba(255, 255, 255, .86); }
+  .mes-comp .ico { width: 15px; height: 15px; }
+  .mes-comp.pior .ico { color: #F4A9A9; }
+  .mes-comp.melhor .ico { color: #7FE0B4; }
+  .mes-comp-val { color: rgba(255, 255, 255, .7); }
+  .barra-mes.compacta .mes-comp { display: none; }
+  /* Rosca de categorias */
+  .cat-wrap { display: grid; grid-template-columns: 168px minmax(0, 1fr); gap: 14px 20px; align-items: center; }
+  .rosca-caixa { position: relative; width: 168px; height: 168px; }
+  .rosca { width: 100%; height: 100%; display: block; }
+  .rosca-fatia { stroke: var(--superficie); stroke-width: 1.4; stroke-linejoin: round; cursor: pointer; transition: opacity .15s; }
+  .rosca:hover .rosca-fatia { opacity: .55; }
+  .rosca:hover .rosca-fatia:hover { opacity: 1; }
+  .rosca-centro { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; text-align: center; }
+  .rosca-centro span { font-size: .74rem; color: var(--suave); }
+  .rosca-centro strong { font-family: 'Manrope', 'Inter', sans-serif; font-size: .98rem; font-weight: 800; letter-spacing: -.02em; color: var(--texto); font-variant-numeric: tabular-nums; }
+  .cat-ponto { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 7px; vertical-align: 1px; }
+  @media (max-width: 760px) {
+    .cat-wrap { grid-template-columns: minmax(0, 1fr); }
+    .rosca-caixa { margin: 0 auto 4px; }
+  }
+  /* Evolução em 6 meses */
+  .evo-legenda { display: flex; gap: 12px; font-size: .8rem; color: var(--suave); }
+  .evo-legenda span::before { content: ''; display: inline-block; width: 9px; height: 9px; border-radius: 3px; margin-right: 6px; vertical-align: 0; }
+  .evo-leg-e::before { background: var(--g-receita); }
+  .evo-leg-s::before { background: var(--g-despesa); }
+  .evo-area { position: relative; margin-top: 18px; padding-left: 52px; }
+  .evo-grade { position: absolute; left: 0; right: 0; top: 0; height: 150px; pointer-events: none; }
+  .evo-ref { position: absolute; left: 0; right: 0; border-top: 1px dashed var(--g-grade); }
+  .evo-ref { left: 52px; }
+  .evo-ref-v { position: absolute; left: -52px; width: 48px; top: -8px; text-align: right; font-style: normal; font-size: .7rem; line-height: 1; color: var(--suave); white-space: nowrap; }
+  .evo-cols { position: relative; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 4px; padding-top: 0; }
+  .evo-col { display: flex; flex-direction: column; align-items: stretch; gap: 6px; border: none; background: none; padding: 0 2px 4px; border-radius: var(--raio-sm); cursor: pointer; color: var(--suave); font: inherit; }
+  .evo-col:hover, .evo-col:focus-visible { background: var(--sup-2); outline: none; }
+  .evo-col:focus-visible { box-shadow: var(--anel-foco); }
+  .evo-barras { height: 150px; display: flex; align-items: flex-end; justify-content: center; gap: 2px; border-bottom: 1px solid var(--g-eixo); }
+  .evo-b { width: min(16px, 34%); border-radius: 4px 4px 0 0; }
+  .evo-e { background: var(--g-receita); }
+  .evo-s { background: var(--g-despesa); }
+  .evo-mes { font-size: .78rem; text-align: center; text-transform: capitalize; }
+  .evo-col.atual .evo-mes { color: var(--texto); font-weight: 700; }
+  .evo-col.atual { background: var(--sup-2); }
+  .evo-dica { margin: 10px 0 0; font-size: .82rem; color: var(--suave); min-height: 1.2em; }
+
+  /* ===== Telas (identidade Wealth · fase 3) ===== */
+  /* Menu lateral com ícones */
+  .lateral .aba { display: flex; align-items: center; gap: 11px; }
+  .lateral .aba .aba-ic { width: 19px; height: 19px; flex: none; opacity: .78; }
+  .lateral .aba.ativa .aba-ic, .lateral .aba:hover .aba-ic { opacity: 1; }
+  .lateral .aba.ativa .aba-ic { color: var(--ocre); }
+  .tema-btn { display: flex; align-items: center; gap: 10px; }
+  .tema-btn::before { content: none; }
+  .tema-btn .ico { width: 17px; height: 17px; color: var(--ocre); }
+  @media (max-width: 760px) { .lateral .aba .aba-ic { width: 16px; height: 16px; } }
+
+  /* Cabeçalho das seções (Contas fixas, Faturas) */
+  .fat-titulo h3 { font-family: 'Manrope', 'Inter', sans-serif; font-size: 1.15rem; font-weight: 800; letter-spacing: -.015em; margin-bottom: 4px; }
+  .fat-titulo .uso { font-size: .86rem; line-height: 1.5; max-width: 62ch; }
+  .fat-vazio { border-radius: var(--raio-lg); padding: 28px 18px; }
+  .fat-vazio p { margin: 0 0 14px; }
+
+  /* Esconder o olho no resumo compacto do celular (fica no Início) */
+  @media (max-width: 760px) { .barra-mes.compacta .olho { display: none; } }
+
+  /* Lançamentos: ícone da categoria */
+  #corpoTabela td.ic-cel { display: none; }
+  .lanc-ic { width: 38px; height: 38px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; background: var(--primaria-suave); color: var(--primaria); }
+  .lanc-ic .ico { width: 19px; height: 19px; }
+  .lanc-ic-receita { background: var(--receita-suave); color: var(--receita); }
+  @media (max-width: 760px) {
+    html.modo-simples #corpoTabela tr { grid-template-columns: 38px minmax(0, 1fr) auto; grid-template-areas: "ic desc valor" "ic data cat" "acoes acoes acoes"; column-gap: 12px; }
+    html.modo-simples #corpoTabela td.ic-cel { display: block; grid-area: ic; align-self: start; padding-top: 2px; }
+  }
+  /* Tabela no computador: cabeçalho discreto */
+  #abaLanc thead th { font-size: .74rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--suave); }
+
+  /* Cartões: a fatura atual num “plástico” azul-marinho */
+  .fat-card { padding: 12px; gap: 10px; }
+  .fat-plastico { position: relative; overflow: hidden; border-radius: 14px; padding: 14px 16px 16px; color: #FFFFFF;
+    background: linear-gradient(135deg, #16304D 0%, #0B1F36 70%); box-shadow: 0 8px 20px rgba(11, 31, 54, .18); display: flex; flex-direction: column; gap: 6px; }
+  .fat-plastico::after { content: ''; position: absolute; right: -36px; top: -46px; width: 150px; height: 150px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, rgba(212, 166, 74, .28), rgba(212, 166, 74, 0) 70%); pointer-events: none; }
+  .fat-plastico > * { position: relative; z-index: 1; }
+  .fat-plastico .fat-cab .uso { color: rgba(255, 255, 255, .7); }
+  .fat-plastico .fat-ic { background: linear-gradient(135deg, #E8C877, #C9962E); color: #0B1F36; width: 34px; height: 26px; border-radius: 6px; }
+  .fat-plastico .fat-ic .ico { width: 16px; height: 16px; }
+  .fat-plastico .fat-rot { margin-top: 8px; font-size: .78rem; color: rgba(255, 255, 255, .72); }
+  .fat-plastico .fat-valor { color: #FFFFFF; line-height: 1.1; }
+  .fat-plastico .fat-valor.zero { color: rgba(255, 255, 255, .78); margin-top: 10px; }
+  .fat-plastico .fat-datas { color: rgba(255, 255, 255, .8); }
+  .fat-plastico .fat-datas b { color: #FFFFFF; }
+  .fat-plastico .selo { background: rgba(255, 255, 255, .16); color: #FFFFFF; }
+  .fat-plastico .selo.s-vencida { background: rgba(244, 169, 169, .22); color: #FFD2D2; }
+  .fat-plastico .selo.s-fechada { background: rgba(212, 166, 74, .25); color: #F2D79A; }
+  :root[data-theme="dark"] .fat-plastico { background: linear-gradient(135deg, #1B3A5E 0%, #13304F 70%); border: 1px solid #24405E; box-shadow: none; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme]) .fat-plastico { background: linear-gradient(135deg, #1B3A5E 0%, #13304F 70%); border: 1px solid #24405E; box-shadow: none; } }
+  .fat-card > .btn.primario { margin: 2px 4px 0; }
+  .fat-card > .fat-compras, .fat-card > .fat-prox, .fat-card > .fat-paga, .fat-card > .fat-rodape { margin-left: 4px; margin-right: 4px; }
+
+  /* Ajustes: títulos com ícone */
+  .aj-bloco h3 { display: flex; align-items: center; gap: 8px; font-family: 'Manrope', 'Inter', sans-serif; font-weight: 800; letter-spacing: -.01em; }
+  .aj-bloco h3 .ico { width: 20px; height: 20px; color: var(--ocre); flex: none; }
+  .segmento button[aria-pressed="true"] { box-shadow: var(--sombra); }
+
+  /* ===== Refinamento (identidade Wealth · fase 4) ===== */
+  /* Login */
+  .tela-login { background: radial-gradient(900px 500px at 85% -10%, rgba(212, 166, 74, .20), transparent 60%), linear-gradient(160deg, #13304F 0%, #0B1F36 55%, #071321 100%); }
+  .login-cartao { border-radius: 22px; padding: 28px 24px 22px; border: 1px solid rgba(255, 255, 255, .06); }
+  .login-marca { margin-bottom: 22px; }
+  .login-marca strong { font-family: 'Manrope', 'Inter', sans-serif; font-weight: 800; letter-spacing: -.01em; }
+  .login-cartao h2 { font-family: 'Manrope', 'Inter', sans-serif; font-size: 1.35rem; font-weight: 800; letter-spacing: -.02em; margin-bottom: 6px; }
+  .login-cartao form > .uso { margin: 0 0 16px; line-height: 1.5; }
+  .login-cartao form label { color: var(--texto-2); font-weight: 500; margin-bottom: 14px; }
+  .login-cartao input { min-height: var(--altura-campo); }
+  .login-cartao .btn.primario { min-height: 48px; margin-top: 6px; font-size: .98rem; }
+  .login-cartao .lc-dica { font-size: .8rem; line-height: 1.45; margin: -4px 0 14px; }
+  .login-cartao .btn.primario + .lc-dica { margin: 14px 0 0; padding-top: 12px; border-top: 1px solid var(--borda-suave); }
+  .login-nota { line-height: 1.45; }
+  label.com-ver-senha { position: relative; }
+  label.com-ver-senha input { padding-right: 48px; }
+  .ver-senha { position: absolute; right: 4px; bottom: 4px; width: 40px; height: calc(var(--altura-campo) - 8px); border: none; background: none; color: var(--suave);
+    border-radius: var(--raio-sm); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+  .ver-senha:hover { color: var(--texto); background: var(--sup-2); }
+  .ver-senha:focus-visible { outline: none; box-shadow: var(--anel-foco); }
+  .ver-senha .ico { width: 19px; height: 19px; }
+
+  /* Formulário de lançamento */
+  html.modo-simples #f_valor { font-family: 'Manrope', 'Inter', sans-serif; font-weight: 800; }
+  #modalLanc .lanc-abas { border-radius: var(--raio-md); }
+
+  /* Avisos (toasts): fundo azul-marinho, ícone colorido e faixa lateral */
+  .toast { display: flex; align-items: center; gap: 10px; border-radius: var(--raio-md); padding: 12px 14px; background: #0B1F36; color: #FFFFFF;
+    border-left: 4px solid var(--ocre); box-shadow: 0 12px 28px rgba(7, 19, 33, .28); font-weight: 500; line-height: 1.35; }
+  .toast > span { flex: 1 1 auto; min-width: 0; }
+  .toast .toast-ic { flex: none; width: 20px; height: 20px; color: var(--ocre); }
+  .toast.sucesso { background: #0B1F36; border-left-color: #2FB97A; }
+  .toast.sucesso .toast-ic { color: #3CCB8C; }
+  .toast.erro { background: #0B1F36; border-left-color: #E06A6A; }
+  .toast.erro .toast-ic { color: #F08A8A; }
+  :root[data-theme="dark"] .toast { background: #1B3A5E; box-shadow: 0 12px 28px rgba(0, 0, 0, .5); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme]) .toast { background: #1B3A5E; box-shadow: 0 12px 28px rgba(0, 0, 0, .5); } }
+  .toast-acao { border-radius: var(--raio-sm); font-weight: 600; }
+
+  /* Confirmação */
+  .c-icone { width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 12px;
+    background: var(--despesa-suave); color: var(--despesa); }
+  .c-icone .ico { width: 24px; height: 24px; }
+  #modalConfirm h2 { font-family: 'Manrope', 'Inter', sans-serif; font-weight: 800; }
+  .c-msg { color: var(--texto-2); line-height: 1.5; }
+  .c-msg ul { list-style: none; padding: 10px 12px; margin: 10px 0; background: var(--sup-2); border: 1px solid var(--borda-suave); border-radius: var(--raio-md); }
+  .c-msg li + li { margin-top: 4px; }
+  .c-msg li { color: var(--texto); font-weight: 500; overflow-wrap: anywhere; }
+  @media (max-width: 600px) {
+    #modalConfirm .modal { padding-top: 26px; position: relative; }
+    #modalConfirm .modal::before { content: ''; position: absolute; top: 9px; left: 50%; width: 40px; height: 4px; margin-left: -20px; border-radius: 4px; background: var(--borda); }
+    #modalConfirm .modal > h2 { padding-top: 0; }
+  }
+
+  /* Movimento suave (desligado para quem prefere menos movimento) */
+  @media (prefers-reduced-motion: no-preference) {
+    @keyframes cf-fade { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes cf-sobe { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+    @keyframes cf-sobe-base { from { transform: translateY(100%); } to { transform: none; } }
+    @keyframes cf-pop { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: none; } }
+    .overlay:not([hidden]) { animation: cf-fade .16s ease-out; }
+    .overlay:not([hidden]) > .modal { animation: cf-fade .2s ease-out; }
+    [role="tabpanel"]:not([hidden]) { animation: cf-fade .18s ease-out; }
+    .toast { animation: cf-sobe .22s cubic-bezier(.2, .8, .2, 1); }
+    .login-cartao { animation: cf-pop .28s cubic-bezier(.2, .8, .2, 1); }
+    .chip-cat, .chip-meio, .bi-aba, .evo-col, .cat-item, .lanc-aba { transition: transform .08s ease, background-color .15s ease, border-color .15s ease, color .15s ease; }
+    .chip-cat:active, .bi-aba:active, .cat-item:active { transform: scale(.97); }
+    .cat-barra, .evo-b { transition: width .35s ease, height .35s ease; }
+    .fat-card, .bloco, .card { transition: box-shadow .2s ease, transform .2s ease; }
+    @media (hover: hover) { .fat-card:hover { box-shadow: 0 8px 24px rgba(11, 31, 54, .12); } }
+  }
+  @media (prefers-reduced-motion: no-preference) and (max-width: 600px) {
+    #modalConfirm:not([hidden]) > .modal { animation: cf-sobe-base .24s cubic-bezier(.2, .8, .2, 1); }
+  }
+
+  /* ===== Metas ===== */
+  .metas-grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 14px; }
+  .meta-card { background: var(--superficie); border: 1px solid var(--borda-suave); border-radius: var(--raio-lg); box-shadow: var(--sombra); padding: 16px; display: flex; flex-direction: column; gap: 10px; min-width: 0; transition: box-shadow .2s ease; }
+  .meta-card.destacado { box-shadow: 0 0 0 3px color-mix(in srgb, var(--ocre) 55%, transparent); }
+  .meta-cab { display: flex; align-items: center; gap: 10px; }
+  .meta-cab > div { flex: 1 1 auto; min-width: 0; }
+  .meta-cab strong { display: block; font-family: 'Manrope', 'Inter', sans-serif; font-weight: 800; font-size: 1.02rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .meta-ic { width: 40px; height: 40px; border-radius: 12px; flex: none; display: inline-flex; align-items: center; justify-content: center; background: var(--ocre-suave); color: var(--ocre); }
+  :root[data-theme="light"] .meta-ic { color: #94681A; }
+  .meta-ic .ico { width: 20px; height: 20px; }
+  .meta-card.concluida .meta-ic { background: var(--receita-suave); color: var(--receita); }
+  .meta-valores { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 8px; }
+  .meta-guardado { font-family: 'Manrope', 'Inter', sans-serif; font-size: 1.55rem; font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .meta-de { color: var(--suave); font-size: .9rem; font-variant-numeric: tabular-nums; }
+  .meta-pct { margin-left: auto; font-weight: 700; color: var(--texto-2); font-variant-numeric: tabular-nums; }
+  .meta-trilho { height: 10px; border-radius: 999px; background: var(--sup-3); overflow: hidden; }
+  .meta-barra { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #C9962E, #E2BC6C); }
+  .meta-barra.ok { background: linear-gradient(90deg, #12875A, #2FB97A); }
+  .meta-linha { margin: 0; font-size: .88rem; color: var(--texto-2); }
+  .meta-linha.alerta { color: var(--pendente); }
+  .meta-acoes { display: flex; flex-wrap: wrap; gap: 8px; }
+  .meta-acoes .btn { flex: 1 1 120px; }
+  .meta-acoes .btn .ico { width: 18px; height: 18px; }
+  .meta-hist li { align-items: center; }
+  .meta-hist-fim { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+  .meta-hist-fim .btn.link { font-size: 1.1rem; line-height: 1; padding: 2px 8px; }
+  /* Início */
+  .hoje-metas-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+  .hm-item { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; align-items: center; gap: 6px 10px; padding: 8px 6px; border-radius: 12px; cursor: pointer; }
+  .hm-item:hover, .hm-item:focus-visible { background: var(--sup-2); outline: none; }
+  .hm-item .meta-ic { grid-row: span 2; }
+  .hm-nome { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .hm-valor { font-weight: 700; white-space: nowrap; text-align: right; font-variant-numeric: tabular-nums; }
+  .hm-valor .uso { font-weight: 500; }
+  .hm-trilho { grid-column: 2 / 4; }
+  .hm-trilho .meta-trilho { height: 6px; }
+  html.valores-ocultos :is(.meta-guardado, .meta-de, .meta-linha, .meta-tot, .hm-valor, .meta-hist-fim b) { filter: blur(7px); user-select: none; -webkit-user-select: none; }
+
+  /* Guia: ligar outros aparelhos */
+  .guia-aparelhos { margin-top: 14px; border: 1px solid var(--borda-suave); border-radius: var(--raio-md); background: var(--sup-2); padding: 0 14px; }
+  .guia-aparelhos > summary { cursor: pointer; padding: 12px 0; font-weight: 700; color: var(--texto); list-style-position: inside; }
+  .guia-aparelhos[open] { padding-bottom: 14px; }
+  .guia-aparelhos .nuvem-passos { margin: 0 0 12px; }
+  .guia-aparelhos .nuvem-passos li { margin-bottom: 6px; line-height: 1.5; }
+  #segAparelhos .guia-aparelhos { margin-top: 6px; }
+
+  /* Barra de baixo com Metas: larguras pelo texto, para o + ficar no meio */
+  @media (max-width: 900px) {
+    html.modo-simples .bi-dentro { gap: 2px; padding: 0 2px; }
+    html.modo-simples .bi-dentro .bi-aba { flex: 1 1 auto; font-size: .7rem; padding: 6px 2px; white-space: nowrap; }
+    html.modo-simples .bi-dentro .bi-mais { flex: none; margin-left: 4px; margin-right: 4px; }
+  }
+  .selo-apagar.areceber { background: var(--receita-suave); color: var(--receita); }
+
+  /* Ícones coloridos nos lançamentos */
+  .emoji-cat { font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif; line-height: 1; font-style: normal; }
+  .lanc-ic, .lanc-ic-receita { background: var(--sup-2); border: 1px solid var(--borda-suave); }
+  .lanc-ic .emoji-cat { font-size: 1.25rem; }
+  .chip-cat .ci .emoji-cat { font-size: 1.1rem; }
+  .chip-cat .ci { color: inherit; }
+
+  /* Contas fixas previstas (meses futuros) */
+  .previstas-mes { margin-top: 16px; border: 1px dashed var(--borda); border-radius: var(--raio-lg); padding: 14px 16px; background: var(--sup-2); }
+  .prev-cab { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .prev-cab h4 { margin: 0; font-family: 'Manrope', 'Inter', sans-serif; font-weight: 800; font-size: 1rem; display: flex; align-items: center; gap: 6px; }
+  .previstas-mes > .uso { margin: 4px 0 10px; font-size: .84rem; }
+  .previstas-mes ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .prev-item { display: grid; grid-template-columns: 38px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 8px 10px; background: var(--superficie); border-radius: 12px; border: 1px solid var(--borda-suave); opacity: .92; }
+  .prev-info { display: flex; flex-direction: column; min-width: 0; }
+  .prev-info strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .prev-info .uso { font-size: .8rem; }
+  .prev-valor { font-weight: 700; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  html.valores-ocultos .prev-valor { filter: blur(7px); }
+
+  /* Cartões: cor do banco, limite e lista */
+  .fat-plastico.claro, .cor-previa.claro { color: #142235; }
+  .fat-plastico.claro .fat-cab .uso, .fat-plastico.claro .fat-rot, .fat-plastico.claro .fat-datas, .fat-plastico.claro .fat-valor.zero { color: rgba(20, 34, 53, .75); }
+  .fat-plastico.claro .fat-valor, .fat-plastico.claro .fat-datas b { color: #142235; }
+  .fat-plastico.claro .selo { background: rgba(20, 34, 53, .12); color: #142235; }
+  .fat-plastico.claro .fat-limite .fl-trilho { background: rgba(20, 34, 53, .15); }
+  .fat-plastico.claro .fl-txt span { color: rgba(20, 34, 53, .75); }
+  :root[data-theme="dark"] .fat-plastico[style] { border-color: rgba(255, 255, 255, .08); }
+  .fat-limite { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+  .fl-txt { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 8px; font-size: .8rem; }
+  .fl-txt span { color: rgba(255, 255, 255, .78); }
+  .fl-valor { font-family: 'Manrope', 'Inter', sans-serif; font-weight: 800; font-size: .98rem; }
+  .fl-trilho { height: 6px; border-radius: 999px; background: rgba(255, 255, 255, .22); overflow: hidden; }
+  .fl-barra { height: 100%; border-radius: 999px; background: rgba(255, 255, 255, .92); }
+  .fat-plastico.claro .fl-barra { background: #142235; }
+  .fl-barra.alto { background: #FFB4B4; }
+  html.valores-ocultos :is(.fl-valor, .fl-de, .lc-valor, .lista-cartoes tfoot .num) { filter: blur(7px); user-select: none; }
+  /* Formulário: cor */
+  .cor-campo { display: flex; flex-direction: column; gap: 8px; }
+  .cor-rot { font-size: .9rem; font-weight: 500; color: var(--texto-2); }
+  .cor-previa { position: relative; height: 92px; max-width: 300px; border-radius: 14px; color: #FFFFFF; padding: 12px 14px; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; box-shadow: 0 6px 16px rgba(11, 31, 54, .18); overflow: hidden; }
+  .cor-previa .cp-chip { position: absolute; left: 14px; top: 12px; width: 30px; height: 22px; border-radius: 5px; background: linear-gradient(135deg, #E8C877, #C9962E); }
+  .cor-previa .cp-nome { font-family: 'Manrope', 'Inter', sans-serif; font-weight: 800; }
+  .cor-previa .cp-seg { font-size: .78rem; opacity: .85; min-height: 1em; }
+  .cores-cartao { display: flex; flex-wrap: wrap; gap: 8px; }
+  .cor-op { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 4px; border-radius: 999px; border: 2px solid transparent; background: none; cursor: pointer; font: inherit; font-size: .84rem; color: var(--texto-2); }
+  .cor-op.auto, .cor-op.livre { padding: 4px 10px 4px 4px; border-color: var(--borda); }
+  .cor-op.ativo { border-color: var(--ocre); box-shadow: var(--anel-foco); color: var(--texto); font-weight: 600; }
+  .cor-op:focus-visible { outline: none; box-shadow: var(--anel-foco); }
+  .cor-bola { width: 26px; height: 26px; border-radius: 50%; display: inline-block; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .12); }
+  .cor-livre { width: 28px; height: 28px; padding: 0; border: none; border-radius: 50%; background: none; min-height: 0 !important; cursor: pointer; }
+  /* Alternar cartões / lista */
+  .fat-titulo-acoes { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+  .vista-cartoes { margin-top: 0; padding: 3px; }
+  .vista-cartoes button { min-height: 34px; padding: 4px 12px; display: inline-flex; align-items: center; gap: 6px; font-size: .85rem; }
+  .vista-cartoes .ico { width: 16px; height: 16px; }
+  .cart-lista { margin-top: 4px; }
+  .lista-cartoes-wrap { background: var(--superficie); border: 1px solid var(--borda-suave); border-radius: var(--raio-lg); box-shadow: var(--sombra); overflow: hidden; }
+  .lista-cartoes { width: 100%; border-collapse: collapse; }
+  .lista-cartoes th { text-align: left; font-size: .74rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--suave); padding: 12px 14px; background: var(--sup-2); border-bottom: 1px solid var(--borda-suave); }
+  .lista-cartoes td { padding: 12px 14px; border-bottom: 1px solid var(--borda-suave); vertical-align: middle; }
+  .lista-cartoes .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .lista-cartoes .lc-valor { font-weight: 700; }
+  .lc-disp { display: block; font-size: .74rem; font-weight: 500; color: var(--suave); margin-top: 2px; }
+  html.valores-ocultos .lc-disp { filter: blur(6px); }
+  .lc-nome-in { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .lc-nome-in > span:last-child { display: flex; flex-direction: column; min-width: 0; }
+  .lc-nome strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lc-nome .uso { font-size: .78rem; }
+  .lc-cor { flex: none; width: 34px; height: 24px; border-radius: 6px; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .1); }
+  .lc-venc { white-space: nowrap; }
+  .lc-venc > span:first-child { display: block; font-weight: 600; }
+  .lc-venc .selo { margin-top: 3px; font-size: .68rem; padding: 1px 8px; }
+  .lista-cartoes tfoot td { font-weight: 700; background: var(--sup-2); border-bottom: none; }
+  .lista-cartoes tr.inativo { opacity: .55; }
+  @media (max-width: 760px) {
+    .lista-cartoes th, .lista-cartoes td { padding: 10px 10px; }
+    .lc-cor { width: 26px; height: 18px; }
+    .fat-titulo { flex-wrap: wrap; }
+  }
+
+  /* A lista de cartões continua tabela de verdade no celular */
+  @media (max-width: 760px) {
+    table.lista-cartoes { display: table; width: 100%; }
+    table.lista-cartoes thead { display: table-header-group; }
+    table.lista-cartoes tbody { display: table-row-group; }
+    table.lista-cartoes tfoot { display: table-footer-group; }
+    table.lista-cartoes tr { display: table-row; border: none; border-radius: 0; margin: 0; padding: 0; }
+    table.lista-cartoes td, table.lista-cartoes th { display: table-cell; width: auto; text-align: left; }
+    table.lista-cartoes td::before { content: none; }
+    table.lista-cartoes .num { text-align: right; }
+    .lista-cartoes-wrap { border: 1px solid var(--borda-suave) !important; background: var(--superficie) !important; }
+  }
 </style>
 </head>
 <body>
@@ -1185,12 +1660,13 @@
 <!-- Navegação de baixo no celular (MVP) -->
 <nav class="barra-inferior so-simples" aria-label="Navegação">
   <div class="bi-dentro">
-    <button type="button" class="bi-aba" data-bi="abaHoje"><span class="bi-ic" aria-hidden="true">🏠</span>Início</button>
-    <button type="button" class="bi-aba" data-bi="abaLanc"><span class="bi-ic" aria-hidden="true">📋</span>Lançamentos</button>
-    <button type="button" class="bi-mais" id="biNovo" aria-label="Anotar gasto ou entrada">+</button>
-    <button type="button" class="bi-aba" data-bi="abaRec" data-modulo="recorrencias"><span class="bi-ic" aria-hidden="true">🔁</span>Fixas</button>
-    <button type="button" class="bi-aba" data-bi="abaCartoes" data-modulo="cartoes"><span class="bi-ic" aria-hidden="true">💳</span>Cartões</button>
-    <button type="button" class="bi-aba" data-bi="abaListas"><span class="bi-ic" aria-hidden="true">⚙️</span>Ajustes</button>
+    <button type="button" class="bi-aba" data-bi="abaHoje"><i class="bi-ic ico-ph" data-ico="home"></i>Início</button>
+    <button type="button" class="bi-aba" data-bi="abaLanc"><i class="bi-ic ico-ph" data-ico="list"></i>Lançamentos</button>
+    <button type="button" class="bi-mais" id="biNovo" aria-label="Anotar gasto ou entrada"><i class="ico-ph" data-ico="plus"></i></button>
+    <button type="button" class="bi-aba" data-bi="abaRec" data-modulo="recorrencias"><i class="bi-ic ico-ph" data-ico="repeat"></i>Fixas</button>
+    <button type="button" class="bi-aba" data-bi="abaCartoes" data-modulo="cartoes"><i class="bi-ic ico-ph" data-ico="card"></i>Cartões</button>
+    <button type="button" class="bi-aba" data-bi="abaMetas"><i class="bi-ic ico-ph" data-ico="target"></i>Metas</button>
+    <button type="button" class="bi-aba" data-bi="abaListas"><i class="bi-ic ico-ph" data-ico="sliders"></i>Ajustes</button>
   </div>
 </nav>
 
@@ -1254,6 +1730,7 @@
     <div class="abas-grupo" role="presentation">Dia a dia</div>
     <button type="button" role="tab" class="aba ativa" id="tabHoje" data-aba="abaHoje" aria-controls="abaHoje" aria-selected="true">Hoje</button>
     <button type="button" role="tab" class="aba" id="tabLanc" data-aba="abaLanc" aria-controls="abaLanc" aria-selected="false">Lançamentos</button>
+    <button type="button" role="tab" class="aba" id="tabMetas" data-aba="abaMetas" aria-controls="abaMetas" aria-selected="false">Metas</button>
     <button type="button" role="tab" class="aba" id="tabObr" data-aba="abaObr" aria-controls="abaObr" aria-selected="false">Obrigações</button>
     <button type="button" role="tab" class="aba" id="tabOrc" data-aba="abaOrc" aria-controls="abaOrc" aria-selected="false">Orçamento</button>
     <button type="button" role="tab" class="aba" id="tabContas" data-aba="abaContas" aria-controls="abaContas" aria-selected="false">Saldos e faturas</button>
@@ -1283,7 +1760,7 @@
     <button type="button" class="btn pequeno tema-movel" id="btnTemaMovel" aria-label="Alternar tema claro/escuro">Tema</button>
     <div id="statusSalvamento" class="status-salv"></div>
     <div id="sessaoInfo" class="sessao-info" hidden></div>
-    <button type="button" class="icone-topo so-simples" id="btnAjustesTopo" aria-label="Ajustes" title="Ajustes">⚙︎</button>
+    <button type="button" class="icone-topo so-simples" id="btnAjustesTopo" aria-label="Ajustes" title="Ajustes"><i class="ico-ph" data-ico="sliders"></i>︎</button>
   </div>
   <div class="acoes">
     <button type="button" id="btnNovo" class="btn primario">+ Novo lançamento</button>
@@ -1315,12 +1792,13 @@
    <button type="button" class="seta" id="mesProx" aria-label="Próximo mês">›</button>
   </div>
   <div class="mes-resumo">
-   <div class="mes-sobra"><span>Sobrou no mês</span><strong id="mSobra">R$ 0,00</strong></div>
+   <div class="mes-sobra"><span>Sobrou no mês</span><strong id="mSobra">R$ 0,00</strong><button type="button" class="olho" id="btnOcultar" aria-pressed="false" aria-label="Esconder valores" title="Esconder valores"><i class="ico-ph" data-ico="eye"></i></button></div>
    <div><span class="m-entrou">Entrou</span><strong id="mEntrou">R$ 0,00</strong></div>
    <div><span class="m-saiu">Saiu</span><strong id="mSaiu">R$ 0,00</strong></div>
   </div>
+  <p class="mes-comp" id="mesComp" hidden></p>
   <button type="button" class="mes-apagar" id="mesApagar" hidden></button>
-  <p class="mes-nota" id="mesNota" hidden>💳 Compras no cartão contam no mês em que a fatura vence.</p>
+  <p class="mes-nota" id="mesNota" hidden><i class="ico-ph" data-ico="card"></i> Compras no cartão contam no mês em que a fatura vence.</p>
  </section>
  <!-- Aba Primeiros passos: guia de configuração inicial. Só lê os dados para marcar o progresso. -->
  <div id="abaGuia" role="tabpanel" aria-labelledby="tabGuia" hidden>
@@ -1388,7 +1866,7 @@
  <!-- Tela inicial: o que precisa de atenção agora. Só lê os dados. -->
  <div id="abaHoje" role="tabpanel" aria-labelledby="tabHoje">
   <section class="hoje-topo">
-   <div><div class="hoje-data" id="hojeData"></div><p class="hoje-resumo" id="hojeResumo"></p></div>
+   <div><p class="hoje-saudacao" id="hojeSaudacao"></p><div class="hoje-data" id="hojeData"></div><p class="hoje-resumo" id="hojeResumo"></p></div>
    <div class="hoje-acoes">
     <button type="button" class="btn primario" id="hojeDespesa">+ Despesa</button>
     <button type="button" class="btn" id="hojeReceita">+ Receita</button>
@@ -1402,7 +1880,7 @@
    <button type="button" class="btn pequeno" id="btnFecharDicaIOS">Entendi</button>
   </div>
   <div id="hojeBoasVindas" class="painel hoje-boas" hidden>
-   <div class="so-simples"><div class="boas-emoji" aria-hidden="true">👋</div>
+   <div class="so-simples"><div class="boas-emoji" aria-hidden="true"><i class="ico-ph" data-ico="sparkles"></i></div>
     <h3>Vamos começar?</h3>
     <p>Toque no <strong>+</strong> e anote seu primeiro gasto ou entrada. Não precisa cadastrar nada antes.</p>
     <p class="uso">Já usava a versão anterior? Em <strong>Ajustes › Restaurar backup</strong> você traz seus dados.</p></div>
@@ -1418,6 +1896,11 @@
     <div id="hojeFaturas"></div></section>
    <section class="bloco hoje-bloco hoje-cats"><div class="hoje-cab"><h3>Para onde foi o dinheiro</h3><span class="uso" id="hojeCatsMes"></span></div>
     <div id="hojeCategorias"></div></section>
+   <section class="bloco hoje-bloco hoje-metas" id="hojeMetasBloco"><div class="hoje-cab"><h3>Metas</h3><button type="button" class="btn link" data-ir-aba="abaMetas">Ver metas</button></div>
+    <div id="hojeMetas"></div></section>
+   <section class="bloco hoje-bloco hoje-evo so-simples"><div class="hoje-cab"><h3>Evolução em 6 meses</h3>
+     <div class="evo-legenda" aria-hidden="true"><span class="evo-leg-e">Entrou</span><span class="evo-leg-s">Saiu</span></div></div>
+    <div id="hojeEvolucao"></div></section>
    <section class="bloco hoje-bloco" data-modulo="orcamento"><div class="hoje-cab"><h3>Orçamento do mês</h3><button type="button" class="btn link" data-ir-aba="abaOrc">Ver orçamento</button></div>
     <div id="hojeOrc"></div></section>
    <section class="bloco hoje-bloco hoje-largo"><div class="hoje-cab"><h3>Últimos lançamentos</h3><button type="button" class="btn link" data-ir-aba="abaLanc">Ver todos</button></div>
@@ -1485,6 +1968,7 @@
       </table>
     </div>
     <div id="vazio" class="vazio" hidden></div>
+    <div id="previstasMes" class="previstas-mes" hidden></div>
   </section>
  </div>
 
@@ -1839,6 +2323,10 @@
    <div id="segAcoesTopo" class="lim-topo-acoes"></div>
   </section>
   <div id="segUsuarios"></div>
+  <section class="painel aj-bloco" id="segAparelhos">
+   <h3><i class="ico-ph" data-ico="phone"></i> Usar em outros aparelhos</h3>
+   <div id="segAparelhosGuia"></div>
+  </section>
 
  </div>
 
@@ -1872,10 +2360,23 @@
   <div id="listaAtivosCad"></div>
  </div>
 
+ <div id="abaMetas" role="tabpanel" aria-labelledby="tabMetas" hidden>
+  <section class="fat-secao">
+   <div class="fat-titulo"><div><h3>Metas</h3><span class="uso">Junte dinheiro para seus objetivos: reserva de emergência, viagem, um carro. Anote quanto guardou e acompanhe quanto falta. O que você guarda aqui não entra no Entrou e Saiu do mês.</span></div>
+    <button type="button" class="btn primario" data-meta-acao="nova">+ Nova meta</button></div>
+   <div id="metasResumo" class="fixas-resumo" hidden></div>
+   <div id="metasLista" class="metas-grade"></div>
+  </section>
+ </div>
+
  <div id="abaCartoes" role="tabpanel" aria-labelledby="tabCartoes" hidden>
   <section class="so-simples fat-secao" aria-label="Faturas">
    <div class="fat-titulo" id="fatTitulo"><div><h3>Faturas</h3><span class="uso">A fatura se forma sozinha com as compras que você anota no cartão. Pagar a fatura não cria gasto novo.</span></div>
-    <button type="button" class="btn" data-novo-cartao="1">+ Novo cartão</button></div>
+    <span class="fat-titulo-acoes"><span class="segmento vista-cartoes" id="vistaCartoes" role="group" aria-label="Ver cartões como" hidden>
+      <button type="button" data-vista="cards" aria-pressed="true"><i class="ico-ph" data-ico="card"></i> Cartões</button>
+      <button type="button" data-vista="lista" aria-pressed="false"><i class="ico-ph" data-ico="list"></i> Lista</button></span>
+    <button type="button" class="btn" data-novo-cartao="1">+ Novo cartão</button></span></div>
+   <div id="cartLista" class="cart-lista" hidden></div>
    <div id="cartFaturas" class="fat-grade"></div>
   </section>
   <section class="painel cad-topo">
@@ -1893,18 +2394,19 @@
   </section>
   <div id="configCorpo" class="cad-listas"></div>
   <section class="painel aj-bloco so-simples" id="ajSenha" data-modulo="senha">
-   <h3>🔒 Login e senha</h3>
+   <h3><i class="ico-ph" data-ico="lock"></i> Login e senha</h3>
    <p class="uso" id="ajSenhaTexto">Proteja o app com usuário e senha. Os dados ficam criptografados e o app pede a senha ao abrir e depois de 10 minutos parado.</p>
    <div class="aj-acoes"><button type="button" class="btn primario" id="ajSenhaBtn">Criar login</button></div>
   </section>
   <section class="painel aj-bloco so-simples" id="ajNuvem">
-   <h3>☁️ Sincronização (Planilha Google)</h3>
+   <h3><i class="ico-ph" data-ico="cloud"></i> Sincronização (Planilha Google)</h3>
    <p class="uso" id="nuvemTexto"></p>
    <p class="nuvem-status" id="nuvemStatus" hidden></p>
    <div class="aj-acoes" id="nuvemAcoes"></div>
+   <div id="nuvemGuia"></div>
   </section>
   <section class="painel aj-bloco so-simples" id="ajBackup">
-   <h3>Backup</h3>
+   <h3><i class="ico-ph" data-ico="archive"></i> Backup</h3>
    <p class="uso" id="ajBackupTexto">Seus dados ficam salvos neste aparelho. O backup é uma cópia para guardar em outro lugar (Arquivos, iCloud, e-mail) e para levar a outro aparelho.</p>
    <div class="aj-acoes">
     <button type="button" class="btn primario" id="ajExportar">Exportar backup</button>
@@ -1914,7 +2416,7 @@
    <p class="uso" id="ajUltimoBackup"></p>
   </section>
   <section class="painel aj-bloco so-simples">
-   <h3>Aparência</h3>
+   <h3><i class="ico-ph" data-ico="palette"></i> Aparência</h3>
    <div class="segmento" role="group" aria-label="Tema">
     <button type="button" data-tema-escolha="auto">Automático</button>
     <button type="button" data-tema-escolha="light">Claro</button>
@@ -1922,8 +2424,8 @@
    </div>
   </section>
   <section class="painel aj-bloco aj-versao" id="ajVersao">
-   <p class="uso">ℹ️ <span id="ajVersaoTexto"></span></p>
-   <div class="aj-acoes so-aparelho"><button type="button" class="btn" id="ajAtualizar">🔄 Procurar atualização</button></div>
+   <p class="uso"><i class="ico-ph" data-ico="info"></i> <span id="ajVersaoTexto"></span></p>
+   <div class="aj-acoes so-aparelho"><button type="button" class="btn" id="ajAtualizar"><i class="ico-ph" data-ico="refresh"></i> Procurar atualização</button></div>
   </section>
   <section class="painel zona-perigo" id="zonaPerigo">
    <h3>Limpar dados</h3>
@@ -1952,8 +2454,8 @@
       </div>
     </div>
     <div class="lanc-abas" role="tablist" aria-label="Tipo de lançamento">
-      <button type="button" role="tab" class="lanc-aba" data-tipo-lanc="despesa" aria-selected="true"><span class="so-completo">Despesa</span><span class="so-simples">💸 Gasto</span></button>
-      <button type="button" role="tab" class="lanc-aba" data-tipo-lanc="receita" aria-selected="false"><span class="so-completo">Receita</span><span class="so-simples">💰 Entrada</span></button>
+      <button type="button" role="tab" class="lanc-aba" data-tipo-lanc="despesa" aria-selected="true"><span class="so-completo">Despesa</span><span class="so-simples"><i class="ico-ph" data-ico="minus-circle"></i> Gasto</span></button>
+      <button type="button" role="tab" class="lanc-aba" data-tipo-lanc="receita" aria-selected="false"><span class="so-completo">Receita</span><span class="so-simples"><i class="ico-ph" data-ico="plus-circle"></i> Entrada</span></button>
       <button type="button" role="tab" class="lanc-aba lanc-aba-sec" data-modulo="contas" data-tipo-lanc="transferencia" aria-selected="false">Transferência<span class="aba-extra"> entre contas</span></button>
     </div>
     <input type="hidden" id="f_tipo" value="despesa">
@@ -1977,7 +2479,7 @@
       <label class="largo">Descrição <span class="obrig">*</span><input type="text" id="f_descricao" maxlength="200" list="dlDescricoes"></label>
       <datalist id="dlDescricoes"></datalist>
       <div class="largo dica-sugestao" id="dicaSugestao" hidden></div>
-      <label><span id="rotValor">Valor (R$)</span> <span class="obrig">*</span><input type="text" id="f_valor" inputmode="decimal" placeholder="0,00"></label>
+      <label><span id="rotValor">Valor (R$)</span> <span class="obrig">*</span><input type="text" id="f_valor" inputmode="numeric" placeholder="0,00" data-moeda></label>
       <label id="dataWrap"><span id="rotData">Data</span> <span class="obrig">*</span>
         <span class="datas-rapidas so-simples"><button type="button" class="chip-cat" data-dia-rapido="0">Hoje</button><button type="button" class="chip-cat" data-dia-rapido="-1">Ontem</button></span>
         <input type="date" id="f_data"></label>
@@ -1992,8 +2494,8 @@
       <div class="largo so-simples caixa-pag" id="caixaPag" hidden>
         <span class="rot-simples">Pagamento</span>
         <div class="segmento cp-seg" role="group" aria-label="Situação do pagamento">
-          <button type="button" data-pag="1" aria-pressed="true">✓ Já paguei</button>
-          <button type="button" data-pag="0" aria-pressed="false">⏳ Vou pagar</button>
+          <button type="button" data-pag="1" aria-pressed="true"><i class="ico-ph" data-ico="check"></i> Já paguei</button>
+          <button type="button" data-pag="0" aria-pressed="false"><i class="ico-ph" data-ico="clock"></i> Vou pagar</button>
         </div>
         <div class="cp-data" id="cpDataWrap">
           <label for="f_pagoEm">Pago em</label>
@@ -2003,14 +2505,14 @@
         <p class="cp-info" id="cpInfo"></p>
       </div>
       <div class="largo so-simples" data-modulo="recorrencias" id="virarFixaWrap" hidden>
-        <button type="button" class="btn link" id="btnVirarFixa">🔁 Isso se repete todo mês? Cadastrar como conta fixa</button>
+        <button type="button" class="btn link" id="btnVirarFixa"><i class="ico-ph" data-ico="repeat"></i> Isso se repete todo mês? Cadastrar como conta fixa</button>
       </div>
       <div class="largo dica-form" id="dicaFatura" hidden>Pagamento de fatura de cartão? Use <strong>Pagar fatura</strong> (aba Saldos e faturas): as compras já foram lançadas e o pagamento só liquida a fatura, sem criar despesa nova.</div>
       <div class="largo bloco-cartao" id="blocoCartao" hidden>
         <div class="grade">
           <label id="cartaoWrap">Cartão <span class="obrig">*</span><select id="f_cartao"></select><span class="chips-cat so-simples" id="chipsCartao" role="group" aria-label="Cartão"></span></label>
           <div class="largo so-simples" id="parcModo"><span class="rot-simples">Pagamento</span><span class="chips-cat" role="group" aria-label="À vista ou parcelado">
-            <button type="button" class="chip-cat" data-parc="sazonal">À vista</button><button type="button" class="chip-cat" data-parc="parcelado">Parcelado</button><button type="button" class="chip-cat" data-parc="credito">↩️ Crédito / estorno</button></span>
+            <button type="button" class="chip-cat" data-parc="sazonal">À vista</button><button type="button" class="chip-cat" data-parc="parcelado">Parcelado</button><button type="button" class="chip-cat" data-parc="credito"><i class="ico-ph" data-ico="undo"></i> Crédito / estorno</button></span>
             <p class="cred-nota" id="credNota" hidden>Entra como <b>desconto na fatura</b> (estorno, devolução, cashback). Digite o valor sem o sinal de menos.</p></div>
           <label id="vencWrap"><span id="rotVenc">Vencimento da fatura</span><input type="date" id="f_venc"></label>
           <div class="largo dica-form" id="dicaVenc"></div>
@@ -2112,7 +2614,13 @@
       <label data-modulo="pessoas">Titular<select id="c_titular"></select></label>
       <label>Banco ou instituição<select id="c_banco" data-banco></select><input type="text" id="c_banco_outro" class="banco-outro" maxlength="60" placeholder="Digite o nome do banco" aria-label="Nome do banco" hidden></label>
       <label>Últimos 4 dígitos<input type="text" id="c_final4" maxlength="4" inputmode="numeric" placeholder="Opcional"></label>
-      <label data-modulo="limites">Limite total (R$)<input type="text" id="c_limite" inputmode="decimal" placeholder="Opcional"></label>
+      <label>Segmento<input type="text" id="c_segmento" maxlength="40" list="listaSegmentos" placeholder="Ex.: Platinum, Black"></label>
+      <datalist id="listaSegmentos"><option value="Internacional"><option value="Gold"><option value="Platinum"><option value="Black"><option value="Infinite"><option value="Signature"><option value="Ultravioleta"><option value="Grafite"><option value="Nanquim"><option value="Personnalité"><option value="Private"><option value="Universitário"></datalist>
+      <label>Limite total (R$)<input type="text" id="c_limite" inputmode="numeric" placeholder="0,00 (opcional)" data-moeda></label>
+      <div class="largo cor-campo"><span class="cor-rot">Cor do cartão</span>
+        <div class="cor-previa" id="c_previa" aria-hidden="true"><span class="cp-chip"></span><span class="cp-nome" id="c_previaNome">Seu cartão</span><span class="cp-seg" id="c_previaSeg"></span></div>
+        <div class="cores-cartao" id="c_cores" role="group" aria-label="Cor do cartão"></div>
+        <input type="hidden" id="c_cor"></div>
       <label>Status<select id="c_ativo"><option value="1">Ativo</option><option value="0">Inativo</option></select></label>
       <div class="largo dica-form">Não informe o número completo do cartão, o código de segurança nem a senha.</div>
     </div>
@@ -2153,7 +2661,7 @@
       <label class="largo" id="pagContaWrap" data-modulo="contas"><span id="rotPagConta">De onde sairá o dinheiro?</span> <span class="obrig">*</span><select id="pag_conta"></select></label>
       <div class="largo dica-sugestao" id="pagSugestao" hidden data-modulo="contas"></div>
       <div class="largo dica-form" id="pagSaldo" hidden data-modulo="contas"></div>
-      <label>Valor do pagamento (R$) <span class="obrig">*</span><input type="text" id="pag_valor" inputmode="decimal"></label>
+      <label>Valor do pagamento (R$) <span class="obrig">*</span><input type="text" id="pag_valor" inputmode="numeric" placeholder="0,00" data-moeda></label>
       <label>Data do pagamento <span class="obrig">*</span><input type="date" id="pag_data"></label>
       <label class="largo">Observações<textarea id="pag_obs" rows="2" maxlength="500"></textarea></label>
       <label class="largo check" id="pagConfirmaWrap" hidden><input type="checkbox" id="pag_confirma"> Estou ciente do saldo insuficiente e quero confirmar mesmo assim</label>
@@ -2168,6 +2676,7 @@
 <!-- Modal: confirmação -->
 <div id="modalConfirm" class="overlay" hidden role="alertdialog" aria-modal="true" aria-labelledby="cTitulo">
   <div class="modal pequeno">
+    <div class="c-icone" aria-hidden="true"><i class="ico-ph" data-ico="alert"></i></div>
     <h2 id="cTitulo"></h2>
     <div id="cMensagem" class="c-msg"></div>
     <div class="modal-rodape">
@@ -2189,6 +2698,7 @@
   /* Cópia limpa da página, capturada antes de qualquer alteração na tela.
      É a base usada para gerar a nova versão HTML com os dados. */
   var TEMPLATE = document.documentElement.cloneNode(true);
+  TEMPLATE.removeAttribute('data-theme'); // tema é preferência do navegador, não vai para o arquivo
 
   var FORMATO = 'controle-financeiro-simplificado';
   // v2: cartões, meio de pagamento e parcelamento. v3: pessoas, contas, pagamentos, recorrências e patrimônio.
@@ -2197,7 +2707,7 @@
   // v5: orçamento mensal por categoria.
   var VERSAO_FORMATO = 6; // v6: categorias de receita separadas, cheque especial nas contas e “outros limites”
   var NATUREZAS = { fixa: 'Fixa', variavel: 'Variável' };
-  var ENTIDADES_V3 = ['pessoas', 'contas', 'pagamentos', 'ajustes', 'conciliacoes', 'recorrencias', 'ocorrencias', 'ativos', 'limites'];
+  var ENTIDADES_V3 = ['pessoas', 'contas', 'pagamentos', 'ajustes', 'conciliacoes', 'recorrencias', 'ocorrencias', 'ativos', 'limites', 'metas'];
   var TIPOS_CONTA = ['Conta corrente', 'Poupança', 'Dinheiro em espécie', 'Outra disponibilidade'];
   var TIPOS_LIMITE = ['Empréstimo pré-aprovado', 'Crédito consignado', 'Limite de financiamento', 'Cartão de loja', 'Crédito com garantia', 'Outro'];
   var TIPOS_ATIVO = ['Investimento', 'Aplicação financeira', 'Previdência', 'Imóvel', 'Veículo', 'Outro'];
@@ -2236,7 +2746,7 @@
     fontes: FONTES_PADRAO.slice(),
     cartoes: [],
     pessoas: [], contas: [], pagamentos: [], ajustes: [], conciliacoes: [], limites: [],
-    recorrencias: [], ocorrencias: [], ativos: [],
+    recorrencias: [], ocorrencias: [], ativos: [], metas: [],
     naturezaCategorias: {}, // categoria → 'fixa' | 'variavel' (padrão para lançamentos sem natureza própria)
     orcamentos: {},         // categoria → limite mensal (R$), consolidado da família
     salvoEm: null
@@ -2313,6 +2823,69 @@
     else if (/^\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g, '');
     if (!/^\d+(\.\d{1,2})?$/.test(s)) return NaN;
     return Number(s);
+  }
+  /* Campos de dinheiro com vírgula automática (como no app do banco): cada número digitado entra pelos
+     centavos — 5 → 0,05 · 50 → 0,50 · 5000 → 50,00. Colar ou preencher um valor inteiro (ex.: “45,90” ou
+     “1000”) é lido como está. O campo continua guardando o texto “1.234,56”, que o parseValor já entende. */
+  function textoCentavos(d) {
+    d = String(d).replace(/\D/g, '').replace(/^0+/, '').slice(0, 13);
+    if (!d) return '';
+    while (d.length < 3) d = '0' + d;
+    return d.slice(0, -2).replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ',' + d.slice(-2);
+  }
+  /* iPhone: arrastar a tela com um campo em foco fecha o teclado (antes ele ficava aberto e desalinhava a tela). */
+  function ligarTecladoRolagem() {
+    var inicio = null;
+    document.addEventListener('touchstart', function (e) {
+      var t = e.touches && e.touches[0];
+      inicio = t ? { x: t.clientX, y: t.clientY, alvo: e.target } : null;
+    }, { passive: true });
+    document.addEventListener('touchmove', function (e) {
+      var a = document.activeElement, t = e.touches && e.touches[0];
+      if (!inicio || !t || !a || !a.matches || !a.matches('input:not([type="checkbox"]):not([type="radio"]):not([type="color"]), textarea')) return;
+      if (inicio.alvo === a) return; // selecionando texto dentro do próprio campo
+      if (Math.abs(t.clientY - inicio.y) > 12 || Math.abs(t.clientX - inicio.x) > 12) { a.blur(); inicio = null; }
+    }, { passive: true });
+    // Quando o teclado fecha, devolve a tela para o lugar (o Safari às vezes deixa a página deslocada).
+    if (window.visualViewport) {
+      var alturaAntes = window.visualViewport.height;
+      window.visualViewport.addEventListener('resize', function () {
+        var h = window.visualViewport.height;
+        if (h > alturaAntes + 120 && window.visualViewport.offsetTop > 0) window.scrollTo(window.scrollX, window.scrollY);
+        alturaAntes = h;
+      });
+    }
+    document.addEventListener('focusout', function () {
+      setTimeout(function () {
+        var a = document.activeElement;
+        if (a && a.matches && a.matches('input, textarea, select')) return;
+        if (window.visualViewport && window.visualViewport.offsetTop > 0) window.scrollTo(0, window.scrollY);
+      }, 80);
+    });
+  }
+  function ligarCamposMoeda() {
+    document.addEventListener('input', function (e) {
+      var t = e.target;
+      if (!t || !t.matches || !t.matches('input[data-moeda]')) return;
+      var raw = t.value, tipo = e.inputType || '', novo;
+      var neg = /^\s*[-−]/.test(raw), corpo = raw.replace(/^\s*[-−]\s*/, '');
+      if ((tipo === 'insertText' && e.data && e.data.length === 1) || tipo.indexOf('delete') === 0) novo = textoCentavos(corpo);
+      else { var v = parseValor(corpo); novo = isFinite(v) ? valorParaCampo(v) : textoCentavos(corpo); }
+      if (neg) novo = '-' + novo; // estorno/crédito digitado com sinal de menos
+      if (novo !== raw) {
+        t.value = novo;
+        try { t.setSelectionRange(novo.length, novo.length); } catch (x) { /* ok */ }
+      }
+    }, true);
+    var fim = function (e) {
+      var t = e.target;
+      if (!t || !t.matches || !t.matches('input[data-moeda]')) return;
+      setTimeout(function () {
+        try { if (t.selectionStart === t.selectionEnd) t.setSelectionRange(t.value.length, t.value.length); } catch (x) { /* ok */ }
+      }, 0);
+    };
+    document.addEventListener('focusin', fim);
+    document.addEventListener('click', fim);
   }
   function valorParaCampo(v) {
     return v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -2414,6 +2987,8 @@
       diaFechamento: inteiroOuNulo(c.diaFechamento),
       diaVencimento: inteiroOuNulo(c.diaVencimento),
       limite: c.limite === null || c.limite === undefined || c.limite === '' ? null : Number(c.limite),
+      segmento: texto(c.segmento, 40),
+      cor: /^#[0-9a-fA-F]{6}$/.test(String(c.cor || '')) ? String(c.cor).toUpperCase() : '',
       titularId: texto(c.titularId, 60),
       ativo: c.ativo !== false
     };
@@ -2567,10 +3142,31 @@
     });
     return resultado(limpo, erros);
   }
+  /* Meta: objetivo de dinheiro guardado. Os depósitos e retiradas ficam na própria meta e não entram no Entrou/Saiu. */
+  function validarMeta(m) {
+    var limpo = {
+      id: idOu(m.id, 'm'), nome: texto(m.nome, 60), valorAlvo: Number(m.valorAlvo), dataAlvo: texto(m.dataAlvo, 10),
+      criadoEm: texto(m.criadoEm, 30) || new Date().toISOString(), arquivada: m.arquivada === true, aportes: []
+    }, erros = {};
+    if (!limpo.nome) erros.nome = 'Informe o nome da meta.';
+    if (!isFinite(limpo.valorAlvo) || limpo.valorAlvo <= 0 || limpo.valorAlvo > 1e11) erros.valorAlvo = 'Informe quanto quer juntar (ex.: 5000,00).';
+    else limpo.valorAlvo = dinheiro(limpo.valorAlvo);
+    if (limpo.dataAlvo && !dataValida(limpo.dataAlvo)) erros.dataAlvo = 'Data da meta inválida.';
+    if (m.aportes !== undefined && !Array.isArray(m.aportes)) erros.aportes = 'Movimentos da meta inválidos.';
+    var idsA = {};
+    (Array.isArray(m.aportes) ? m.aportes : []).slice(0, 2000).forEach(function (a) {
+      if (!a || typeof a !== 'object') return;
+      var v = Number(a.valor), id = idOu(a.id, 'a');
+      if (!dataValida(a.data) || !isFinite(v) || v === 0 || Math.abs(v) > 1e11 || idsA[id]) return;
+      idsA[id] = true;
+      limpo.aportes.push({ id: id, data: a.data, valor: dinheiro(v), nota: texto(a.nota, 80) });
+    });
+    return resultado(limpo, erros);
+  }
   var VALIDADORES_V3 = { pessoas: validarPessoa, contas: validarConta, pagamentos: validarPagamento, ajustes: validarAjuste,
-    conciliacoes: validarConciliacao, recorrencias: validarRecorrencia, ocorrencias: validarOcorrencia, ativos: validarAtivo, limites: validarLimite };
+    conciliacoes: validarConciliacao, recorrencias: validarRecorrencia, ocorrencias: validarOcorrencia, ativos: validarAtivo, limites: validarLimite, metas: validarMeta };
   var NOMES_V3 = { pessoas: 'Pessoa', contas: 'Conta', pagamentos: 'Pagamento', ajustes: 'Ajuste', conciliacoes: 'Conciliação',
-    recorrencias: 'Recorrência', ocorrencias: 'Ocorrência', ativos: 'Ativo', limites: 'Limite' };
+    recorrencias: 'Recorrência', ocorrencias: 'Ocorrência', ativos: 'Ativo', limites: 'Limite', metas: 'Meta' };
 
   function listaDeTextos(arr, nome) {
     if (!Array.isArray(arr)) throw new Error('Lista de ' + nome + ' ausente ou inválida.');
@@ -3052,7 +3648,8 @@
   function avisar(msg, tipo, acao) {
     // No modo aparelho tudo já é salvo sozinho: tira os lembretes de “Salvar versão atual”.
     if (modoAparelho && typeof msg === 'string') msg = msg.replace(/\s*[^.]*(Salvar versão atual|Salve a versão atual|salve a versão atual)[^.]*\.?/g, '').trim() || msg;
-    var t = el('div', { class: 'toast ' + (tipo || '') + (acao ? ' com-acao' : ''), role: tipo === 'erro' ? 'alert' : 'status' }, el('span', null, msg));
+    var t = el('div', { class: 'toast ' + (tipo || '') + (acao ? ' com-acao' : ''), role: tipo === 'erro' ? 'alert' : 'status' },
+      ico(tipo === 'sucesso' ? 'check' : tipo === 'erro' ? 'alert' : 'info', 'toast-ic'), el('span', null, msg));
     if (acao) {
       var b = el('button', { type: 'button', class: 'toast-acao' }, acao.rotulo);
       b.addEventListener('click', function () { t.remove(); acao.fn(); });
@@ -3365,7 +3962,7 @@
   function mostrarLogin(motivo) {
     var t = $('telaLogin');
     $('lgEntrar').hidden = false; $('lgRecuperar').hidden = true; $('lgCriar').hidden = true;
-    $('lgErro').hidden = true; $('lg_senha').value = '';
+    $('lgErro').hidden = true; $('lg_senha').value = ''; esconderSenhas();
     $('lgMotivo').textContent = motivo || '';
     $('lgMotivo').hidden = !motivo;
     $('lgInfo').textContent = 'Arquivo protegido · ' + plural(protecao.usuarios.length, 'usuário', 'usuários');
@@ -3605,19 +4202,20 @@
         celula('Data', dataBR(l.data), 'data'),
         el('td', { 'data-rotulo': 'Descrição', class: 'desc' },
           el('div', { class: 'desc-titulo' }, l.descricao, usaCaixaPagLanc(l) && l.status === 'Pendente'
-            ? el('span', { class: 'selo-apagar' + (l.data < hojeISO() ? ' vencido' : '') }, l.data < hojeISO() ? 'Vencido' : 'A pagar') : null),
+            ? el('span', { class: 'selo-apagar' + (l.tipo === 'receita' ? ' areceber' : '') + (l.data < hojeISO() ? ' vencido' : '') }, l.data < hojeISO() ? (l.tipo === 'receita' ? 'Atrasado' : 'Vencido') : txtCaixa(l.tipo).selo) : null),
           el('div', { class: 'info-pag' }, chips),
-          infoMes ? el('div', { class: 'desc-sub so-simples' }, infoMes.txt) : null,
+          infoMes ? el('div', { class: 'desc-sub so-simples' }, ico('card', 'ico-inline'), ' ' + infoMes.txt) : null,
           l.observacoes ? el('div', { class: 'obs-linha' }, l.observacoes) : null),
         el('td', { 'data-rotulo': 'Categoria', class: 'cat' + (l.categoria ? '' : ' vazio-cel') }, l.categoria || '', l.subcategoria ? el('div', { class: 'uso' }, l.subcategoria) : null),
         parcMes ? el('td', { 'data-rotulo': 'Valor', class: 'num valor-cel v-despesa' }, '− ' + moeda(parcMes.centavos / 100), el('div', { class: 'valor-total' }, 'de ' + moeda(l.valor)))
-          : celula('Valor', l.valor < 0 ? '↩️ ' + moeda(Math.abs(l.valor)) : sinal + moeda(l.valor), 'num valor-cel ' + (l.valor < 0 ? 'v-receita valor-credito' : 'v-' + l.tipo)),
+          : celula('Valor', l.valor < 0 ? [ico('undo', 'ico-inline'), ' ' + moeda(Math.abs(l.valor))] : sinal + moeda(l.valor), 'num valor-cel ' + (l.valor < 0 ? 'v-receita valor-credito' : 'v-' + l.tipo)),
         celula('Status', el('span', { class: 'selo ' + classeStatus(l.status) }, l.status)),
         el('td', { 'data-rotulo': 'Ações', class: 'acoes-linha' },
-          usaCaixaPagLanc(l) && podePagar(l) ? el('button', { type: 'button', class: 'btn link acao-paguei', 'data-acao': 'paguei', 'data-id': l.id, 'aria-label': 'Marcar ' + l.descricao + ' como pago hoje' }, '✓ Paguei') : null,
+          usaCaixaPagLanc(l) && podePagar(l) ? el('button', { type: 'button', class: 'btn link acao-paguei', 'data-acao': 'paguei', 'data-id': l.id, 'aria-label': 'Marcar ' + l.descricao + (l.tipo === 'receita' ? ' como recebido hoje' : ' como pago hoje') }, txtCaixa(l.tipo).rapido) : null,
           podePagar(l) ? el('button', { type: 'button', class: 'btn link acao-pagar', 'data-acao': 'pagar', 'data-id': l.id, 'aria-label': (l.tipo === 'receita' ? 'Receber ' : 'Pagar ') + l.descricao }, l.tipo === 'receita' ? 'Receber' : 'Pagar') : null,
           el('button', { type: 'button', class: 'btn link', 'data-acao': 'editar', 'data-id': l.id, 'aria-label': 'Editar ' + l.descricao }, 'Editar'),
-          el('button', { type: 'button', class: 'btn link perigo-txt', 'data-acao': 'excluir', 'data-id': l.id, 'aria-label': 'Excluir ' + l.descricao }, 'Excluir'))
+          el('button', { type: 'button', class: 'btn link perigo-txt', 'data-acao': 'excluir', 'data-id': l.id, 'aria-label': 'Excluir ' + l.descricao }, 'Excluir')),
+        el('td', { class: 'ic-cel', 'aria-hidden': 'true' }, el('span', { class: 'lanc-ic lanc-ic-' + l.tipo }, emojiCategoria(l.categoria || '', l.tipo)))
       );
       corpo.append(tr);
     });
@@ -3691,6 +4289,7 @@
     renderLimites();
     renderSeguranca();
     renderMvp();
+    renderMetas();
     if (modoSimples()) {
       renderUltimoBackup(); renderFixasMvp(); if (!nuvemOcupada) renderNuvem();
       var protegidoAgora = !!protecao;
@@ -4072,7 +4671,7 @@
     } else {
       var est = vencimentoPorCartao($('f_data').value, c), fech = fechamentoPorCartao($('f_data').value, c);
       dica.textContent = est
-        ? (modoSimples() ? '🧾 Vai para a fatura que fecha em ' + dataBR(fech) + ' e vence em ' + dataBR($('f_venc').value || est) + '.'
+        ? (modoSimples() ? 'Vai para a fatura que fecha em ' + dataBR(fech) + ' e vence em ' + dataBR($('f_venc').value || est) + '.'
           : 'Estimativa pelo cartão: fatura que fecha em ' + dataBR(fech) + ' e vence em ' + dataBR(est) + '. Deixe o vencimento em branco para usar a estimativa, ou informe outra data para corrigir.')
         : 'Informe uma data válida para estimar a fatura.';
     }
@@ -4827,10 +5426,66 @@
     focoAuto($(nome ? 'c_fech' : 'c_nome'));
   }
 
+  /* Cores dos cartões: a do banco por padrão (aproximada da marca), ou a que você escolher. */
+  var CORES_BANCO = { 'nubank': '#820AD1', 'inter': '#FF7A00', 'itau': '#EC7000', 'bradesco': '#CC092F', 'santander': '#EC0000',
+    'banco do brasil': '#0038A8', 'caixa economica federal': '#005CA9', 'c6 bank': '#242424', 'btg pactual': '#0B2A4A',
+    'mercado pago': '#009EE3', 'neon': '#1A73E8', 'picpay': '#11C76F', 'pagbank (pagseguro)': '#1BB99A', 'sicredi': '#3FA110',
+    'sicoob': '#00534C', 'will bank': '#FFD200', 'banco pan': '#0091D5', 'banrisul': '#004B8D', 'agibank': '#0099D8', '99pay': '#FFDD00',
+    'xp investimentos': '#1A1A1A' };
+  var CORES_OPCOES = [['#820AD1', 'Roxo'], ['#EC7000', 'Laranja'], ['#CC092F', 'Vermelho'], ['#0038A8', 'Azul'], ['#009EE3', 'Azul claro'],
+    ['#11C76F', 'Verde'], ['#00534C', 'Verde-escuro'], ['#FFD200', 'Amarelo'], ['#B8892A', 'Dourado'], ['#9AA5B1', 'Prata'],
+    ['#3A3F47', 'Grafite'], ['#1A1A1A', 'Preto'], ['#0B1F36', 'Azul-marinho'], ['#E2338B', 'Rosa']];
+  function corDoCartao(c) {
+    if (c && c.cor) return c.cor;
+    var b = c ? normalizar(c.banco || '') : '';
+    return CORES_BANCO[b] || '#16304D';
+  }
+  function corClara(hex) {
+    var n = parseInt(hex.slice(1), 16), r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+    return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.62;
+  }
+  function estiloPlastico(c) {
+    var cor = corDoCartao(c);
+    return 'background: linear-gradient(135deg, color-mix(in srgb, ' + cor + ' 78%, #FFFFFF) 0%, ' + cor + ' 52%, color-mix(in srgb, ' + cor + ' 72%, #000000) 100%);';
+  }
+  function renderCoresCartao() {
+    var box = $('c_cores');
+    if (!box) return;
+    var atual = $('c_cor').value, banco = lerBanco('c_banco'), auto = CORES_BANCO[normalizar(banco || '')] || '#16304D';
+    box.replaceChildren(el('button', { type: 'button', class: 'cor-op auto' + (!atual ? ' ativo' : ''), 'data-cor': '', 'aria-pressed': !atual ? 'true' : 'false', title: 'Cor do banco' },
+      el('span', { class: 'cor-bola', style: 'background:' + auto }), 'Do banco'));
+    CORES_OPCOES.forEach(function (o) {
+      box.append(el('button', { type: 'button', class: 'cor-op' + (atual === o[0] ? ' ativo' : ''), 'data-cor': o[0], 'aria-pressed': atual === o[0] ? 'true' : 'false', 'aria-label': o[1], title: o[1] },
+        el('span', { class: 'cor-bola', style: 'background:' + o[0] })));
+    });
+    var outra = atual && !CORES_OPCOES.some(function (o) { return o[0] === atual; });
+    var inp = el('input', { type: 'color', class: 'cor-livre', value: outra ? atual : auto, 'aria-label': 'Outra cor', title: 'Outra cor' });
+    box.append(el('label', { class: 'cor-op livre' + (outra ? ' ativo' : '') }, inp, 'Outra'));
+    var pv = $('c_previa'), c = { cor: atual, banco: banco };
+    pv.setAttribute('style', estiloPlastico(c));
+    pv.classList.toggle('claro', corClara(corDoCartao(c)));
+    $('c_previaNome').textContent = $('c_nome').value.trim() || 'Seu cartão';
+    $('c_previaSeg').textContent = $('c_segmento').value.trim();
+  }
+  function ligarCoresCartao() {
+    $('c_cores').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-cor]');
+      if (!b) return;
+      e.preventDefault();
+      $('c_cor').value = b.getAttribute('data-cor'); renderCoresCartao();
+    });
+    $('c_cores').addEventListener('change', function (e) {
+      if (e.target.classList.contains('cor-livre')) { $('c_cor').value = e.target.value.toUpperCase(); renderCoresCartao(); }
+    });
+    ['c_nome', 'c_segmento'].forEach(function (id) { $(id).addEventListener('input', renderCoresCartao); });
+    $('c_banco').addEventListener('change', renderCoresCartao);
+  }
+
   function limparFormCartao() {
     editandoCartaoId = null;
-    ['c_nome', 'c_final4', 'c_fech', 'c_venc', 'c_limite'].forEach(function (id) { $(id).value = ''; $(id).classList.remove('invalido'); });
+    ['c_nome', 'c_final4', 'c_fech', 'c_venc', 'c_limite', 'c_segmento', 'c_cor'].forEach(function (id) { $(id).value = ''; $(id).classList.remove('invalido'); });
     definirBanco('c_banco', '');
+    renderCoresCartao();
     $('c_ativo').value = '1';
     opcoesPessoas($('c_titular'), '');
     $('erroCartao').hidden = true;
@@ -4846,6 +5501,8 @@
     $('c_nome').value = c.nome; definirBanco('c_banco', c.banco); $('c_final4').value = c.final4;
     $('c_fech').value = c.diaFechamento; $('c_venc').value = c.diaVencimento;
     $('c_limite').value = c.limite !== null ? valorParaCampo(c.limite) : '';
+    $('c_segmento').value = c.segmento || ''; $('c_cor').value = c.cor || '';
+    renderCoresCartao();
     $('c_ativo').value = c.ativo ? '1' : '0';
     opcoesPessoas($('c_titular'), c.titularId);
     $('tituloFormCartao').textContent = 'Editar cartão';
@@ -4861,7 +5518,8 @@
     var r = validarCartao({
       id: editandoCartaoId || undefined, nome: $('c_nome').value, banco: lerBanco('c_banco'),
       final4: $('c_final4').value, diaFechamento: $('c_fech').value, diaVencimento: $('c_venc').value,
-      limite: limite, ativo: $('c_ativo').value === '1', titularId: $('c_titular').value
+      limite: limite, ativo: $('c_ativo').value === '1', titularId: $('c_titular').value,
+      segmento: $('c_segmento').value, cor: $('c_cor').value
     });
     if (limiteTxt && !isFinite(limite)) { r.erros.limite = 'Limite inválido (ex.: 5000,00).'; r.ok = false; }
     var dup = estado.cartoes.some(function (c) { return c.id !== editandoCartaoId && normalizar(c.nome) === normalizar(r.limpo.nome); });
@@ -5651,7 +6309,7 @@
       } else if (c.tipo === 'textarea') inp = el('textarea', { id: 'g_' + c.id, rows: '2', maxlength: '500' });
       else inp = el('input', { id: 'g_' + c.id, type: c.tipo === 'date' ? 'date' : (c.tipo === 'number' ? 'number' : (c.tipo === 'senha' ? 'password' : 'text')), autocomplete: c.autocomplete || null,
         autocapitalize: c.tipo === 'senha' || c.autocomplete === 'username' ? 'none' : null, spellcheck: c.tipo === 'senha' || c.autocomplete === 'username' ? 'false' : null,
-        inputmode: c.tipo === 'valor' && !c.negativo ? 'decimal' : null, maxlength: c.max ? String(c.max) : null, placeholder: c.placeholder || null, min: c.min, max: c.maxNum });
+        inputmode: c.tipo === 'valor' && !c.negativo ? 'numeric' : null, 'data-moeda': c.tipo === 'valor' && !c.negativo ? true : null, maxlength: c.max ? String(c.max) : null, placeholder: c.placeholder || null, min: c.min, max: c.maxNum });
       inp.value = c.valor === null || c.valor === undefined ? '' : String(c.valor);
       grade.append(el('label', { class: c.largo ? 'largo' : null }, c.rotulo, c.obrig ? el('span', { class: 'obrig' }, ' *') : null, inp,
         c.ajuda ? el('span', { class: 'uso' }, c.ajuda) : null));
@@ -7013,7 +7671,7 @@
      fica escondido (os dados continuam no arquivo e voltam a aparecer quando o módulo for ligado).
      Para ver tudo (testes ou uso avançado): localStorage 'controle-financeiro-nivel' = 7. */
   /* Versão do app: atualize a cada entrega (o sw.js usa o mesmo número no nome do cache). */
-  var VERSAO_APP = { numero: '15', data: '2026-11-15', novidade: 'nova paleta de cores (azul-marinho e dourado)' };
+  var VERSAO_APP = { numero: '26', data: '2026-11-17', novidade: 'vírgula automática nos valores, cartões com cor do banco, limite e lista, e contas fixas previstas nos próximos meses' };
   var CHAVE_VERSAO_VISTA = 'controle-financeiro-versao-vista';
   function textoVersao() { return 'Versão ' + VERSAO_APP.numero + ' · atualizada em ' + dataBR(VERSAO_APP.data) + '.'; }
   /* Procurar atualização: confere se há internet, apaga só a cópia do app (código e ícones; os dados
@@ -7072,7 +7730,7 @@
     if (modoSimples()) {
       // Ordem do menu no modo simples: o dia a dia primeiro.
       var depois = $('tabLanc');
-      ['tabRec', 'tabCartoes'].forEach(function (id) { var t = $(id); if (t && depois && t.parentNode === depois.parentNode) { depois.after(t); depois = t; } });
+      ['tabRec', 'tabCartoes', 'tabMetas'].forEach(function (id) { var t = $(id); if (t && depois && t.parentNode === depois.parentNode) { depois.after(t); depois = t; } });
     }
     var grupo = null, visiveis = 0;
     Array.prototype.forEach.call(document.querySelectorAll('.lateral .abas > *'), function (n) {
@@ -7090,6 +7748,7 @@
       // No celular, o app (endereço https) já guarda tudo sozinho: o “baixar .html” fica em Ajustes.
       if (modoAparelho) $('btnSalvar').classList.add('so-completo');
     }
+    iconesLateral();
     $('ajVersaoTexto').textContent = textoVersao();
     $('ajAtualizar').closest('.aj-acoes').hidden = !(modoAparelho && navigator.serviceWorker && navigator.serviceWorker.controller);
     $('ajBaixarHtml').textContent = modoAparelho ? 'Baixar arquivo .html' : 'Salvar versão atual (.html)';
@@ -7098,24 +7757,153 @@
       : 'Seus dados ficam dentro deste arquivo .html. Depois de anotar, use “Salvar versão atual” e passe a abrir o arquivo novo. O backup (.json) é uma cópia extra.';
   }
 
+
+  /* ---------- Ícones de linha (24×24, traço fino, no estilo Lucide) ---------- */
+  var ICO = {
+    home: '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/>',
+    list: '<path d="M9 6h12M9 12h12M9 18h12"/><path d="M4 6h.01M4 12h.01M4 18h.01"/>',
+    repeat: '<path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/>',
+    card: '<rect x="2" y="5" width="20" height="14" rx="2.5"/><path d="M2 10h20"/><path d="M6 15h4"/>',
+    sliders: '<path d="M20 7h-9"/><path d="M14 17H4"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>',
+    eye: '<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>',
+    'eye-off': '<path d="M10.7 5.1A10.8 10.8 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-2.2 3.1"/><path d="M6.6 6.6C3.8 8.4 2 12 2 12s3.6 7 10 7a9.7 9.7 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/><path d="m2 2 20 20"/>',
+    'arrow-up': '<path d="M12 19V5"/><path d="m5 12 7-7 7 7"/>',
+    target: '<circle cx="12" cy="12" r="9.5"/><circle cx="12" cy="12" r="5.5"/><circle cx="12" cy="12" r="1.6"/>',
+    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+    moon: '<path d="M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11Z"/>',
+    archive: '<rect x="2" y="4" width="20" height="5" rx="1.5"/><path d="M4 9v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9"/><path d="M10 13h4"/>',
+    palette: '<path d="M12 22a10 10 0 1 1 10-10c0 2.8-2.2 4-4.5 4H15a2 2 0 0 0-1.5 3.3c.5.6.3 2.7-1.5 2.7Z"/><circle cx="7.5" cy="10.5" r="1.2"/><circle cx="12" cy="7" r="1.2"/><circle cx="16.5" cy="10.5" r="1.2"/>',
+    gauge: '<path d="M3 13a9 9 0 0 1 18 0"/><path d="m12 13 4-4"/><path d="M5 17h14"/>',
+    'pie': '<path d="M21 12A9 9 0 1 1 12 3v9Z"/><path d="M15 3.5A9 9 0 0 1 20.5 9H15Z"/>',
+    'book-open': '<path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2Z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7Z"/>',
+    'arrow-down': '<path d="M12 5v14"/><path d="m19 12-7 7-7-7"/>',
+    'plus-circle': '<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>',
+    'minus-circle': '<circle cx="12" cy="12" r="9"/><path d="M8 12h8"/>',
+    check: '<path d="M20 6 9 17l-5-5"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    lock: '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+    cloud: '<path d="M17.5 19H7a5 5 0 1 1 1.1-9.9A6 6 0 0 1 19.5 11 4 4 0 0 1 17.5 19z"/>',
+    refresh: '<path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 21v-5h5"/><path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"/><path d="M21 3v5h-5"/>',
+    copy: '<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/>',
+    info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8h.01"/>',
+    alert: '<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+    undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>',
+    receipt: '<path d="M5 3v18l2.5-1.5L10 21l2-1.5 2 1.5 2.5-1.5L19 21V3l-2.5 1.5L14 3l-2 1.5L10 3 7.5 4.5z"/><path d="M9 9h6M9 13h6"/>',
+    sparkles: '<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 3v4M17 5h4"/>',
+    landmark: '<path d="M3 21h18"/><path d="M5 21V10M9.5 21V10M14.5 21V10M19 21V10"/><path d="M12 3 3 8h18z"/>',
+    banknote: '<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/>',
+    utensils: '<path d="M4 3v7a3 3 0 0 0 3 3v8"/><path d="M7 3v7M10 3v7"/><path d="M18 21V3c-2 0-3.5 2-3.5 5v5a2 2 0 0 0 2 2H18"/>',
+    cart: '<circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.7 12.4a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.5L21 8H6"/>',
+    more: '<path d="M5 12h.01M12 12h.01M19 12h.01"/>',
+    car: '<path d="M5 17H3v-5l2-5h14l2 5v5h-2"/><path d="M3 12h18"/><circle cx="7.5" cy="17" r="2"/><circle cx="16.5" cy="17" r="2"/><path d="M9.5 17h5"/>',
+    health: '<path d="M20.8 5.6a5 5 0 0 0-7.1 0L12 7.3l-1.7-1.7a5 5 0 0 0-7.1 7.1L12 21.5l8.8-8.8a5 5 0 0 0 0-7.1z"/><path d="M3.5 12h4l2-3 3 6 2-3h5.5"/>',
+    book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/>',
+    ticket: '<path d="M3 9a3 3 0 0 0 0 6v3a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3a3 3 0 0 0 0-6V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2z"/><path d="M13 5v2M13 11v2M13 17v2"/>',
+    plane: '<path d="M2 16.5 9 13V7.5a1.5 1.5 0 0 1 3 0V13l7 3.5V18l-7-2v3l2 1.5V22l-3.5-1L7 22v-1.5L9 19v-3l-7 2z"/>',
+    shirt: '<path d="M20.4 3.5 16 2a4 4 0 0 1-8 0L3.6 3.5a2 2 0 0 0-1.3 2.2l.6 3.5a1 1 0 0 0 1 .8H6v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V10h2.1a1 1 0 0 0 1-.8l.6-3.5a2 2 0 0 0-1.3-2.2z"/>',
+    zap: '<path d="M13 2 3 14h9l-1 8 10-12h-9z"/>',
+    phone: '<rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/>',
+    tv: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="m17 2-5 5-5-5"/>',
+    heart: '<path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z"/>',
+    gift: '<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/>',
+    file: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h6"/>',
+    scissors: '<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.1 15.9M14.5 14.5 20 20M8.1 8.1 12 12"/>',
+    users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
+    shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+    dumbbell: '<path d="M6 7v10M3 9v6M18 7v10M21 9v6M6 12h12"/>',
+    briefcase: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><path d="M2 13h20"/>',
+    wrench: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9z"/>',
+    trending: '<path d="m22 7-8.5 8.5-5-5L2 17"/><path d="M16 7h6v6"/>',
+    'rotate-ccw': '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.7 2.7L3 8"/><path d="M3 3v5h5"/>',
+    key: '<circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 9.8-9.8M17 6l3 3M14.5 8.5l2 2"/>',
+    tag: '<path d="M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4z"/><circle cx="7.5" cy="7.5" r="1.2"/>',
+    award: '<circle cx="12" cy="8" r="6"/><path d="M15.5 13 17 22l-5-3-5 3 1.5-9"/>',
+    package: '<path d="M21 8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.7z"/><path d="M3.3 7 12 12l8.7-5M12 22V12"/>',
+    bag: '<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>',
+    coins: '<circle cx="8" cy="8" r="6"/><path d="M18.1 10.4A6 6 0 1 1 10.3 18"/><path d="M7 6h1v4"/>',
+    droplet: '<path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5S12.5 5 12 2.5c-.5 2.5-2 4.9-4 6.5S5 13 5 15a7 7 0 0 0 7 7z"/>'
+  };
+  var SVG_NS = 'http://www.w3.org/2000/svg';
+  function ico(nome, classe) {
+    var s = document.createElementNS(SVG_NS, 'svg');
+    s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('fill', 'none'); s.setAttribute('stroke', 'currentColor');
+    s.setAttribute('stroke-width', '1.8'); s.setAttribute('stroke-linecap', 'round'); s.setAttribute('stroke-linejoin', 'round');
+    s.setAttribute('aria-hidden', 'true'); s.setAttribute('focusable', 'false');
+    s.setAttribute('class', 'ico' + (classe ? ' ' + classe : ''));
+    s.innerHTML = ICO[nome] || ICO.tag;
+    return s;
+  }
+  /* Ícones do menu lateral (só visual: o texto do botão continua o mesmo). */
+  var ICONES_ABA = { abaHoje: 'home', abaLanc: 'list', abaRec: 'repeat', abaCartoes: 'card', abaListas: 'sliders', abaSeguranca: 'lock',
+    abaObr: 'clock', abaOrc: 'gauge', abaContas: 'landmark', abaLimites: 'shield', abaDash: 'pie', abaTend: 'trending', abaPessoas: 'users',
+    abaCadContas: 'banknote', abaGuia: 'book-open', abaMetas: 'target' };
+  function iconesLateral() {
+    Array.prototype.forEach.call(document.querySelectorAll('.lateral .aba[data-aba]'), function (b) {
+      var n = ICONES_ABA[b.getAttribute('data-aba')];
+      if (!n || b.querySelector('.ico')) return;
+      b.prepend(ico(n, 'aba-ic'));
+    });
+  }
+  function esconderSenhas() {
+    Array.prototype.forEach.call(document.querySelectorAll('#telaLogin .ver-senha[aria-pressed="true"]'), function (b) { b.click(); });
+  }
+  /* Botão de mostrar/esconder a senha nos campos da tela de login (só muda o tipo do campo). */
+  function ligarVerSenha() {
+    Array.prototype.forEach.call(document.querySelectorAll('#telaLogin input[type="password"]'), function (inp) {
+      var lab = inp.closest('label');
+      if (!lab || lab.querySelector('.ver-senha')) return;
+      lab.classList.add('com-ver-senha');
+      var b = el('button', { type: 'button', class: 'ver-senha', 'aria-label': 'Mostrar senha', 'aria-pressed': 'false', tabindex: '0' }, ico('eye'));
+      b.addEventListener('click', function (e) {
+        e.preventDefault();
+        var mostrar = inp.type === 'password';
+        inp.type = mostrar ? 'text' : 'password';
+        b.setAttribute('aria-pressed', mostrar ? 'true' : 'false');
+        b.setAttribute('aria-label', mostrar ? 'Esconder senha' : 'Mostrar senha');
+        b.replaceChildren(ico(mostrar ? 'eye-off' : 'eye'));
+        inp.focus();
+      });
+      lab.append(b);
+    });
+  }
+  /* Troca os marcadores <i class="ico-ph" data-ico="…"> do HTML pelos ícones. */
+  function pintarIcones(raiz) {
+    Array.prototype.forEach.call((raiz || document).querySelectorAll('i.ico-ph[data-ico]'), function (i) {
+      var extra = i.className.replace('ico-ph', '').trim();
+      i.replaceWith(ico(i.getAttribute('data-ico'), extra));
+    });
+  }
+
   /* Ícones das categorias (pelo nome; categorias novas ganham um ícone genérico) */
   var ICONES_CAT = [
-    [/mercado|supermerc|feira|hortifruti|padaria|aliment/, '🛒'], [/restaurante|lanche|ifood|delivery|refei|bar\b|cafe/, '🍽️'],
-    [/moradia|aluguel|condom|casa|lar\b|iptu/, '🏠'], [/transporte|combust|gasolina|uber|onibus|metro|carro|estacion|pedagio|ipva|veicul/, '🚗'],
-    [/saude|farmac|remedio|medic|hospital|plano de saude|dentista|consulta|exame/, '💊'], [/educa|escola|faculdade|curso|livro|material escolar/, '📚'],
-    [/lazer|diversao|cinema|passeio|festa|show/, '🎉'], [/viagem|ferias|hotel|passagem/, '✈️'], [/roupa|vestu|calcado|moda/, '👕'],
-    [/luz|energia|agua|gas\b|contas da casa|servicos/, '⚡'], [/internet|telefone|celular|tv\b/, '📱'], [/assinatura|streaming|netflix|spotify/, '📺'],
-    [/pet|animal|veterin|racao/, '🐾'], [/presente|doacao|dizimo|caridade/, '🎁'], [/imposto|taxa|tarifa|juros|multa/, '🧾'],
-    [/beleza|cabelo|salao|estetica|cuidado pessoal|higiene/, '💇'], [/filho|crianca|bebe|escola dos/, '🧸'], [/seguro/, '🛡️'],
-    [/academia|esporte|ginast/, '🏋️'], [/salario|pro-labore|prolabore|holerite/, '💼'], [/freela|servico prestado|autonomo|extra/, '🧰'],
-    [/invest|rendimento|dividend|juros recebidos|aplica/, '📈'], [/reembolso|devolu|estorno/, '↩️'], [/aluguel recebido|aluguéis/, '🔑'],
-    [/venda/, '🏷️'], [/bonus|13|decimo|ferias recebidas|premio|plr/, '🎉'], [/cartao/, '💳'], [/divida|emprestimo|financiamento|parcela/, '🏦'],
-    [/outro|divers/, '📦']
+    [/compra/, 'bag'], [/benef|aliment/, 'food'], [/bebe|famil/, 'users'], [/agua/, 'droplet'],
+    [/mercado|supermerc|feira|hortifruti|padaria/, 'cart'], [/restaurante|lanche|ifood|delivery|refei|bar\b|cafe/, 'resto'],
+    [/moradia|aluguel|condom|casa|lar\b|iptu/, 'home'], [/transporte|combust|gasolina|uber|onibus|metro|carro|estacion|pedagio|ipva|veicul/, 'car'],
+    [/saude|farmac|remedio|medic|hospital|plano de saude|dentista|consulta|exame/, 'health'], [/educa|escola|faculdade|curso|livro|material escolar/, 'book'],
+    [/lazer|diversao|cinema|passeio|festa|show/, 'ticket'], [/viagem|ferias|hotel|passagem/, 'plane'], [/roupa|vestu|calcado|moda/, 'shirt'],
+    [/luz|energia|agua|gas\b|contas da casa|servicos/, 'zap'], [/internet|telefone|celular|tv\b/, 'phone'], [/assinatura|streaming|netflix|spotify/, 'tv'],
+    [/pet|animal|veterin|racao/, 'heart'], [/presente|doacao|dizimo|caridade/, 'gift'], [/imposto|taxa|tarifa|juros|multa/, 'file'],
+    [/beleza|cabelo|salao|estetica|cuidado pessoal|higiene/, 'scissors'], [/filho|crianca|bebe|escola dos/, 'users'], [/seguro/, 'shield'],
+    [/academia|esporte|ginast/, 'dumbbell'], [/salario|pro-labore|prolabore|holerite/, 'briefcase'], [/freela|servico prestado|autonomo|extra/, 'wrench'],
+    [/invest|rendimento|dividend|juros recebidos|aplica/, 'trending'], [/reembolso|devolu|estorno/, 'rotate-ccw'], [/aluguel recebido|aluguéis/, 'key'],
+    [/venda/, 'tag'], [/bonus|13|decimo|ferias recebidas|premio|plr/, 'award'], [/cartao/, 'card'], [/divida|emprestimo|financiamento|parcela/, 'landmark'],
+    [/outro|divers/, 'package']
   ];
-  function iconeCategoria(nome, tipo) {
+  function iconeCategoria(nome, tipo) { return ico(nomeIconeCategoria(nome, tipo)); }
+  /* Ícones coloridos (emoji) usados nos lançamentos: lista e botões de categoria do formulário. */
+  ICO.food = ICO.utensils; ICO.resto = ICO.utensils;
+  var EMOJI_ICONE = { food: '🍽️', resto: '🍔', bag: '🛍️', utensils: '🍽️', users: '🧸', droplet: '💧', cart: '🛒', home: '🏠', car: '🚗', health: '💊', book: '📚',
+    ticket: '🎉', plane: '✈️', shirt: '👕', zap: '⚡', phone: '📱', tv: '📺', heart: '🐾', gift: '🎁', file: '🧾', scissors: '💇',
+    shield: '🛡️', dumbbell: '🏋️', briefcase: '💼', wrench: '🧰', trending: '📈', 'rotate-ccw': '↩️', key: '🔑', tag: '🏷️',
+    award: '🏆', card: '💳', landmark: '🏦', package: '📦', coins: '💰' };
+  function emojiCategoria(nome, tipo) {
+    return el('span', { class: 'emoji-cat' }, EMOJI_ICONE[nomeIconeCategoria(nome, tipo)] || (tipo === 'receita' ? '💰' : '🏷️'));
+  }
+  function nomeIconeCategoria(nome, tipo) {
     var n = normalizar(nome || '');
     for (var i = 0; i < ICONES_CAT.length; i++) if (ICONES_CAT[i][0].test(n)) return ICONES_CAT[i][1];
-    return tipo === 'receita' ? '💰' : '🏷️';
+    return tipo === 'receita' ? 'coins' : 'tag';
   }
 
   /* Botões de categoria e de data no formulário (espelham os campos originais) */
@@ -7130,7 +7918,7 @@
       var at = sel.value === o.value;
       box.append(el('button', { type: 'button', class: 'chip-cat' + (at ? ' ativo' : '') + (at && sel.dataset.sugerido ? ' sugerido' : ''),
         'data-cat': o.value, 'aria-pressed': at ? 'true' : 'false' },
-        el('span', { class: 'ci', 'aria-hidden': 'true' }, iconeCategoria(o.value, tipo)), el('span', { class: 'cn' }, o.value)));
+        el('span', { class: 'ci', 'aria-hidden': 'true' }, emojiCategoria(o.value, tipo)), el('span', { class: 'cn' }, o.value)));
     });
     $('categoriaWrap').classList.toggle('invalido-chips', sel.classList.contains('invalido'));
     var d = $('f_data').value, hoje = hojeISO();
@@ -7150,12 +7938,33 @@
   function infoCartaoNoMes(l, mes) {
     if (!ehCompraCartao(l) || !moduloAtivo('cartoes')) return null;
     var it = itensCartaoNoMes(l, mes)[0], nome = nomeCartao(l.cartaoId);
-    if (it) return { txt: '💳 ' + nome + (it.n ? ' · parcela ' + it.k + ' de ' + it.n : '') + ' · fatura de ' + dataBR(it.venc), item: it };
+    if (it) return { txt: nome + (it.n ? ' · parcela ' + it.k + ' de ' + it.n : '') + ' · fatura de ' + dataBR(it.venc), item: it };
     var prox = itensCompromisso(l)[0];
-    return { txt: '💳 ' + nome + (prox && prox.venc ? ' · entra na fatura de ' + dataBR(prox.venc) : ''), item: null };
+    return { txt: nome + (prox && prox.venc ? ' · entra na fatura de ' + dataBR(prox.venc) : ''), item: null };
+  }
+  /* Contas fixas previstas de meses futuros (ainda não viraram lançamento). Entram na previsão do mês:
+     no Entrou/Saiu e, se não forem no cartão, no “A pagar”. No cartão, contam no mês em que a fatura vence. */
+  function fixasPrevistas(mes) {
+    if (!modoSimples() || !moduloAtivo('recorrencias') || mes <= mesAtual()) return [];
+    var out = [], atual = mesAtual();
+    estado.ocorrencias.forEach(function (o) {
+      if (o.status !== 'prevista' || o.lancamentoId || o.competencia <= atual || o.valorEstimado === null) return;
+      var r = recorrenciaPorId(o.regraId);
+      if (!r || !r.ativo) return;
+      var cart = r.tipo === 'despesa' && r.cartaoId && moduloAtivo('cartoes') ? cartaoPorId(r.cartaoId) : null;
+      var venc = cart ? (vencimentoPorCartao(o.vencimento, cart) || o.vencimento) : o.vencimento;
+      if (String(venc).slice(0, 7) !== mes) return;
+      out.push({ o: o, r: r, cartao: cart, venc: venc, data: o.vencimento, centavos: centavos(o.valorEstimado), tipo: r.tipo });
+    });
+    return out.sort(function (a, b) { return a.data < b.data ? -1 : a.data > b.data ? 1 : 0; });
   }
   function totaisDoMes(mes) {
-    var t = { entrou: 0, saiu: 0, cats: {}, cartao: false };
+    var t = { entrou: 0, saiu: 0, cats: {}, cartao: false, previsto: 0 };
+    fixasPrevistas(mes).forEach(function (p) {
+      if (p.tipo === 'receita') t.entrou += p.centavos;
+      else { t.saiu += p.centavos; var c = p.r.categoria || 'Sem categoria'; t.cats[c] = (t.cats[c] || 0) + p.centavos; }
+      t.previsto++;
+    });
     estado.lancamentos.forEach(function (l) {
       if (l.status === 'Cancelado') return;
       if (ehCompraCartao(l) && moduloAtivo('cartoes')) {
@@ -7189,29 +7998,344 @@
     $('mesNota').hidden = !t.cartao;
     var ap = !moduloAtivo('contas') ? totalAPagar(mesVisao) : { qtd: 0 };
     $('mesApagar').hidden = !ap.qtd;
-    if (ap.qtd) $('mesApagar').textContent = '⏳ A pagar: ' + moeda(ap.total / 100) + ' (' + plural(ap.qtd, 'conta', 'contas') + ')';
+    if (ap.qtd) $('mesApagar').replaceChildren(ico('clock', 'ico-inline'), ' A pagar: ' + moeda(ap.total / 100) + ' (' + plural(ap.qtd, 'conta', 'contas') + ')');
     renderFaturasMvp();
-    // Para onde foi o dinheiro
+    renderPrevistasMes();
+    renderComparacaoMes(t);
+    renderEvolucao();
+    // Para onde foi o dinheiro: rosca + lista (as 6 maiores com cor própria; o resto em “Outras”)
     $('hojeCatsMes').textContent = rot;
-    var box = $('hojeCategorias'), nomes = Object.keys(t.cats).sort(function (a, b) { return t.cats[b] - t.cats[a]; });
+    var box = $('hojeCategorias'), nomes = Object.keys(t.cats).filter(function (n) { return t.cats[n] > 0; }).sort(function (a, b) { return t.cats[b] - t.cats[a]; });
     box.replaceChildren();
     if (!nomes.length) { box.append(el('div', { class: 'hoje-vazio' }, 'Nenhum gasto anotado em ' + rot + '. Toque no + para anotar.')); return; }
+    var totalCats = nomes.reduce(function (a, n) { return a + t.cats[n]; }, 0);
+    var corDe = function (i) { return i < 6 ? 'var(--g-cat' + (i + 1) + ')' : 'var(--g-cat-outras)'; };
+    var fatias = nomes.slice(0, 6).map(function (n, i) { return { nome: n, v: t.cats[n], cor: corDe(i) }; });
+    if (nomes.length > 6) fatias.push({ nome: 'Outras', v: nomes.slice(6).reduce(function (a, n) { return a + t.cats[n]; }, 0), cor: corDe(6), outras: true });
     var maior = t.cats[nomes[0]], ul = el('ul', { class: 'cat-lista' });
-    nomes.slice(0, 8).forEach(function (n) {
-      var v = t.cats[n], pct = t.saiu ? Math.round(v / t.saiu * 100) : 0;
+    nomes.slice(0, 8).forEach(function (n, i) {
+      var v = t.cats[n], pct = totalCats ? Math.round(v / totalCats * 100) : 0;
       ul.append(el('li', { class: 'cat-item', tabindex: '0', role: 'button', 'data-ver-cat': n, 'aria-label': n + ': ' + moeda(v / 100) + ', ' + pct + '% dos gastos. Ver lançamentos' },
         el('span', { class: 'cat-ic', 'aria-hidden': 'true' }, iconeCategoria(n, 'despesa')),
-        el('span', { class: 'cat-nome' }, n, el('span', { class: 'cat-pct' }, pct + '%')),
+        el('span', { class: 'cat-nome' }, el('span', { class: 'cat-ponto', style: 'background:' + corDe(i), 'aria-hidden': 'true' }), n, el('span', { class: 'cat-pct' }, pct + '%')),
         el('span', { class: 'cat-valor' }, moeda(v / 100)),
-        el('span', { class: 'cat-trilho', 'aria-hidden': 'true' }, el('span', { class: 'cat-barra', style: 'display:block;width:' + Math.max(3, Math.round(v / maior * 100)) + '%' }))));
+        el('span', { class: 'cat-trilho', 'aria-hidden': 'true' }, el('span', { class: 'cat-barra', style: 'display:block;width:' + Math.max(3, Math.round(v / maior * 100)) + '%;background:' + corDe(i) }))));
     });
-    box.append(ul);
+    box.append(el('div', { class: 'cat-wrap' }, rosca(fatias, totalCats, nomes.slice(6)), ul));
     if (nomes.length > 8) box.append(el('div', { class: 'uso' }, 'e mais ' + plural(nomes.length - 8, 'categoria', 'categorias') + ' — veja em Lançamentos.'));
   }
-  function mudarMes(delta) {
-    var y = +mesVisao.slice(0, 4), m = +mesVisao.slice(5, 7) - 1 + delta;
+
+  /* Rosca de categorias (SVG). Cada fatia leva ao filtro da categoria; “Outras” não filtra. */
+  function rosca(fatias, total, restantes) {
+    var NS = 'http://www.w3.org/2000/svg', R = 54, r = 36, C = 60;
+    var svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 120 120'); svg.setAttribute('class', 'rosca'); svg.setAttribute('role', 'img');
+    svg.setAttribute('aria-label', 'Gastos por categoria: ' + fatias.map(function (f) { return f.nome + ' ' + Math.round(f.v / total * 100) + '%'; }).join(', '));
+    var ang = -Math.PI / 2, pt = function (rad, a) { return (C + rad * Math.cos(a)).toFixed(2) + ' ' + (C + rad * Math.sin(a)).toFixed(2); };
+    fatias.forEach(function (f) {
+      var frac = f.v / total, a2 = ang + frac * 2 * Math.PI, p = document.createElementNS(NS, 'path');
+      if (frac >= 0.9999) {
+        p.setAttribute('d', 'M ' + pt(R, 0) + ' A ' + R + ' ' + R + ' 0 1 1 ' + pt(R, Math.PI) + ' A ' + R + ' ' + R + ' 0 1 1 ' + pt(R, 0) +
+          ' M ' + pt(r, 0) + ' A ' + r + ' ' + r + ' 0 1 0 ' + pt(r, Math.PI) + ' A ' + r + ' ' + r + ' 0 1 0 ' + pt(r, 0) + ' Z');
+        p.setAttribute('fill-rule', 'evenodd');
+      } else {
+        var g = frac > 0.5 ? 1 : 0;
+        p.setAttribute('d', 'M ' + pt(R, ang) + ' A ' + R + ' ' + R + ' 0 ' + g + ' 1 ' + pt(R, a2) + ' L ' + pt(r, a2) + ' A ' + r + ' ' + r + ' 0 ' + g + ' 0 ' + pt(r, ang) + ' Z');
+      }
+      p.setAttribute('style', 'fill:' + f.cor);
+      p.setAttribute('class', 'rosca-fatia');
+      if (!f.outras) p.setAttribute('data-ver-cat', f.nome);
+      var tt = document.createElementNS(NS, 'title');
+      tt.textContent = f.nome + ': ' + moeda(f.v / 100) + ' (' + Math.round(frac * 100) + '%)' + (f.outras && restantes.length ? ' — ' + restantes.join(', ') : '');
+      p.append(tt); svg.append(p);
+      ang = a2;
+    });
+    var centro = el('div', { class: 'rosca-centro' }, el('span', null, 'Total'), el('strong', { class: 'rosca-total' }, moeda(total / 100)));
+    return el('div', { class: 'rosca-caixa' }, svg, centro);
+  }
+
+  /* Comparação com o mês anterior (só leitura dos mesmos totais do resumo). */
+  function mesDeslocado(mes, delta) {
+    var y = +mes.slice(0, 4), m = +mes.slice(5, 7) - 1 + delta;
     y += Math.floor(m / 12); m = ((m % 12) + 12) % 12;
-    mesVisao = y + '-' + String(m + 1).padStart(2, '0');
+    return y + '-' + String(m + 1).padStart(2, '0');
+  }
+  function renderComparacaoMes(t) {
+    var box = $('mesComp'), ant = mesDeslocado(mesVisao, -1), ta = totaisDoMes(ant);
+    var nomeAnt = MESES_LONGOS[+ant.slice(5, 7) - 1];
+    if (!ta.saiu || !t.saiu) { box.hidden = true; return; }
+    var dif = Math.round((t.saiu - ta.saiu) / ta.saiu * 100);
+    box.hidden = false;
+    box.className = 'mes-comp ' + (dif > 0 ? 'pior' : dif < 0 ? 'melhor' : '');
+    if (dif === 0) box.replaceChildren('Gastos iguais aos de ' + nomeAnt);
+    else box.replaceChildren(ico(dif > 0 ? 'arrow-up' : 'arrow-down', 'ico-inline'),
+      el('span', null, 'Gastos ' + Math.abs(dif) + '% ' + (dif > 0 ? 'acima' : 'abaixo') + ' de ' + nomeAnt + ' '),
+      el('span', { class: 'mes-comp-val' }, '(' + moeda(ta.saiu / 100) + ')'));
+  }
+
+  /* Evolução: entradas e saídas dos 6 meses que terminam no mês mostrado. Tocar num mês abre esse mês. */
+  function renderEvolucao() {
+    var box = $('hojeEvolucao');
+    if (!box) return;
+    var meses = [], maior = 0;
+    for (var i = 5; i >= 0; i--) { var m = mesDeslocado(mesVisao, -i), tt = totaisDoMes(m); meses.push({ mes: m, e: tt.entrou, s: tt.saiu }); maior = Math.max(maior, tt.entrou, tt.saiu); }
+    box.replaceChildren();
+    if (!maior) { box.append(el('div', { class: 'hoje-vazio' }, 'Ainda não há entradas nem saídas nestes 6 meses.')); return; }
+    var escala = escalaRedonda(maior), grade = el('div', { class: 'evo-grade', 'aria-hidden': 'true' },
+      el('span', { class: 'evo-ref', style: 'bottom:100%' }, el('em', { class: 'evo-ref-v' }, moedaCurta(escala))),
+      el('span', { class: 'evo-ref', style: 'bottom:50%' }, el('em', { class: 'evo-ref-v' }, moedaCurta(escala / 2))));
+    var cols = el('div', { class: 'evo-cols' });
+    meses.forEach(function (x) {
+      var rot = MESES_LONGOS[+x.mes.slice(5, 7) - 1] + (x.mes.slice(0, 4) !== mesVisao.slice(0, 4) ? ' de ' + x.mes.slice(0, 4) : ''), sob = x.e - x.s;
+      var dica = rot.charAt(0).toUpperCase() + rot.slice(1) + ' — entrou ' + moeda(x.e / 100) + ', saiu ' + moeda(x.s / 100) + ', ' + (sob < 0 ? 'faltou ' + moeda(-sob / 100) : 'sobrou ' + moeda(sob / 100));
+      cols.append(el('button', { type: 'button', class: 'evo-col' + (x.mes === mesVisao ? ' atual' : ''), 'data-evo-mes': x.mes, 'aria-label': dica + '. Abrir este mês', 'data-dica': dica },
+        el('span', { class: 'evo-barras' },
+          el('span', { class: 'evo-b evo-e', style: 'height:' + (x.e ? Math.max(2, x.e / escala * 100) : 0) + '%' }),
+          el('span', { class: 'evo-b evo-s', style: 'height:' + (x.s ? Math.max(2, x.s / escala * 100) : 0) + '%' })),
+        el('span', { class: 'evo-mes' }, MESES[+x.mes.slice(5, 7) - 1])));
+    });
+    box.append(el('div', { class: 'evo-area' }, grade, cols), el('p', { class: 'evo-dica', id: 'evoDica', 'aria-live': 'polite' }, 'Toque num mês para abrir. Passe o mouse para ver os valores.'));
+  }
+  function escalaRedonda(v) {
+    var reais = v / 100, p = Math.pow(10, Math.floor(Math.log10(reais))), passos = [1, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10];
+    for (var i = 0; i < passos.length; i++) if (passos[i] * p >= reais) return passos[i] * p * 100;
+    return 10 * p * 100;
+  }
+  function moedaCurta(c) {
+    var r = c / 100;
+    if (r >= 1e6) return 'R$ ' + (r / 1e6).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + ' mi';
+    if (r >= 1e3) return 'R$ ' + (r / 1e3).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + ' mil';
+    return 'R$ ' + Math.round(r);
+  }
+
+  /* ---------- Metas ----------
+     Cada meta guarda seus depósitos (valor positivo) e retiradas (negativo). Nada disso mexe nos
+     lançamentos nem no Entrou/Saiu: é um controle à parte do dinheiro separado para cada objetivo. */
+  function metaPorId(id) { return estado.metas.filter(function (m) { return m.id === id; })[0] || null; }
+  function guardadoMeta(m) { return m.aportes.reduce(function (t, a) { return t + Math.round(a.valor * 100); }, 0); }
+  function iconeMeta(nome) {
+    var n = normalizar(nome || '');
+    var regras = [[/viag|ferias|passeio|disney|europa/, 'plane'], [/carro|moto|veiculo/, 'car'], [/casa|apartamento|imovel|reforma|aluguel/, 'home'],
+      [/reserva|emergencia|seguranca/, 'shield'], [/estud|curso|faculdade|escola|intercambio/, 'book'], [/presente|natal|aniversario/, 'gift'],
+      [/casamento|festa/, 'heart'], [/celular|computador|notebook|tv|eletron/, 'phone'], [/aposent|invest/, 'trending'], [/bebe|filho|crianca/, 'users']];
+    for (var i = 0; i < regras.length; i++) if (regras[i][0].test(n)) return regras[i][1];
+    return 'target';
+  }
+  function mesesAte(dataAlvo) {
+    var h = hojeISO(), m = (+dataAlvo.slice(0, 4) - +h.slice(0, 4)) * 12 + (+dataAlvo.slice(5, 7) - +h.slice(5, 7));
+    return m + 1; // conta o mês atual
+  }
+  function infoMeta(m) {
+    var alvo = Math.round(m.valorAlvo * 100), g = guardadoMeta(m), falta = Math.max(0, alvo - g), pct = alvo ? Math.min(100, Math.floor(g / alvo * 100)) : 0;
+    var r = { alvo: alvo, guardado: g, falta: falta, pct: pct, concluida: g >= alvo, porMes: null, atrasada: false, meses: null };
+    if (m.dataAlvo && !r.concluida) {
+      if (m.dataAlvo < hojeISO()) r.atrasada = true;
+      else { r.meses = Math.max(1, mesesAte(m.dataAlvo)); r.porMes = Math.ceil(falta / r.meses); }
+    }
+    return r;
+  }
+  function rotuloPrazoMeta(d) { return MESES[+d.slice(5, 7) - 1] + '/' + d.slice(0, 4); }
+  function seloMeta(m, i) {
+    if (i.concluida) return el('span', { class: 'selo s-pago' }, 'Concluída');
+    if (i.atrasada) return el('span', { class: 'selo s-pendente' }, 'Prazo passou');
+    if (m.dataAlvo) return el('span', { class: 'selo' }, 'até ' + rotuloPrazoMeta(m.dataAlvo));
+    return null;
+  }
+  function trilhoMeta(i) {
+    return el('div', { class: 'meta-trilho', role: 'progressbar', 'aria-valuemin': '0', 'aria-valuemax': '100', 'aria-valuenow': String(i.pct), 'aria-label': i.pct + '% da meta' },
+      el('div', { class: 'meta-barra' + (i.concluida ? ' ok' : ''), style: 'width:' + Math.max(i.guardado > 0 ? 2 : 0, i.pct) + '%' }));
+  }
+  function renderMetas() {
+    var lista = $('metasLista'), res = $('metasResumo'), hj = $('hojeMetas');
+    if (!lista) return;
+    var metas = estado.metas.slice().sort(function (a, b) {
+      var ia = infoMeta(a), ib = infoMeta(b);
+      return (ia.concluida - ib.concluida) || ((a.dataAlvo || '9999') < (b.dataAlvo || '9999') ? -1 : (a.dataAlvo || '9999') > (b.dataAlvo || '9999') ? 1 : 0) || (a.criadoEm < b.criadoEm ? -1 : 1);
+    });
+    lista.replaceChildren(); hj.replaceChildren();
+    if (!metas.length) {
+      lista.append(el('div', { class: 'fat-vazio' }, el('p', null, 'Nenhuma meta ainda. Exemplos: reserva de emergência, viagem de férias, trocar de carro.'),
+        el('button', { type: 'button', class: 'btn primario', 'data-meta-acao': 'nova' }, '+ Criar primeira meta')));
+      res.hidden = true;
+      hj.append(el('div', { class: 'hoje-vazio' }, 'Crie uma meta para juntar dinheiro para um objetivo. ', el('button', { type: 'button', class: 'btn link', 'data-meta-acao': 'nova' }, 'Criar meta')));
+      return;
+    }
+    var totG = 0, totA = 0, conc = 0;
+    metas.forEach(function (m) {
+      var i = infoMeta(m);
+      totG += i.guardado; totA += i.alvo; if (i.concluida) conc++;
+      var linha = i.concluida ? 'Meta alcançada!' + (i.guardado > i.alvo ? ' Passou ' + moeda((i.guardado - i.alvo) / 100) + ' do objetivo.' : '')
+        : 'Faltam ' + moeda(i.falta / 100) + (i.porMes ? ' · guarde ' + moeda(i.porMes / 100) + ' por mês' + (i.meses > 1 ? ' até ' + rotuloPrazoMeta(m.dataAlvo) : ' neste mês') : i.atrasada ? ' · o prazo (' + dataBR(m.dataAlvo) + ') já passou' : '');
+      var hist = m.aportes.slice().sort(function (a, b) { return a.data < b.data ? 1 : a.data > b.data ? -1 : 0; });
+      var ul = el('ul');
+      hist.forEach(function (a) {
+        ul.append(el('li', null, el('span', null, a.valor > 0 ? 'Guardei' : 'Retirei', el('span', { class: 'uso' }, dataBR(a.data) + (a.nota ? ' · ' + a.nota : ''))),
+          el('span', { class: 'meta-hist-fim' }, el('b', { class: a.valor > 0 ? 'v-receita' : 'v-despesa' }, (a.valor > 0 ? '+ ' : '− ') + moeda(Math.abs(a.valor))),
+            el('button', { type: 'button', class: 'btn link perigo-txt', 'data-meta-acao': 'excluir-mov', 'data-id': m.id, 'data-mov': a.id, 'aria-label': 'Excluir este movimento' }, '×'))));
+      });
+      lista.append(el('article', { class: 'meta-card' + (i.concluida ? ' concluida' : ''), 'data-meta': m.id },
+        el('div', { class: 'meta-cab' }, el('span', { class: 'meta-ic', 'aria-hidden': 'true' }, ico(i.concluida ? 'award' : iconeMeta(m.nome))),
+          el('div', null, el('strong', null, m.nome)), seloMeta(m, i)),
+        el('div', { class: 'meta-valores' }, el('span', { class: 'meta-guardado' }, moeda(i.guardado / 100)), el('span', { class: 'meta-de' }, 'de ' + moeda(i.alvo / 100)), el('span', { class: 'meta-pct' }, i.pct + '%')),
+        trilhoMeta(i),
+        el('p', { class: 'meta-linha' + (i.atrasada ? ' alerta' : '') }, linha),
+        el('div', { class: 'meta-acoes' },
+          el('button', { type: 'button', class: 'btn primario', 'data-meta-acao': 'guardar', 'data-id': m.id }, ico('plus-circle'), 'Guardar'),
+          i.guardado > 0 ? el('button', { type: 'button', class: 'btn', 'data-meta-acao': 'retirar', 'data-id': m.id }, ico('minus-circle'), 'Retirar') : null),
+        hist.length ? el('details', { class: 'fat-compras meta-hist' }, el('summary', null, 'Movimentos (' + hist.length + ')'), ul) : null,
+        el('div', { class: 'fat-rodape' }, el('span', null, m.dataAlvo ? 'Prazo: ' + dataBR(m.dataAlvo) : 'Sem prazo definido'),
+          el('span', null, el('button', { type: 'button', class: 'btn link', 'data-meta-acao': 'editar', 'data-id': m.id }, 'Editar'),
+            el('button', { type: 'button', class: 'btn link perigo-txt', 'data-meta-acao': 'excluir', 'data-id': m.id }, 'Excluir')))));
+    });
+    res.hidden = false;
+    res.replaceChildren(el('span', null, 'Guardado em metas: ', el('b', { class: 'meta-tot' }, moeda(totG / 100))),
+      el('span', null, 'Objetivo total: ', el('b', { class: 'meta-tot' }, moeda(totA / 100))),
+      el('span', null, plural(metas.length, 'meta', 'metas') + (conc ? ' · ' + plural(conc, 'concluída', 'concluídas') : '')));
+    // Início: as 3 primeiras (não concluídas primeiro)
+    var ulH = el('ul', { class: 'hoje-metas-lista' });
+    metas.slice(0, 3).forEach(function (m) {
+      var i = infoMeta(m);
+      ulH.append(el('li', { class: 'hm-item', tabindex: '0', role: 'button', 'data-ir-meta': m.id, 'aria-label': m.nome + ': ' + i.pct + '% (' + moeda(i.guardado / 100) + ' de ' + moeda(i.alvo / 100) + ')' },
+        el('span', { class: 'meta-ic', 'aria-hidden': 'true' }, ico(i.concluida ? 'award' : iconeMeta(m.nome))),
+        el('span', { class: 'hm-nome' }, m.nome, el('span', { class: 'cat-pct' }, i.pct + '%')),
+        el('span', { class: 'hm-valor' }, moeda(i.guardado / 100), el('span', { class: 'uso' }, ' de ' + moeda(i.alvo / 100))),
+        el('span', { class: 'hm-trilho' }, trilhoMeta(i))));
+    });
+    hj.append(ulH);
+    if (metas.length > 3) hj.append(el('div', { class: 'uso' }, 'e mais ' + plural(metas.length - 3, 'meta', 'metas') + '.'));
+  }
+  function formMeta(id) {
+    var m = id ? metaPorId(id) : null;
+    abrirGen(m ? 'Editar meta' : 'Nova meta', [
+      { id: 'nome', rotulo: 'Nome da meta', obrig: true, largo: true, max: 60, valor: m ? m.nome : '', placeholder: 'Ex.: Reserva de emergência, Viagem' },
+      { id: 'alvo', rotulo: 'Quanto quer juntar (R$)', tipo: 'valor', obrig: true, valor: m ? formatarValorCampo(m.valorAlvo) : '', placeholder: '0,00' },
+      { id: 'data', rotulo: 'Até quando (opcional)', tipo: 'date', valor: m ? m.dataAlvo : '' },
+      m ? null : { id: 'ja', rotulo: 'Já tem algum valor guardado? (opcional)', tipo: 'valor', largo: true, valor: '', placeholder: '0,00', ajuda: 'Entra como primeiro depósito, com a data de hoje.' },
+      { tipo: 'html', conteudo: el('p', { class: 'uso' }, 'Com um prazo, o app mostra quanto guardar por mês. O dinheiro das metas não entra no Entrou e Saiu.') }
+    ].filter(Boolean), function (v) {
+      var alvo = parseValor(v.alvo), ja = v.ja ? parseValor(v.ja) : 0;
+      var r = validarMeta({ id: m ? m.id : undefined, nome: v.nome, valorAlvo: alvo, dataAlvo: v.data, criadoEm: m ? m.criadoEm : undefined,
+        arquivada: m ? m.arquivada : false, aportes: m ? m.aportes : [] });
+      var er = erros(r);
+      if (v.ja && (!isFinite(ja) || ja < 0)) er.push('Valor já guardado inválido (ex.: 500,00).');
+      var dup = estado.metas.some(function (x) { return x.id !== r.limpo.id && normalizar(x.nome) === normalizar(r.limpo.nome); });
+      if (dup) er.push('Já existe uma meta chamada “' + r.limpo.nome + '”.');
+      if (er.length) return er;
+      if (!m && ja > 0) r.limpo.aportes.push({ id: 'a' + gerarId().slice(1), data: hojeISO(), valor: dinheiro(ja), nota: 'Valor inicial' });
+      if (m) estado.metas[estado.metas.indexOf(m)] = r.limpo; else estado.metas.push(r.limpo);
+      marcarAlterado(); render();
+      avisar(m ? 'Meta atualizada.' : 'Meta “' + r.limpo.nome + '” criada.', 'sucesso');
+      return [];
+    }, m ? 'Salvar meta' : 'Criar meta');
+  }
+  function formMovMeta(id, retirar) {
+    var m = metaPorId(id);
+    if (!m) return;
+    var g = guardadoMeta(m);
+    abrirGen((retirar ? 'Retirar de ' : 'Guardar em ') + m.nome, [
+      { tipo: 'html', conteudo: el('p', { class: 'uso' }, 'Guardado até agora: ', el('b', { class: 'meta-tot' }, moeda(g / 100)), ' de ' + moeda(m.valorAlvo) + '.') },
+      { id: 'valor', rotulo: 'Valor (R$)', tipo: 'valor', obrig: true, valor: '', placeholder: '0,00' },
+      { id: 'data', rotulo: 'Data', tipo: 'date', obrig: true, valor: hojeISO() },
+      { id: 'nota', rotulo: 'Observação (opcional)', largo: true, max: 80, valor: '', placeholder: retirar ? 'Ex.: usei para o conserto do carro' : 'Ex.: 13º salário' }
+    ], function (v) {
+      var val = parseValor(v.valor), er = [];
+      if (!isFinite(val) || val <= 0) er.push('Informe um valor maior que zero (ex.: 200,00).');
+      if (!dataValida(v.data)) er.push('Informe a data.');
+      if (retirar && isFinite(val) && Math.round(val * 100) > g) er.push('Não dá para retirar mais do que está guardado (' + moeda(g / 100) + ').');
+      if (er.length) return er;
+      var antes = infoMeta(m);
+      m.aportes.push({ id: 'a' + gerarId().slice(1), data: v.data, valor: dinheiro(retirar ? -val : val), nota: texto(v.nota, 80) });
+      marcarAlterado(); render();
+      var depois = infoMeta(m);
+      avisar(!antes.concluida && depois.concluida ? 'Parabéns! Você alcançou a meta “' + m.nome + '”.' : (retirar ? 'Retirada anotada em “' : 'Depósito anotado em “') + m.nome + '”.', 'sucesso');
+      return [];
+    }, retirar ? 'Retirar' : 'Guardar');
+  }
+  function formatarValorCampo(v) { return Number(v).toFixed(2).replace('.', ','); }
+  function excluirMeta(id) {
+    var m = metaPorId(id);
+    if (!m) return;
+    confirmar('Excluir meta', ['Excluir a meta “' + m.nome + '” e seus ' + plural(m.aportes.length, 'movimento', 'movimentos') + '?',
+      'Seus lançamentos não mudam. Se mudar de ideia, use “Desfazer” no aviso logo após excluir.'], 'Excluir').then(function (ok) {
+      if (!ok) return;
+      var foto = fotografia();
+      estado.metas = estado.metas.filter(function (x) { return x.id !== id; });
+      marcarAlterado(); render();
+      avisar('Meta excluída.', 'sucesso', desfazerPara(foto));
+    });
+  }
+  function excluirMovMeta(id, mov) {
+    var m = metaPorId(id), a = m && m.aportes.filter(function (x) { return x.id === mov; })[0];
+    if (!a) return;
+    confirmar('Excluir movimento', ['Excluir este movimento da meta “' + m.nome + '”?', [dataBR(a.data) + ' — ' + (a.valor > 0 ? 'Guardei ' : 'Retirei ') + moeda(Math.abs(a.valor))]], 'Excluir').then(function (ok) {
+      if (!ok) return;
+      var foto = fotografia();
+      m.aportes = m.aportes.filter(function (x) { return x.id !== mov; });
+      marcarAlterado(); render();
+      avisar('Movimento excluído.', 'sucesso', desfazerPara(foto));
+    });
+  }
+  function ligarEventosMetas() {
+    var acao = function (e) {
+      var b = e.target.closest('[data-meta-acao]');
+      if (b) {
+        var a = b.getAttribute('data-meta-acao'), id = b.getAttribute('data-id');
+        if (a === 'nova') formMeta(null);
+        else if (a === 'editar') formMeta(id);
+        else if (a === 'guardar') formMovMeta(id, false);
+        else if (a === 'retirar') formMovMeta(id, true);
+        else if (a === 'excluir') excluirMeta(id);
+        else if (a === 'excluir-mov') excluirMovMeta(id, b.getAttribute('data-mov'));
+        return;
+      }
+      var it = e.target.closest('[data-ir-meta]');
+      if (it) irParaMeta(it.getAttribute('data-ir-meta'));
+    };
+    $('abaMetas').addEventListener('click', acao);
+    $('hojeMetas').addEventListener('click', acao);
+    $('hojeMetas').addEventListener('keydown', function (e) {
+      if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[data-ir-meta]')) { e.preventDefault(); irParaMeta(e.target.getAttribute('data-ir-meta')); }
+    });
+  }
+  function irParaMeta(id) {
+    mostrarAba('abaMetas');
+    var c = $('metasLista').querySelector('[data-meta="' + CSS.escape(id) + '"]');
+    if (c) { c.scrollIntoView({ block: 'center' }); c.classList.add('destacado'); setTimeout(function () { c.classList.remove('destacado'); }, 1600); }
+  }
+
+  /* Esconder valores: preferência deste aparelho (não vai para o arquivo nem para o backup). */
+  var CHAVE_OCULTAR = 'controle-financeiro-ocultar-valores';
+  function aplicarOcultar(sim) {
+    document.documentElement.classList.toggle('valores-ocultos', sim);
+    var b = $('btnOcultar');
+    if (!b) return;
+    b.setAttribute('aria-pressed', sim ? 'true' : 'false');
+    b.setAttribute('aria-label', sim ? 'Mostrar valores' : 'Esconder valores'); b.title = sim ? 'Mostrar valores' : 'Esconder valores';
+    b.replaceChildren(ico(sim ? 'eye-off' : 'eye'));
+  }
+  function iniciarOcultar() {
+    var sim = false;
+    try { sim = localStorage.getItem(CHAVE_OCULTAR) === '1'; } catch (e) { /* ok */ }
+    aplicarOcultar(sim);
+    $('btnOcultar').addEventListener('click', function () {
+      var novo = !document.documentElement.classList.contains('valores-ocultos');
+      try { if (novo) localStorage.setItem(CHAVE_OCULTAR, '1'); else localStorage.removeItem(CHAVE_OCULTAR); } catch (e) { /* só nesta sessão */ }
+      aplicarOcultar(novo);
+    });
+    var evo = $('hojeEvolucao');
+    evo.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-evo-mes]');
+      if (b) { mesVisao = b.getAttribute('data-evo-mes'); render(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    });
+    var mostrarDica = function (e) {
+      var b = e.target.closest && e.target.closest('[data-evo-mes]'), d = $('evoDica');
+      if (b && d) d.textContent = b.getAttribute('data-dica');
+    };
+    evo.addEventListener('mouseover', mostrarDica);
+    evo.addEventListener('focusin', mostrarDica);
+  }
+  function mudarMes(delta) {
+    mesVisao = mesDeslocado(mesVisao, delta);
     render();
   }
   function verCategoria(cat) {
@@ -7227,7 +8351,7 @@
     Array.prototype.forEach.call(document.querySelectorAll('[data-tema-escolha]'), function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-tema-escolha') === t ? 'true' : 'false'); });
   }
   function escolherTema(t) {
-    if (t === 'auto') { document.documentElement.removeAttribute('data-theme'); try { localStorage.removeItem(CHAVE_TEMA); } catch (e) { /* ok */ } }
+    if (t === 'auto') { document.documentElement.removeAttribute('data-theme'); try { localStorage.setItem(CHAVE_TEMA, 'auto'); } catch (e) { /* ok */ } }
     else { document.documentElement.setAttribute('data-theme', t); try { localStorage.setItem(CHAVE_TEMA, t); } catch (e) { /* ok */ } }
     marcarTema(); atualizarBotaoTema(); render();
   }
@@ -7297,14 +8421,14 @@
     if (orig && orig.status === 'Cancelado') return 'Cancelado';
     if (tipo === 'transferencia') return st.value;
     if (tipo === 'despesa' && cartao) return orig && ehCompraCartao(orig) ? orig.status : 'Pendente';
-    if (tipo === 'despesa' && caixaPagAtiva()) return $('caixaPag').dataset.pago === '1' ? 'Pago' : 'Pendente';
+    if ((tipo === 'despesa' || tipo === 'receita') && caixaPagAtiva()) return $('caixaPag').dataset.pago === '1' ? statusLiquidado(tipo) : 'Pendente';
     return tipo === 'receita' ? 'Recebido' : 'Pago';
   }
-  var ICONES_MEIO = { 'Conta bancária': '🏦', 'Cartão de crédito': '💳', 'Vale-refeição (VR)': '🍽️', 'Vale-alimentação (VA)': '🛒', 'Dinheiro': '💵', 'Outro': '➕' };
+  var ICONES_MEIO = { 'Conta bancária': 'landmark', 'Cartão de crédito': 'card', 'Vale-refeição (VR)': 'utensils', 'Vale-alimentação (VA)': 'cart', 'Dinheiro': 'banknote', 'Outro': 'more' };
   var ROTULO_MEIO = { 'Conta bancária': 'Pix / débito', 'Cartão de crédito': 'Cartão de crédito', 'Vale-refeição (VR)': 'VR', 'Vale-alimentação (VA)': 'VA', 'Dinheiro': 'Dinheiro', 'Outro': 'Outro' };
   function chip(attrs, ic, txt, ativo) {
     return el('button', Object.assign({ type: 'button', class: 'chip-cat' + (ativo ? ' ativo' : ''), 'aria-pressed': ativo ? 'true' : 'false' }, attrs),
-      ic ? el('span', { class: 'ci', 'aria-hidden': 'true' }, ic) : null, el('span', { class: 'cn' }, txt));
+      ic ? el('span', { class: 'ci', 'aria-hidden': 'true' }, ico(ic)) : null, el('span', { class: 'cn' }, txt));
   }
   function renderChipsCartao() {
     if (!modoSimples() || !moduloAtivo('cartoes')) return;
@@ -7312,13 +8436,13 @@
     bm.replaceChildren();
     Array.prototype.forEach.call(sm.options, function (o) {
       if (!o.value) return;
-      bm.append(chip({ 'data-meio': o.value, disabled: sm.disabled && sm.value !== o.value ? 'disabled' : null }, ICONES_MEIO[o.value] || '➕', ROTULO_MEIO[o.value] || o.value, sm.value === o.value));
+      bm.append(chip({ 'data-meio': o.value, disabled: sm.disabled && sm.value !== o.value ? 'disabled' : null }, ICONES_MEIO[o.value] || 'more', ROTULO_MEIO[o.value] || o.value, sm.value === o.value));
     });
     var sc = $('f_cartao'), bc = $('chipsCartao');
     bc.replaceChildren();
     var ops = Array.prototype.filter.call(sc.options, function (o) { return o.value; });
     if (!ops.length) bc.append(el('span', { class: 'chips-vazio' }, 'Nenhum cartão cadastrado. Cadastre na aba Cartões.'));
-    ops.forEach(function (o) { bc.append(chip({ 'data-cartao-chip': o.value }, '💳', o.textContent, sc.value === o.value)); });
+    ops.forEach(function (o) { bc.append(chip({ 'data-cartao-chip': o.value }, 'card', o.textContent, sc.value === o.value)); });
     var tg = $('f_tipoGasto').value, cred = creditoForm();
     $('credNota').hidden = !cred;
     Array.prototype.forEach.call(document.querySelectorAll('[data-parc]'), function (b) {
@@ -7360,11 +8484,55 @@
     if (f.fechada) return ['Fechada', 's-fechada'];
     return ['Aberta', 's-aberta'];
   }
+  /* Limite usado = tudo que ainda está em aberto no cartão (inclui parcelas futuras), como fazem os bancos. */
+  function limiteDoCartao(c) {
+    if (c.limite === null || c.limite === undefined || !(c.limite > 0)) return null;
+    var total = Math.round(c.limite * 100), usado = 0;
+    faturasDoCartao(c.id).forEach(function (f) { if (f.aberto > 0) usado += f.aberto; });
+    return { total: total, usado: usado, disponivel: total - usado, pct: Math.max(0, Math.min(100, Math.round(usado / total * 100))) };
+  }
+  /* Vista em lista (tabela) dos cartões: preferência deste aparelho. */
+  var CHAVE_VISTA_CARTOES = 'controle-financeiro-vista-cartoes';
+  function vistaCartoes() { try { return localStorage.getItem(CHAVE_VISTA_CARTOES) === 'lista' ? 'lista' : 'cards'; } catch (e) { return 'cards'; } }
+  function ligarVistaCartoes() {
+    $('vistaCartoes').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-vista]');
+      if (!b) return;
+      try { localStorage.setItem(CHAVE_VISTA_CARTOES, b.getAttribute('data-vista')); } catch (x) { /* só nesta sessão */ }
+      $('vistaCartoes').dataset.atual = b.getAttribute('data-vista');
+      renderFaturasMvp();
+    });
+  }
+  function renderTabelaCartoes(cartoes) {
+    var box = $('cartLista');
+    box.replaceChildren();
+    var tb = el('tbody'), tot = 0;
+    cartoes.forEach(function (c) {
+      var f = resumoFaturas(c).atual, lim = limiteDoCartao(c);
+      if (f) tot += f.aberto;
+      var sit = f ? situacaoFatura(f) : null;
+      tb.append(el('tr', { 'data-lista-cartao': c.id, class: c.ativo ? '' : 'inativo' },
+        el('td', { class: 'lc-nome' }, el('div', { class: 'lc-nome-in' }, el('span', { class: 'lc-cor', style: estiloPlastico(c), 'aria-hidden': 'true' }),
+          el('span', null, el('strong', null, c.nome), [c.banco, c.segmento].filter(Boolean).length ? el('span', { class: 'uso' }, [c.banco, c.segmento].filter(Boolean).join(' · ')) : null))),
+        el('td', { class: 'lc-venc' }, f ? [el('span', null, dataBR(f.venc)), el('span', { class: 'selo ' + sit[1] }, sit[0])] : el('span', { class: 'uso' }, '—')),
+        el('td', { class: 'lc-valor num' }, f ? moeda(f.aberto / 100) : el('span', { class: 'uso' }, 'Sem fatura'),
+          lim ? el('span', { class: 'lc-disp' }, 'disp. ' + moeda(lim.disponivel / 100)) : null)));
+    });
+    box.append(el('div', { class: 'tabela-wrap lista-cartoes-wrap' }, el('table', { class: 'lista-cartoes' },
+      el('thead', null, el('tr', null, el('th', null, 'Cartão'), el('th', null, 'Vencimento'), el('th', { class: 'num' }, 'Próxima fatura'))),
+      tb,
+      el('tfoot', null, el('tr', null, el('td', { colspan: '2' }, 'Total das próximas faturas'), el('td', { class: 'num' }, moeda(tot / 100)))))));
+  }
   function renderFaturasMvp() {
     if (!moduloAtivo('cartoes') || !modoSimples()) return;
     var box = $('cartFaturas'), hj = $('hojeFaturas');
     box.replaceChildren(); hj.replaceChildren();
-    var cartoes = ordenarAtivos(estado.cartoes);
+    var cartoes = ordenarAtivos(estado.cartoes), vista = vistaCartoes();
+    $('vistaCartoes').hidden = !cartoes.length;
+    Array.prototype.forEach.call($('vistaCartoes').querySelectorAll('[data-vista]'), function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-vista') === vista ? 'true' : 'false'); });
+    box.hidden = vista === 'lista' && cartoes.length > 0;
+    $('cartLista').hidden = !(vista === 'lista' && cartoes.length > 0);
+    if (vista === 'lista' && cartoes.length) renderTabelaCartoes(cartoes);
     if (!cartoes.length) {
       box.append(el('div', { class: 'fat-vazio' }, el('p', null, 'Cadastre seus cartões para ver as faturas.'),
         el('button', { type: 'button', class: 'btn primario', 'data-novo-cartao': '1' }, '+ Cadastrar cartão')));
@@ -7374,31 +8542,38 @@
     var ulH = el('ul', { class: 'hoje-lista' }), linhasH = 0;
     cartoes.forEach(function (c) {
       var r = resumoFaturas(c), f = r.atual;
-      var sub = [c.banco, c.final4 ? '•••• ' + c.final4 : ''].filter(Boolean).join(' · ');
-      var card = el('article', { class: 'fat-card' + (c.ativo ? '' : ' inativo'), 'data-fat-cartao': c.id },
-        el('div', { class: 'fat-cab' }, el('span', { class: 'fat-ic', 'aria-hidden': 'true' }, '💳'),
+      var sub = [c.banco, c.segmento, c.final4 ? '•••• ' + c.final4 : ''].filter(Boolean).join(' · ');
+      var plast = el('div', { class: 'fat-plastico' + (corClara(corDoCartao(c)) ? ' claro' : ''), style: estiloPlastico(c) });
+      var card = el('article', { class: 'fat-card' + (c.ativo ? '' : ' inativo'), 'data-fat-cartao': c.id }, plast);
+      plast.append(
+        el('div', { class: 'fat-cab' }, el('span', { class: 'fat-ic', 'aria-hidden': 'true' }, ico('card')),
           el('div', null, el('strong', null, c.nome), sub ? el('span', { class: 'uso' }, sub) : null),
           f ? el('span', { class: 'selo ' + situacaoFatura(f)[1] }, situacaoFatura(f)[0]) : (c.ativo ? null : el('span', { class: 'selo s-cancelado' }, 'Desativado'))));
       if (f) {
-        card.append(el('div', { class: 'fat-valor' }, moeda(f.aberto / 100)),
+        plast.append(el('div', { class: 'fat-rot' }, 'Fatura atual'), el('div', { class: 'fat-valor' }, moeda(f.aberto / 100)),
           el('div', { class: 'fat-datas' }, 'Vence ', el('b', null, dataBR(f.venc)), f.fechamento ? ' · ' + (f.fechada ? 'fechou' : 'fecha') + ' em ' + dataBR(f.fechamento) : '',
-            f.pago > 0 ? ' · já pago ' + moeda(f.pago / 100) : ''),
-          el('button', { type: 'button', class: 'btn primario', 'data-mvp-pagar': c.id + '|' + f.venc }, 'Pagar fatura'));
+            f.pago > 0 ? ' · já pago ' + moeda(f.pago / 100) : ''));
+        card.append(el('button', { type: 'button', class: 'btn primario', 'data-mvp-pagar': c.id + '|' + f.venc }, 'Pagar fatura'));
         var ul = el('ul');
         f.itens.slice().sort(function (a, b) { return a.lanc.data < b.lanc.data ? 1 : -1; }).forEach(function (i) {
           ul.append(el('li', null, el('span', null, i.lanc.descricao, el('span', { class: 'uso' }, dataBR(i.lanc.data) + (i.n ? ' · parcela ' + i.k + ' de ' + i.n : '') + (i.lanc.categoria ? ' · ' + i.lanc.categoria : ''))),
-            el('b', i.credito ? { class: 'valor-credito' } : null, i.credito ? '↩️ −' + moeda(-i.centavos / 100) : moeda(i.centavos / 100))));
+            el('b', i.credito ? { class: 'valor-credito' } : null, i.credito ? [ico('undo', 'ico-inline'), ' −' + moeda(-i.centavos / 100)] : moeda(i.centavos / 100))));
         });
         card.append(el('details', { class: 'fat-compras' }, el('summary', null, 'Compras desta fatura (' + f.itens.length + ')'), ul));
         if (r.proximas.length) card.append(el('div', { class: 'fat-prox' }, [el('span', { class: 'fat-prox-rot' }, 'Próximas:')].concat(r.proximas.map(function (x) { return el('span', null, rotuloMes(x.venc.slice(0, 7)) + ' ' + moeda(x.aberto / 100)); }))));
         linhasH++;
         ulH.append(el('li', { class: 'hoje-item' + (f.venc < hojeISO() ? ' p-atrasado' : '') },
-          el('div', { class: 'hoje-item-info' }, el('span', { class: 'hoje-prazo' }, (f.venc < hojeISO() ? 'Venceu ' : 'Vence ') + dataBR(f.venc)), el('span', { class: 'hoje-desc' }, '💳 ' + c.nome)),
+          el('div', { class: 'hoje-item-info' }, el('span', { class: 'hoje-prazo' }, (f.venc < hojeISO() ? 'Venceu ' : 'Vence ') + dataBR(f.venc)), el('span', { class: 'hoje-desc' }, ico('card', 'ico-inline'), ' ' + c.nome)),
           el('div', { class: 'hoje-item-fim' }, el('span', { class: 'hoje-valor' }, moeda(f.aberto / 100)),
             el('button', { type: 'button', class: 'btn pequeno' + (f.fechada ? ' primario' : ''), 'data-mvp-pagar': c.id + '|' + f.venc }, 'Pagar'))));
       } else {
-        card.append(el('div', { class: 'fat-valor zero' }, 'Nenhuma compra em aberto'));
+        plast.append(el('div', { class: 'fat-valor zero' }, 'Nenhuma compra em aberto'));
       }
+      var lim = limiteDoCartao(c);
+      if (lim) plast.append(el('div', { class: 'fat-limite' },
+        el('div', { class: 'fl-txt' }, el('span', null, 'Limite disponível'), el('b', { class: 'fl-valor' }, moeda(lim.disponivel / 100)), el('span', { class: 'fl-de' }, 'de ' + moeda(lim.total / 100))),
+        el('div', { class: 'fl-trilho', role: 'progressbar', 'aria-label': 'Limite usado', 'aria-valuemin': '0', 'aria-valuemax': '100', 'aria-valuenow': String(lim.pct) },
+          el('div', { class: 'fl-barra' + (lim.pct >= 90 ? ' alto' : ''), style: 'width:' + lim.pct + '%' }))));
       if (r.ultimaPaga) {
         var pg = r.ultimaPaga.pagamentos.filter(function (p) { return p.situacao === 'ativo'; });
         var ult = pg[pg.length - 1];
@@ -7471,11 +8646,21 @@
      “Já paguei” em outra data: registra o pagamento (sem conta) com essa data.
      “Vou pagar”: fica A pagar; a data do gasto vira o vencimento. Desfazer = voltar para “Vou pagar”. */
   function usaCaixaPagLanc(l) {
-    return modoSimples() && !moduloAtivo('contas') && l.tipo === 'despesa' && !ehCompraCartao(l);
+    return modoSimples() && !moduloAtivo('contas') && (l.tipo === 'despesa' || l.tipo === 'receita') && !ehCompraCartao(l);
   }
   function caixaPagAtiva() {
-    return modoSimples() && !moduloAtivo('contas') && $('f_tipo').value === 'despesa' && $('f_meio').value !== MEIO_CARTAO && $('f_tipoGasto').value !== 'parcelado';
+    if (!modoSimples() || moduloAtivo('contas')) return false;
+    var t = $('f_tipo').value;
+    if (t === 'receita') return true;
+    return t === 'despesa' && $('f_meio').value !== MEIO_CARTAO && $('f_tipoGasto').value !== 'parcelado';
   }
+  function statusLiquidado(tipo) { return tipo === 'receita' ? 'Recebido' : 'Pago'; }
+  /* Textos da caixa: “Já paguei / Vou pagar” nos gastos e “Já recebi / Vou receber” nas entradas. */
+  var TXT_CAIXA = {
+    despesa: { sim: 'Já paguei', nao: 'Vou pagar', em: 'Pago em', grupo: 'Situação do pagamento', rot: 'Pagamento', venc: 'Vencimento', verbo: 'pagar', rapido: '✓ Paguei', selo: 'A pagar', futuro: 'A data do pagamento não pode ser no futuro.' },
+    receita: { sim: 'Já recebi', nao: 'Vou receber', em: 'Recebido em', grupo: 'Situação do recebimento', rot: 'Recebimento', venc: 'Previsto para', verbo: 'receber', rapido: '✓ Recebi', selo: 'A receber', futuro: 'A data do recebimento não pode ser no futuro.' }
+  };
+  function txtCaixa(tipo) { return TXT_CAIXA[tipo === 'receita' ? 'receita' : 'despesa']; }
   function pagamentosAtivosLanc(l) {
     return estado.pagamentos.filter(function (g) { return g.situacao === 'ativo' && g.tipo !== 'fatura' && g.lancamentoId === l.id; })
       .sort(function (a, b) { return a.data < b.data ? -1 : a.data > b.data ? 1 : 0; });
@@ -7483,7 +8668,7 @@
   function iniciarCaixaPag(original) {
     var cp = $('caixaPag'), hoje = hojeISO(), data = $('f_data').value, pago, quando;
     delete cp.dataset.tocado; delete $('f_pagoEm').dataset.tocado;
-    if (!original || original.tipo !== 'despesa') { pago = !(dataValida(data) && data > hoje); quando = pago ? data : hoje; }
+    if (!original || original.tipo !== $('f_tipo').value) { pago = !(dataValida(data) && data > hoje); quando = pago ? data : hoje; }
     else {
       var at = pagamentosAtivosLanc(original);
       if (at.length) { pago = centavosPendentes(original) === 0; quando = at[at.length - 1].data; }
@@ -7503,7 +8688,12 @@
     cp.hidden = !ativa;
     if (!ativa) return;
     $('dicaStatus').hidden = true; $('histPagamentos').hidden = true; // a caixa já mostra a situação
-    var hoje = hojeISO(), data = $('f_data').value, pe = $('f_pagoEm');
+    var hoje = hojeISO(), data = $('f_data').value, pe = $('f_pagoEm'), tx = txtCaixa($('f_tipo').value);
+    cp.querySelector('.rot-simples').textContent = tx.rot;
+    cp.querySelector('.cp-seg').setAttribute('aria-label', tx.grupo);
+    cp.querySelector('[data-pag="1"]').lastChild.textContent = ' ' + tx.sim;
+    cp.querySelector('[data-pag="0"]').lastChild.textContent = ' ' + tx.nao;
+    cp.querySelector('label[for="f_pagoEm"]').textContent = tx.em;
     // Sem escolha da pessoa: data futura = ainda vai pagar.
     if (!cp.dataset.tocado && dataValida(data)) cp.dataset.pago = data > hoje ? '0' : '1';
     var pago = cp.dataset.pago === '1';
@@ -7515,24 +8705,27 @@
       var at = pe.value === somarDias(hoje, +b.getAttribute('data-pago-rapido'));
       b.classList.toggle('ativo', at); b.setAttribute('aria-pressed', at ? 'true' : 'false');
     });
-    $('rotData').textContent = pago ? 'Data' : 'Vencimento';
-    var info = $('cpInfo');
-    if (pago) info.textContent = pe.value && pe.value > hoje ? 'A data do pagamento não pode ser no futuro.' : '';
+    $('rotData').textContent = pago ? 'Data' : tx.venc;
+    var info = $('cpInfo'), ehRec = $('f_tipo').value === 'receita';
+    if (pago) info.textContent = pe.value && pe.value > hoje ? tx.futuro : '';
+    else if (ehRec) info.textContent = dataValida(data)
+      ? (data < hoje ? 'Era para chegar em ' + dataBR(data) + '. ' : 'Previsto para ' + dataBR(data) + '. ') + 'Quando o dinheiro cair, toque em “✓ Recebi” na lista ou abra a entrada e escolha “Já recebi”.'
+      : 'Informe a data prevista.';
     else info.textContent = dataValida(data)
-      ? (data < hoje ? '⚠️ Venceu em ' + dataBR(data) + '. ' : 'Vence em ' + dataBR(data) + '. ') + 'Quando pagar, toque em “✓ Paguei” na lista ou abra o gasto e escolha “Já paguei”.'
+      ? (data < hoje ? 'Venceu em ' + dataBR(data) + '. ' : 'Vence em ' + dataBR(data) + '. ') + 'Quando pagar, toque em “✓ Paguei” na lista ou abra o gasto e escolha “Já paguei”.'
       : 'Informe a data de vencimento.';
     info.hidden = !info.textContent;
   }
   function planoPagamentoSimples(original, dados) {
-    if (!caixaPagAtiva() || dados.tipo !== 'despesa') return null;
-    var pago = $('caixaPag').dataset.pago === '1', data = $('f_pagoEm').value;
+    if (!caixaPagAtiva() || (dados.tipo !== 'despesa' && dados.tipo !== 'receita')) return null;
+    var pago = $('caixaPag').dataset.pago === '1', data = $('f_pagoEm').value, liqSt = statusLiquidado(dados.tipo), tx = txtCaixa(dados.tipo);
     var ativos = original ? pagamentosAtivosLanc(original) : [];
     var cancelado = original && original.status === 'Cancelado';
     if (cancelado) return { acao: 'manter', status: 'Cancelado' };
     if (!pago) return ativos.length ? { acao: 'refazer', pago: false } : { acao: 'manter', status: 'Pendente' };
-    if (!dataValida(data)) return { acao: 'manter', status: 'Pago', erro: 'Informe a data do pagamento.' };
-    if (data > hojeISO()) return { acao: 'manter', status: 'Pago', erro: 'A data do pagamento não pode ser no futuro.' };
-    if (data === dados.data) return ativos.length ? { acao: 'refazer', pago: true, manual: true } : { acao: 'manter', status: 'Pago' };
+    if (!dataValida(data)) return { acao: 'manter', status: liqSt, erro: dados.tipo === 'receita' ? 'Informe a data do recebimento.' : 'Informe a data do pagamento.' };
+    if (data > hojeISO()) return { acao: 'manter', status: liqSt, erro: tx.futuro };
+    if (data === dados.data) return ativos.length ? { acao: 'refazer', pago: true, manual: true } : { acao: 'manter', status: liqSt };
     var ult = ativos[ativos.length - 1];
     if (ativos.length === 1 && ult.data === data && isFinite(dados.valor) && centavos(ult.valor) === centavos(dados.valor)) return { acao: 'manter', status: original.status };
     return { acao: 'refazer', pago: true, data: data };
@@ -7540,9 +8733,9 @@
   function aplicarPlanoPag(p, l) {
     var agora = new Date().toISOString();
     pagamentosAtivosLanc(l).forEach(function (g) { g.situacao = 'estornado'; g.estornadoEm = agora; });
-    if (p.manual) { l.controlePagamento = false; l.status = 'Pago'; versaoDados++; return; }
+    if (p.manual) { l.controlePagamento = false; l.status = statusLiquidado(l.tipo); versaoDados++; return; }
     if (p.pago) {
-      var rp = validarPagamento({ id: 'g' + gerarId().slice(1), tipo: 'despesa', lancamentoId: l.id, contaId: '', valor: l.valor, data: p.data,
+      var rp = validarPagamento({ id: 'g' + gerarId().slice(1), tipo: l.tipo === 'receita' ? 'receita' : 'despesa', lancamentoId: l.id, contaId: '', valor: l.valor, data: p.data,
         observacoes: '', situacao: 'ativo', criadoEm: agora });
       if (rp.ok) { estado.pagamentos.push(rp.limpo); l.controlePagamento = true; }
     }
@@ -7552,19 +8745,41 @@
   function marcarPagoRapido(l) {
     if (!podePagar(l)) return;
     var foto = fotografia(), hoje = hojeISO();
-    if (l.data === hoje && !l.controlePagamento) { l.status = 'Pago'; l.atualizadoEm = new Date().toISOString(); versaoDados++; }
+    if (l.data === hoje && !l.controlePagamento) { l.status = statusLiquidado(l.tipo); l.atualizadoEm = new Date().toISOString(); versaoDados++; }
     else aplicarPlanoPag({ pago: true, data: hoje }, l);
     marcarAlterado(); render();
-    avisar('“' + l.descricao + '” marcado como pago hoje.', 'sucesso', desfazerPara(foto));
+    avisar('“' + l.descricao + '” marcado como ' + (l.tipo === 'receita' ? 'recebido' : 'pago') + ' hoje.', 'sucesso', desfazerPara(foto));
   }
   function totalAPagar(mes) {
     var t = 0, n = 0;
     estado.lancamentos.forEach(function (l) {
-      if (!usaCaixaPagLanc(l) || l.status !== 'Pendente' || String(l.data).slice(0, 7) > mes) return;
+      if (!usaCaixaPagLanc(l) || l.tipo !== 'despesa' || l.status !== 'Pendente' || String(l.data).slice(0, 7) > mes) return;
       if (String(l.data).slice(0, 7) < mes && mes !== mesAtual()) return; // atrasados aparecem no mês atual
       var v = centavosPendentes(l); if (v > 0) { t += v; n++; }
     });
+    fixasPrevistas(mes).forEach(function (p) { if (p.tipo === 'despesa' && !p.cartao) { t += p.centavos; n++; } });
     return { total: t, qtd: n };
+  }
+  /* Lista das contas fixas previstas, abaixo dos lançamentos do mês (só meses futuros). */
+  function renderPrevistasMes() {
+    var box = $('previstasMes');
+    if (!box) return;
+    var lista = fixasPrevistas(mesVisao);
+    box.hidden = !lista.length;
+    box.replaceChildren();
+    if (!lista.length) return;
+    var tot = lista.reduce(function (a, p) { return a + (p.tipo === 'receita' ? p.centavos : -p.centavos); }, 0);
+    var ul = el('ul');
+    lista.forEach(function (p) {
+      ul.append(el('li', { class: 'prev-item' },
+        el('span', { class: 'lanc-ic lanc-ic-' + p.tipo, 'aria-hidden': 'true' }, emojiCategoria(p.r.categoria || p.r.descricao, p.tipo)),
+        el('span', { class: 'prev-info' }, el('strong', null, p.r.descricao),
+          el('span', { class: 'uso' }, (p.tipo === 'receita' ? 'Prevista para ' : 'Vence ') + dataBR(p.data) + (p.cartao ? ' · no cartão ' + p.cartao.nome + ' (fatura de ' + dataBR(p.venc) + ')' : '') + (p.r.categoria ? ' · ' + p.r.categoria : ''))),
+        el('span', { class: 'prev-valor ' + (p.tipo === 'receita' ? 'v-receita' : 'v-despesa') }, (p.tipo === 'receita' ? '+ ' : '− ') + moeda(p.centavos / 100))));
+    });
+    box.append(el('div', { class: 'prev-cab' }, el('h4', null, ico('repeat', 'ico-inline'), ' Contas fixas previstas'), el('span', { class: 'selo' }, plural(lista.length, 'prevista', 'previstas'))),
+      el('p', { class: 'uso' }, 'Ainda não são lançamentos: entram sozinhas no começo do mês. Já estão somadas no Entrou, no Saiu e no A pagar deste mês.'),
+      ul);
   }
   function ligarEventosPag() {
     $('caixaPag').addEventListener('click', function (e) {
@@ -7587,7 +8802,7 @@
     $('f_data').addEventListener('input', renderCaixaPag);
     $('mesApagar').addEventListener('click', function () {
       limparFiltros(false); $('fTipo').value = 'despesa'; mostrarAba('abaLanc'); render();
-      var pend = $('corpoTabela').querySelector('tr.a-pagar');
+      var pend = $('corpoTabela').querySelector('tr.a-pagar') || ($('previstasMes').hidden ? null : $('previstasMes'));
       if (pend && pend.scrollIntoView) pend.scrollIntoView({ block: 'center', behavior: 'smooth' });
     });
   }
@@ -7675,7 +8890,7 @@
     var l = o.lancamentoId ? lancamentoPorId(o.lancamentoId) : null;
     if (l) {
       if (l.status === 'Pago' || l.status === 'Recebido') return { txt: rec ? '✓ Recebida' : '✓ Paga', cls: 'ok' };
-      if (ehCompraCartao(l)) return { txt: '💳 Na fatura do cartão', cls: 'mudo' };
+      if (ehCompraCartao(l)) return { txt: 'Na fatura do cartão', cls: 'mudo' };
       if (l.status === 'Cancelado') return { txt: 'Cancelada', cls: 'mudo' };
       return { txt: (l.data < hoje ? 'Venceu em ' : 'A pagar · vence ') + dataBR(l.data), cls: l.data < hoje ? 'atraso' : 'pend', lanc: l };
     }
@@ -7703,7 +8918,7 @@
           else nVar++;
         }
         var sit = situacaoFixaMes(r), acoes = el('span', { class: 'fixa-acoes' });
-        if (sit.lanc && usaCaixaPagLanc(sit.lanc) && podePagar(sit.lanc)) acoes.append(el('button', { type: 'button', class: 'btn pequeno primario', 'data-fixa-paguei': sit.lanc.id }, '✓ Paguei'));
+        if (sit.lanc && usaCaixaPagLanc(sit.lanc) && podePagar(sit.lanc)) acoes.append(el('button', { type: 'button', class: 'btn pequeno primario', 'data-fixa-paguei': sit.lanc.id }, txtCaixa(sit.lanc.tipo).rapido));
         if (sit.pedir) acoes.append(el('button', { type: 'button', class: 'btn pequeno primario', 'data-fixa-lancar': sit.oc.id }, 'Informar valor'));
         acoes.append(el('button', { type: 'button', class: 'btn link', 'data-regra-acao': 'editar', 'data-id': r.id }, 'Editar'),
           el('button', { type: 'button', class: 'btn link', 'data-regra-acao': 'ativo', 'data-id': r.id }, r.ativo ? 'Pausar' : 'Reativar'));
@@ -7711,7 +8926,7 @@
           el('span', { class: 'fixa-ic', 'aria-hidden': 'true' }, iconeCategoria(r.categoria || r.descricao, r.tipo)),
           el('span', { class: 'fixa-nome' }, r.descricao),
           el('span', { class: 'fixa-valor' + (r.tipo === 'receita' ? ' receita' : '') }, r.valorEsperado !== null ? moeda(r.valorEsperado) : 'varia'),
-          el('span', { class: 'fixa-det' }, textoFrequencia(r) + (r.categoria ? ' · ' + r.categoria : '') + (r.cartaoId && moduloAtivo('cartoes') ? ' · 💳 ' + nomeCartao(r.cartaoId) : '') + (r.dataFinal ? ' · até ' + dataBR(r.dataFinal) : '')),
+          el('span', { class: 'fixa-det' }, textoFrequencia(r) + (r.categoria ? ' · ' + r.categoria : '') + (r.cartaoId && moduloAtivo('cartoes') ? ' · cartão ' + nomeCartao(r.cartaoId) : '') + (r.dataFinal ? ' · até ' + dataBR(r.dataFinal) : '')),
           el('span', null),
           el('div', { class: 'fixa-mes' }, el('span', { class: 'fixa-sit ' + sit.cls }, sit.txt), acoes)));
       });
@@ -7775,7 +8990,7 @@
           function (e) { throw new Error(e && e.name === 'AbortError' ? 'A planilha demorou demais para responder.' : 'Sem conexão com a planilha.'); })
         .then(function (txt) {
           var j; try { j = JSON.parse(txt); } catch (e) { throw new Error('Resposta inesperada. Confira se o endereço é o do “App da Web” e se o acesso está como “Qualquer pessoa”.'); }
-          if (j.erro) throw new Error(j.erro === 'acesso negado' ? 'A chave de acesso não confere com a do script.' : j.erro);
+          if (j.erro) throw new Error(String(j.erro).indexOf('acesso negado') === 0 ? 'A chave de acesso não confere com a do script.' : j.erro);
           return j;
         })
         .then(function (j) { if (t) clearTimeout(t); ok(j); }, function (e) { if (t) clearTimeout(t); falha(e); });
@@ -7904,43 +9119,10 @@
   }
 
   /* ---- Script da planilha (o app gera com a chave de acesso já dentro) ---- */
-  function scriptPlanilha(chave) {
-    return [
-      '// Controle Financeiro — sincronização. Guarda só dados CIFRADOS (o Google não consegue ler).',
-      '// Não compartilhe este código: a chave abaixo dá acesso de leitura e gravação ao arquivo cifrado.',
-      "var CHAVE_ACESSO = '" + chave + "';",
-      'function resp(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }',
-      "function doGet() { return resp({ ok: true, app: 'controle-financeiro' }); }",
-      'function doPost(e) {',
-      '  var req; try { req = JSON.parse(e.postData.contents); } catch (x) { return resp({ erro: "pedido inválido" }); }',
-      "  if (req.chave !== CHAVE_ACESSO) return resp({ erro: 'acesso negado' });",
-      '  var lock = LockService.getScriptLock(); lock.waitLock(25000);',
-      '  try {',
-      '    var ss = SpreadsheetApp.getActiveSpreadsheet();',
-      "    var sh = ss.getSheetByName('nuvem') || ss.insertSheet('nuvem');",
-      "    var versao = Number(sh.getRange('A1').getValue()) || 0;",
-      "    if (req.acao === 'ler') {",
-      '      if (req.desde !== undefined && Number(req.desde) === versao && versao > 0) return resp({ versao: versao, igual: true });',
-      '      var n = sh.getLastRow(), env = "";',
-      '      if (n >= 3) env = sh.getRange(3, 1, n - 2, 1).getValues().map(function (r) { return String(r[0]).slice(1); }).join("");',
-      "      return resp({ versao: versao, env: env || null });",
-      '    }',
-      "    if (req.acao === 'gravar') {",
-      '      if (Number(req.base) !== versao) return resp({ conflito: true, versao: versao });',
-      '      var txt = String(req.env || ""), partes = [];',
-      '      for (var i = 0; i < txt.length; i += 40000) partes.push(["x" + txt.substr(i, 40000)]);',
-      '      var ultima = sh.getLastRow(); if (ultima >= 3) sh.getRange(3, 1, ultima - 2, 1).clearContent();',
-      '      if (partes.length) sh.getRange(3, 1, partes.length, 1).setValues(partes);',
-      '      versao++;',
-      "      sh.getRange('A1:C1').setValues([[versao, new Date(), String(req.aparelho || '')]]);",
-      "      sh.getRange('A2').setValue('Dados cifrados do Controle Financeiro. Não edite esta aba.');",
-      '      return resp({ ok: true, versao: versao });',
-      '    }',
-      "    return resp({ erro: 'ação desconhecida' });",
-      '  } finally { lock.releaseLock(); }',
-      '}'
-    ].join('\n');
-  }
+  /* Script pronto do Google Apps Script (o mesmo do arquivo controle-financeiro-sync.gs). Ele cria a pasta e a planilha no Drive
+     e gera a chave de acesso na primeira execução da função “configurar”. */
+  var SCRIPT_SYNC = "// =====================================================================\n//  Controle Financeiro — sincronização pela sua conta Google\n//\n//  Este script cria sozinho, no SEU Google Drive:\n//    • a pasta \"Controle Financeiro\"\n//    • a planilha \"Controle Financeiro – nuvem (não editar)\", com as abas:\n//        nuvem    → os dados do app, CIFRADOS (o Google não consegue ler)\n//        registro → data, aparelho e versão de cada gravação\n//        leia-me  → explicações\n//  e gera uma CHAVE DE ACESSO só sua, que você cola no app.\n//\n//  Como usar (uma vez só):\n//    1. Selecione a função \"configurar\" lá em cima e clique em Executar.\n//       Autorize com sua conta Google.\n//    2. Copie a CHAVE DE ACESSO que aparece no \"Registro de execução\".\n//    3. Implantar › Nova implantação › App da Web\n//       (Executar como: Eu · Quem pode acessar: Qualquer pessoa).\n//    4. No app: cole a URL do app da Web (termina em /exec) e a chave.\n//\n//  Não compartilhe a chave: com ela e a URL dá para ler e gravar o\n//  arquivo cifrado (mas não para abrir os dados, que pedem usuário e senha).\n// =====================================================================\n\nvar NOME_PASTA = 'Controle Financeiro';\nvar NOME_PLANILHA = 'Controle Financeiro – nuvem (não editar)';\nvar TAM_PEDACO = 40000;      // caracteres por célula (limite do Google: 50.000)\nvar MAX_REGISTRO = 500;      // linhas guardadas na aba \"registro\"\n\n// Rode esta função uma vez pelo editor. Pode rodar de novo quando quiser\n// ver a chave: ela não muda e a planilha não é recriada.\nfunction configurar() {\n  var props = PropertiesService.getScriptProperties();\n  var chave = props.getProperty('CHAVE_ACESSO');\n  if (!chave) {\n    chave = (Utilities.getUuid() + Utilities.getUuid()).replace(/-/g, '').slice(0, 40);\n    props.setProperty('CHAVE_ACESSO', chave);\n  }\n  var ss = planilha_();\n  Logger.log('Tudo pronto!');\n  Logger.log('Planilha: ' + ss.getUrl());\n  Logger.log('CHAVE DE ACESSO (cole no app): ' + chave);\n  Logger.log('Agora: Implantar › Nova implantação › App da Web (Executar como: Eu · Quem pode acessar: Qualquer pessoa).');\n  return chave;\n}\n\n// Só se precisar trocar a chave (ex.: alguém indevido ficou com ela).\n// Depois, reconecte os aparelhos com a chave nova.\nfunction trocarChave() {\n  PropertiesService.getScriptProperties().deleteProperty('CHAVE_ACESSO');\n  return configurar();\n}\n\nfunction resp_(o) {\n  return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);\n}\n\nfunction doGet() {\n  return resp_({ ok: true, app: 'controle-financeiro', configurado: !!PropertiesService.getScriptProperties().getProperty('CHAVE_ACESSO') });\n}\n\nfunction doPost(e) {\n  var req;\n  try { req = JSON.parse(e.postData.contents); } catch (x) { return resp_({ erro: 'pedido inválido' }); }\n  var chave = PropertiesService.getScriptProperties().getProperty('CHAVE_ACESSO');\n  if (!chave) return resp_({ erro: 'script ainda não configurado: no editor do Apps Script, rode a função \"configurar\"' });\n  if (!req || req.chave !== chave) return resp_({ erro: 'acesso negado (confira a chave de acesso)' });\n\n  var lock = LockService.getScriptLock();\n  lock.waitLock(25000);\n  try {\n    var ss = planilha_();\n    var sh = ss.getSheetByName('nuvem');\n    var versao = Number(sh.getRange('A1').getValue()) || 0;\n\n    if (req.acao === 'ler') {\n      if (req.desde !== undefined && Number(req.desde) === versao && versao > 0) return resp_({ versao: versao, igual: true });\n      var n = sh.getLastRow(), env = '';\n      if (n >= 3) env = sh.getRange(3, 1, n - 2, 1).getValues().map(function (r) { return String(r[0]).slice(1); }).join('');\n      return resp_({ versao: versao, env: env || null });\n    }\n\n    if (req.acao === 'gravar') {\n      if (Number(req.base) !== versao) return resp_({ conflito: true, versao: versao });\n      var txt = String(req.env || ''), partes = [];\n      for (var i = 0; i < txt.length; i += TAM_PEDACO) partes.push(['x' + txt.substr(i, TAM_PEDACO)]);\n      var ultima = sh.getLastRow();\n      if (ultima >= 3) sh.getRange(3, 1, ultima - 2, 1).clearContent();\n      if (partes.length) sh.getRange(3, 1, partes.length, 1).setValues(partes);\n      versao++;\n      sh.getRange('A1:C1').setValues([[versao, new Date(), String(req.aparelho || '')]]);\n      sh.getRange('A2').setValue('Dados cifrados do Controle Financeiro. Não edite esta aba.');\n      registrar_(ss, versao, String(req.aparelho || ''), txt.length);\n      return resp_({ ok: true, versao: versao });\n    }\n\n    return resp_({ erro: 'ação desconhecida' });\n  } finally {\n    lock.releaseLock();\n  }\n}\n\n// Abre a planilha do app; se ainda não existir (ou tiver sido apagada), cria.\nfunction planilha_() {\n  var props = PropertiesService.getScriptProperties();\n  var id = props.getProperty('PLANILHA_ID');\n  if (id) {\n    try {\n      var existente = SpreadsheetApp.openById(id);\n      if (!DriveApp.getFileById(id).isTrashed()) { prepararAbas_(existente); return existente; }\n    } catch (x) { /* apagada ou sem acesso: cria outra */ }\n  }\n  var ss = SpreadsheetApp.create(NOME_PLANILHA);\n  var pastas = DriveApp.getFoldersByName(NOME_PASTA);\n  var pasta = pastas.hasNext() ? pastas.next() : DriveApp.createFolder(NOME_PASTA);\n  DriveApp.getFileById(ss.getId()).moveTo(pasta);\n  prepararAbas_(ss);\n  props.setProperty('PLANILHA_ID', ss.getId());\n  return ss;\n}\n\nfunction prepararAbas_(ss) {\n  var nuvem = ss.getSheetByName('nuvem');\n  if (!nuvem) {\n    var primeira = ss.getSheets()[0];\n    if (primeira && primeira.getLastRow() === 0 && ss.getSheets().length === 1 && !ss.getSheetByName('registro')) {\n      nuvem = primeira.setName('nuvem');\n    } else {\n      nuvem = ss.insertSheet('nuvem');\n    }\n    nuvem.getRange('A1:C1').setValues([[0, '', '']]);\n    nuvem.getRange('A2').setValue('Dados cifrados do Controle Financeiro. Não edite esta aba.');\n    nuvem.setColumnWidth(1, 220);\n  }\n  var reg = ss.getSheetByName('registro');\n  if (!reg) {\n    reg = ss.insertSheet('registro');\n    reg.getRange('A1:D1').setValues([['Quando', 'Aparelho', 'Versão', 'Tamanho (caracteres)']]).setFontWeight('bold');\n    reg.setFrozenRows(1);\n    reg.setColumnWidth(1, 170); reg.setColumnWidth(2, 220);\n  }\n  var leia = ss.getSheetByName('leia-me');\n  if (!leia) {\n    leia = ss.insertSheet('leia-me');\n    leia.getRange('A1:A8').setValues([\n      ['Controle Financeiro — planilha de sincronização'],\n      ['• A aba \"nuvem\" guarda os dados do app CIFRADOS. Não edite, não ordene e não apague nada nela.'],\n      ['• A aba \"registro\" mostra cada gravação feita pelos aparelhos (só para conferência).'],\n      ['• Para abrir os dados é preciso o usuário e a senha do app: esta planilha sozinha não mostra nada.'],\n      ['• Não compartilhe esta planilha. Quem usa o app com você só precisa do código de conexão (no app: Ajustes › Sincronização).'],\n      ['• Se apagar esta planilha, o script cria outra vazia; os aparelhos enviam de novo os dados que têm.'],\n      ['• Para trocar a chave de acesso: no Apps Script, rode a função \"trocarChave\" e reconecte os aparelhos.'],\n      ['']\n    ]);\n    leia.getRange('A1').setFontWeight('bold').setFontSize(13);\n    leia.setColumnWidth(1, 820);\n  }\n}\n\nfunction registrar_(ss, versao, aparelho, tamanho) {\n  try {\n    var reg = ss.getSheetByName('registro');\n    reg.appendRow([new Date(), aparelho || '—', versao, tamanho]);\n    var excesso = reg.getLastRow() - 1 - MAX_REGISTRO;\n    if (excesso > 0) reg.deleteRows(2, excesso);\n  } catch (x) { /* o registro é só informativo */ }\n}\n";
+  function scriptPlanilha() { return SCRIPT_SYNC; }
   function codigoConexao(cfg) { return 'CFN1.' + btoa(unescape(encodeURIComponent(JSON.stringify({ u: cfg.url, k: cfg.chave })))); }
   function lerCodigoConexao(t) {
     t = String(t || '').trim().replace(/\s+/g, '');
@@ -7960,6 +9142,7 @@
     var txt = $('nuvemTexto'), st = $('nuvemStatus'), ac = $('nuvemAcoes');
     if (!txt) return;
     ac.replaceChildren();
+    renderGuiasAparelhos();
     if (!nuvemAtiva()) {
       txt.textContent = 'Guarde seus dados também numa Planilha Google sua: eles ficam iguais no app, no Safari e no celular de outra pessoa da casa. Na planilha vai só o arquivo cifrado — o Google não lê os dados.';
       st.hidden = true;
@@ -7970,30 +9153,60 @@
     txt.textContent = 'Conectado à sua Planilha Google. O app sincroniza sozinho ao abrir e depois de cada alteração (com internet).';
     st.hidden = false;
     st.className = 'nuvem-status ' + (trabalhando ? 'trab' : nuvem.erro ? 'erro' : nuvem.pendente ? 'trab' : 'ok');
-    st.textContent = trabalhando ? '⏳ ' + trabalhando
-      : nuvem.erro ? '⚠️ ' + nuvem.erro + (nuvem.pendente ? ' As mudanças ficam guardadas aqui e vão quando der.' : '')
-      : nuvem.pendente ? '⏳ Há mudanças esperando para ir para a planilha.'
+    st.textContent = trabalhando ? trabalhando
+      : nuvem.erro ? nuvem.erro + (nuvem.pendente ? ' As mudanças ficam guardadas aqui e vão quando der.' : '')
+      : nuvem.pendente ? 'Há mudanças esperando para ir para a planilha.'
       : nuvem.sincEm ? '✓ Sincronizado em ' + dataHoraBR(nuvem.sincEm) + '.' : '';
-    ac.append(el('button', { type: 'button', class: 'btn primario', 'data-nuvem': 'sincronizar' }, '🔄 Sincronizar agora'),
+    ac.append(el('button', { type: 'button', class: 'btn primario', 'data-nuvem': 'sincronizar' }, ico('refresh', 'ico-inline'), ' Sincronizar agora'),
       el('button', { type: 'button', class: 'btn', 'data-nuvem': 'codigo' }, 'Conectar outro aparelho'),
       el('button', { type: 'button', class: 'btn link perigo-txt', 'data-nuvem': 'desconectar' }, 'Desconectar'));
   }
+  /* Passo a passo para ligar outro aparelho (fica em Ajustes › Sincronização e em Login e senha). */
+  function guiaOutrosAparelhos(aberto) {
+    var ativa = nuvemAtiva(), u = usuarioPorId(usuarioAtual);
+    var endereco = /github\.io$/.test(location.hostname) ? location.hostname + location.pathname.replace(/index\.html$/, '') : null;
+    var passos = el('ol', { class: 'nuvem-passos' },
+      el('li', null, 'Se for ', el('b', null, 'outra pessoa'), ', crie antes um usuário e senha para ela em ', el('b', null, 'Login e senha › + Novo usuário'), '. Se for você em outro aparelho, use o seu', u ? [' (', el('b', null, u.usuario), ')'] : '', '.'),
+      el('li', null, 'Neste aparelho, toque em ', el('b', null, 'Copiar código de conexão'), ' e envie o código para o outro aparelho, por exemplo por WhatsApp.'),
+      el('li', null, 'No outro aparelho, abra ', endereco ? el('b', null, endereco) : 'o app pelo mesmo endereço deste', ' e crie um acesso qualquer. Ele será trocado.'),
+      el('li', null, 'Lá, vá em ', el('b', null, 'Ajustes › Sincronização › Conectar a uma planilha existente'), ', cole o código e entre com o usuário e a senha do passo 1.'),
+      el('li', null, 'Pronto: os aparelhos passam a ver os mesmos dados. Faça o mesmo no Safari e no computador, se quiser usá-los.'));
+    var fim;
+    if (ativa) {
+      fim = el('div', { class: 'aj-acoes' }, el('button', { type: 'button', class: 'btn primario guia-copiar' }, ico('copy', 'ico-inline'), ' Copiar código de conexão'));
+      fim.querySelector('button').addEventListener('click', function () { copiarTexto(codigoConexao(nuvem), 'Código copiado. Envie para o outro aparelho.'); });
+    } else {
+      fim = el('p', { class: 'dica-form' }, 'Este aparelho ainda não está ligado à planilha. Se for o primeiro, use ', el('b', null, 'Ajustes › Sincronização › Configurar planilha'),
+        '. Se for o segundo aparelho, use ', el('b', null, 'Conectar a uma planilha existente'), ' com o código que o outro aparelho gerou.');
+    }
+    var d = el('details', { class: 'guia-aparelhos' }, el('summary', null, 'Como ligar outros aparelhos'), passos, fim);
+    if (aberto) d.open = true;
+    return d;
+  }
+  function renderGuiasAparelhos() {
+    var a = $('nuvemGuia'), b = $('segAparelhosGuia');
+    if (a) { var abertoA = a.querySelector('details') ? a.querySelector('details').open : false; a.replaceChildren(guiaOutrosAparelhos(abertoA)); }
+    if (b) b.replaceChildren(guiaOutrosAparelhos(true));
+  }
   function formConfigurarNuvem() {
     if (!protecao || !chaveDados) { avisar('Crie o login do app antes de configurar a planilha.', 'erro'); return; }
-    var chave = b64(aleatorio(24)).replace(/[^A-Za-z0-9]/g, '').slice(0, 32);
-    var script = scriptPlanilha(chave);
+    var script = scriptPlanilha();
     abrirGen('Configurar a Planilha Google', [
+      { tipo: 'html', conteudo: el('div', { class: 'dica-form' }, 'O script cria sozinho a pasta “Controle Financeiro” e a planilha no seu Google Drive. Faça num computador: é mais fácil.') },
       { tipo: 'html', conteudo: el('ol', { class: 'nuvem-passos' },
-        el('li', null, 'No Google Drive (de preferência num computador), crie uma ', el('b', null, 'planilha nova'), ' — ex.: “Finanças – nuvem”.'),
-        el('li', null, 'Na planilha: menu ', el('b', null, 'Extensões › Apps Script'), '. Apague o que estiver lá e cole o script (botão abaixo). Salve (ícone de disquete).'),
-        el('li', null, el('b', null, 'Implantar › Nova implantação'), ' › engrenagem › ', el('b', null, 'App da Web'), '. Executar como: ', el('b', null, 'Eu'), '. Quem pode acessar: ', el('b', null, 'Qualquer pessoa'), ' › Implantar › autorize com sua conta Google. Se aparecer “O Google não verificou este app”, toque em ', el('b', null, 'Avançado › Acessar (não seguro)'), ' — o script é seu e só mexe nesta planilha.'),
-        el('li', null, 'Copie a ', el('b', null, 'URL do app da Web'), ' (termina em /exec) e cole aqui embaixo.')) },
-      { tipo: 'html', conteudo: el('div', { class: 'aj-acoes' }, el('button', { type: 'button', class: 'btn', id: 'btnCopiarScript' }, '📋 Copiar o script'), el('button', { type: 'button', class: 'btn', id: 'btnVerScript' }, 'Mostrar o script')) },
+        el('li', null, 'Abra ', el('b', null, 'script.google.com'), ' (com a sua conta Google) › ', el('b', null, 'Novo projeto'), '. Apague o que estiver lá, cole o script (botão abaixo) e salve (ícone de disquete).'),
+        el('li', null, 'Lá em cima, escolha a função ', el('b', null, 'configurar'), ' e clique em ', el('b', null, 'Executar'), '. Autorize com sua conta. Se aparecer “O Google não verificou este app”: ', el('b', null, 'Avançado › Acessar (não seguro)'), ' — o script é seu.'),
+        el('li', null, 'No ', el('b', null, 'Registro de execução'), ', copie a ', el('b', null, 'CHAVE DE ACESSO'), ' e cole aqui embaixo.'),
+        el('li', null, el('b', null, 'Implantar › Nova implantação'), ' › engrenagem › ', el('b', null, 'App da Web'), '. Executar como: ', el('b', null, 'Eu'), '. Quem pode acessar: ', el('b', null, 'Qualquer pessoa'), ' › Implantar.'),
+        el('li', null, 'Copie a ', el('b', null, 'URL do app da Web'), ' (termina em /exec), cole aqui embaixo e toque em Conectar.')) },
+      { tipo: 'html', conteudo: el('div', { class: 'aj-acoes' }, el('button', { type: 'button', class: 'btn', id: 'btnCopiarScript' }, ico('copy', 'ico-inline'), ' Copiar o script'), el('button', { type: 'button', class: 'btn', id: 'btnVerScript' }, 'Mostrar o script')) },
       { tipo: 'html', conteudo: el('pre', { class: 'nuvem-codigo', id: 'scriptTexto', hidden: 'hidden' }, script) },
+      { id: 'chave', rotulo: 'Chave de acesso (do Registro de execução)', obrig: true, largo: true, placeholder: 'ex.: 3f9c…', max: 80, autocomplete: 'off' },
       { id: 'url', rotulo: 'URL do app da Web', obrig: true, largo: true, placeholder: 'https://script.google.com/macros/s/…/exec', max: 400 },
-      { tipo: 'html', conteudo: el('div', { class: 'dica-form' }, 'Por segurança, o script tem uma chave de acesso só sua. Se fechar esta janela antes de terminar, comece de novo e copie o script outra vez.') }
+      { tipo: 'html', conteudo: el('div', { class: 'dica-form' }, 'Já usava uma planilha com o script antigo? Ela continua funcionando: não precisa refazer.') }
     ], function (v) {
-      var url = v.url.trim();
+      var url = v.url.trim(), chave = v.chave.replace(/^.*CHAVE DE ACESSO[^:]*:\s*/i, '').trim();
+      if (!/^[A-Za-z0-9]{20,80}$/.test(chave)) return ['A chave de acesso tem só letras e números (40 caracteres). Copie de novo do Registro de execução.'];
       if (!urlScriptValida(url)) return ['A URL deve começar com https://script.google.com/ (é a “URL do app da Web”).'];
       var cfg = { url: url, chave: chave };
       return chamar(cfg, { acao: 'ler' }).then(function (rem) {
@@ -8010,11 +9223,12 @@
     var cod = codigoConexao(nuvem);
     abrirGen('Conectar outro aparelho', [
       { tipo: 'html', conteudo: el('ol', { class: 'nuvem-passos' },
+        el('li', null, 'Para outra pessoa, crie antes um usuário e senha para ela em Login e senha › + Novo usuário.'),
         el('li', null, 'No outro aparelho, abra o app pelo mesmo endereço e crie um acesso qualquer (ele será trocado).'),
         el('li', null, 'Em Ajustes › Sincronização › ', el('b', null, 'Conectar a uma planilha existente'), ', cole o código abaixo.'),
         el('li', null, 'Entre com um usuário e senha ', el('b', null, 'deste'), ' app. Para outra pessoa, crie antes um usuário para ela em Login e senha › Gerenciar.')) },
       { tipo: 'html', conteudo: el('div', { class: 'nuvem-codigo', id: 'codConexao' }, cod) },
-      { tipo: 'html', conteudo: el('div', { class: 'aj-acoes' }, el('button', { type: 'button', class: 'btn primario', id: 'btnCopiarCodigo' }, '📋 Copiar código')) },
+      { tipo: 'html', conteudo: el('div', { class: 'aj-acoes' }, el('button', { type: 'button', class: 'btn primario', id: 'btnCopiarCodigo' }, ico('copy', 'ico-inline'), ' Copiar código')) },
       { tipo: 'html', conteudo: el('div', { class: 'dica-form' }, 'Envie o código só para quem vai usar o app com você (ex.: por mensagem direta). Ele sozinho não abre os dados: ainda é preciso um usuário e senha.') }
     ], function () { return []; }, 'Fechar');
     $('btnCopiarCodigo').addEventListener('click', function () { copiarTexto(cod, 'Código copiado.'); });
@@ -8485,6 +9699,8 @@
   function renderHoje() {
     var hoje = hojeISO(), mes = mesAtual(), lim7 = somarDias(hoje, 7);
     var dt = new Date(+hoje.slice(0, 4), +hoje.slice(5, 7) - 1, +hoje.slice(8, 10));
+    var hora = new Date().getHours();
+    $('hojeSaudacao').textContent = hora < 5 ? 'Boa noite' : hora < 12 ? 'Bom dia' : hora < 18 ? 'Boa tarde' : 'Boa noite';
     $('hojeData').textContent = DIAS_SEMANA[dt.getDay()].replace(/^./, function (c) { return c.toUpperCase(); }) + ', ' + (+hoje.slice(8, 10)) + ' de ' + rotuloMes(mes, true);
     var vazio = !estado.lancamentos.length && !estado.contas.length && !estado.recorrencias.length;
     $('hojeBoasVindas').hidden = !vazio;
@@ -8496,7 +9712,7 @@
       if (!i.venc || i.aberto <= 0 || i.venc > lim7 || (i.situacao !== 'vencida' && i.venc < hoje)) return;
       var acao = null;
       if (i.lanc && i.cartaoId) acao = ['Pagar fatura', { 'data-pagar-fatura': i.cartaoId + '|' + i.venc }];
-      else if (i.lanc && podePagar(i.lanc)) acao = [usaCaixaPagLanc(i.lanc) ? '✓ Paguei' : 'Pagar', { 'data-hoje-pagar': i.lanc.id }];
+      else if (i.lanc && podePagar(i.lanc)) acao = [usaCaixaPagLanc(i.lanc) ? txtCaixa(i.lanc.tipo).rapido : (i.lanc.tipo === 'receita' ? 'Receber' : 'Pagar'), { 'data-hoje-pagar': i.lanc.id }];
       else if (i.oc) acao = [modoSimples() && i.semValor ? 'Informar valor' : 'Lançar', { 'data-hoje-lancar': i.oc.id }];
       itens.push({ venc: i.venc, desc: i.descricao, valor: i.aberto, estimada: i.situacao === 'estimada', semValor: i.semValor, tipo: 'despesa', acao: acao,
         chave: i.cartaoId ? 'fat|' + i.cartaoId + '|' + i.venc : i.chave });
@@ -8605,7 +9821,7 @@
   function cor(nome) { return getComputedStyle(document.documentElement).getPropertyValue('--g-' + nome).trim() || '#888888'; }
 
   /* ---------- Tema claro / escuro ----------
-     Padrão: segue o sistema. O botão fixa a escolha neste navegador (preferência visual, não é dado
+     Padrão: claro ("Automático" segue o sistema). O botão fixa a escolha neste navegador (preferência visual, não é dado
      financeiro: não vai para o HTML salvo nem para o backup). */
   var CHAVE_TEMA = 'controle-financeiro-tema';
   function temaEfetivo() {
@@ -8616,12 +9832,15 @@
   function atualizarBotaoTema() {
     var escuro = temaEfetivo() === 'dark', b = $('btnTema');
     if (!b) return;
-    b.textContent = escuro ? 'Tema claro' : 'Tema escuro';
+    b.replaceChildren(ico(escuro ? 'sun' : 'moon'), escuro ? 'Tema claro' : 'Tema escuro');
     b.setAttribute('aria-pressed', escuro ? 'true' : 'false');
     b.title = escuro ? 'Mudar para o tema claro' : 'Mudar para o tema escuro';
   }
   function iniciarTema() {
-    try { var t = localStorage.getItem(CHAVE_TEMA); if (t === 'dark' || t === 'light') document.documentElement.setAttribute('data-theme', t); } catch (e) { /* sem armazenamento: segue o sistema */ }
+    var t = null;
+    try { t = localStorage.getItem(CHAVE_TEMA); } catch (e) { /* sem armazenamento: tema claro */ }
+    if (t === 'auto') document.documentElement.removeAttribute('data-theme');
+    else document.documentElement.setAttribute('data-theme', t === 'dark' ? 'dark' : 'light');
     if (window.matchMedia) {
       var mq = window.matchMedia('(prefers-color-scheme: dark)');
       var aoMudar = function () { if (!document.documentElement.getAttribute('data-theme')) { atualizarBotaoTema(); render(); } };
@@ -9664,12 +10883,20 @@
   }
   if (!estado.idArquivo) estado.idArquivo = 'arq' + gerarId();
   iniciarTema();
+  iniciarOcultar();
+  ligarVerSenha();
+  pintarIcones();
   aplicarModulos();
   ligarEventos();
   ligarEventosMvp();
   ligarEventosMvp2();
   ligarEventosPag();
   ligarEventosMvp3();
+  ligarEventosMetas();
+  ligarCoresCartao();
+  ligarCamposMoeda();
+  ligarTecladoRolagem();
+  ligarVistaCartoes();
   ligarEventosNuvem();
   render();
   setTimeout(avisarSeAtualizou, 400);
