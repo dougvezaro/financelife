@@ -1657,6 +1657,51 @@
   /* Campo invisível do chaveiro (usuário@financas) */
   .conta-chaveiro { position: absolute !important; width: 1px !important; height: 1px !important; min-height: 0 !important; padding: 0 !important; border: 0 !important;
     opacity: 0; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; pointer-events: none; }
+
+  /* Orçamento do mês (modo simples) */
+  .orcs-vazio p { margin: 0 0 12px; color: var(--texto-2); line-height: 1.5; }
+  .orcs-total { margin-bottom: 12px; }
+  .orcs-total-txt { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 8px; margin-bottom: 8px; }
+  .orcs-total-txt > span:first-child { color: var(--suave); font-size: .85rem; }
+  .orcs-v { font-family: 'Manrope', 'Inter', sans-serif; font-size: 1.35rem; font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .orcs-de { color: var(--suave); font-variant-numeric: tabular-nums; }
+  .orcs-pct { margin-left: auto; font-weight: 700; color: var(--texto-2); }
+  .orcs-trilho { display: block; height: 6px; border-radius: 999px; background: var(--sup-3); overflow: hidden; }
+  .orcs-trilho.grande { height: 10px; }
+  .orcs-barra { display: block; height: 100%; border-radius: 999px; }
+  .orcs-ok { background: var(--g-receita); }
+  .orcs-atencao { background: #E0A43A; }
+  .orcs-estourado { background: var(--g-despesa); }
+  .orcs-aviso { margin: 8px 0 0; font-size: .86rem; color: var(--receita); font-weight: 600; }
+  .orcs-aviso.atento { color: var(--pendente); }
+  .orcs-aviso.ruim { color: var(--despesa); }
+  .orcs-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  .orcs-item { display: grid; grid-template-columns: 38px minmax(0, 1fr) auto; grid-template-areas: "ic nome val" "ic barra barra" "ic resta resta"; align-items: center; gap: 4px 10px; padding: 10px 6px; border-radius: 12px; cursor: pointer; }
+  .orcs-item:hover, .orcs-item:focus-visible { background: var(--sup-2); outline: none; }
+  .orcs-item .lanc-ic { grid-area: ic; align-self: start; }
+  .orcs-nome { grid-area: nome; font-weight: 600; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; min-width: 0; }
+  .orcs-nome .selo { font-size: .68rem; padding: 1px 8px; }
+  .orcs-val { grid-area: val; white-space: nowrap; text-align: right; font-variant-numeric: tabular-nums; }
+  .orcs-item .orcs-trilho { grid-area: barra; }
+  .orcs-resta { grid-area: resta; font-size: .8rem; color: var(--suave); }
+  .orcs-resta.v-despesa { color: var(--despesa); font-weight: 600; }
+  html.valores-ocultos :is(.orcs-v, .orcs-de, .orcs-val, .orcs-resta) { filter: blur(7px); user-select: none; }
+  /* Editor de limites */
+  .orcs-editar { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 8px; }
+  .orcs-editar li { display: grid; grid-template-columns: 38px minmax(0, 1fr) 132px; align-items: center; gap: 10px; padding: 8px 10px; border: 1px solid var(--borda-suave); border-radius: 12px; background: var(--superficie); }
+  .orcs-ed-nome { display: flex; flex-direction: column; min-width: 0; }
+  .orcs-ed-nome strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .orcs-ed-nome .uso { font-size: .78rem; }
+  .orcs-media { padding: 0 2px; min-height: 0; font-size: .78rem; }
+  .orcs-editar .orc-input { width: 100%; text-align: right; }
+  @media (max-width: 420px) { .orcs-editar li { grid-template-columns: 34px minmax(0, 1fr) 112px; gap: 8px; } }
+
+  /* Primeiro acesso: entrar primeiro, criar conta embaixo */
+  .lp-dica { margin: -6px 0 14px !important; }
+  .lp-ou { display: flex; align-items: center; gap: 10px; margin: 18px 0 10px; color: var(--suave); font-size: .84rem; }
+  .lp-ou::before, .lp-ou::after { content: ''; flex: 1; height: 1px; background: var(--borda-suave); }
+  .login-cartao .lp-cadastro { width: 100%; min-height: 46px; }
+  .login-cartao .lp-voltar, .login-cartao .lp-tenho-codigo { display: block; margin: 12px auto 0; }
 </style>
 </head>
 <body>
@@ -1696,16 +1741,32 @@
       <button type="submit" class="btn primario" id="btnEntrar">Entrar</button>
       <button type="button" class="btn link" id="btnEsqueci">Esqueci a senha</button>
     </form>
+    <form id="lgPrimeiro" novalidate hidden>
+      <h2>Entrar</h2>
+      <p class="uso">Já usa o app em outro aparelho? Entre com o seu usuário e senha.</p>
+      <input type="text" class="conta-chaveiro" data-conta-de="lp_usuario" autocomplete="username" tabindex="-1" aria-hidden="true">
+      <label>Usuário<input type="text" id="lp_usuario" autocomplete="off" data-1p-ignore autocapitalize="none" spellcheck="false" maxlength="40"></label>
+      <label>Senha<input type="password" id="lp_senha" autocomplete="current-password" maxlength="200"></label>
+      <div id="lpCodigoBox" hidden>
+       <label>Código de conexão<input type="text" id="lp_codigo" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="2000" placeholder="CFN1.…"></label>
+       <p class="uso lc-dica lp-dica">Pegue no aparelho que já usa o app: <b>Ajustes › Sincronização › Conectar outro aparelho</b>.</p>
+      </div>
+      <button type="submit" class="btn primario" id="btnEntrarPrimeiro">Entrar</button>
+      <button type="button" class="btn link lp-tenho-codigo" id="btnTenhoCodigo">Tenho um código de conexão</button>
+      <div class="lp-ou"><span>Primeira vez usando o app?</span></div>
+      <button type="button" class="btn lp-cadastro" id="btnIrCadastro">Criar conta</button>
+    </form>
     <form id="lgCriar" novalidate hidden>
-      <h2>Crie seu acesso</h2>
+      <h2>Criar conta</h2>
       <p class="uso">Antes de começar, escolha um usuário e uma senha. Tudo o que você anotar fica criptografado neste aparelho, e o app pede a senha ao abrir.</p>
       <input type="text" class="conta-chaveiro" data-conta-de="lc_usuario" autocomplete="username" tabindex="-1" aria-hidden="true">
       <label>Usuário<input type="text" id="lc_usuario" autocomplete="off" data-1p-ignore autocapitalize="none" spellcheck="false" maxlength="40" placeholder="Ex.: douglas"></label>
       <label>Senha<input type="password" id="lc_senha" autocomplete="new-password" maxlength="200"></label>
       <label>Confirme a senha<input type="password" id="lc_senha2" autocomplete="new-password" maxlength="200"></label>
       <p class="uso lc-dica">Mínimo de 8 caracteres. Prefira uma frase fácil de lembrar (ex.: “cafe da manha na praia”) e nunca use a senha do banco.</p>
-      <button type="submit" class="btn primario" id="btnCriarAcesso">Criar e entrar</button>
+      <button type="submit" class="btn primario" id="btnCriarAcesso">Criar conta e entrar</button>
       <p class="uso lc-dica">Já tem um backup? Crie o acesso e depois use Ajustes › Restaurar backup. Se o backup tiver senha, o app passa a usar a senha dele.</p>
+      <button type="button" class="btn link lp-voltar" id="btnIrEntrar">Já tenho conta: entrar</button>
     </form>
     <form id="lgRecuperar" novalidate hidden>
       <h2>Redefinir a senha</h2>
@@ -1901,6 +1962,8 @@
     <div id="hojeVence"></div></section>
    <section class="bloco hoje-bloco so-simples" data-modulo="cartoes" id="hojeFaturasBloco"><div class="hoje-cab"><h3>Faturas dos cartões</h3><button type="button" class="btn link" data-ir-aba="abaCartoes">Ver cartões</button></div>
     <div id="hojeFaturas"></div></section>
+   <section class="bloco hoje-bloco hoje-orcs so-simples" id="hojeOrcSBloco"><div class="hoje-cab"><h3>Orçamento do mês</h3><button type="button" class="btn link" data-orc-s="editar" id="btnOrcSEditar">Definir limites</button></div>
+    <div id="hojeOrcS"></div></section>
    <section class="bloco hoje-bloco hoje-cats"><div class="hoje-cab"><h3>Para onde foi o dinheiro</h3><span class="uso" id="hojeCatsMes"></span></div>
     <div id="hojeCategorias"></div></section>
    <section class="bloco hoje-bloco hoje-metas" id="hojeMetasBloco"><div class="hoje-cab"><h3>Metas</h3><button type="button" class="btn link" data-ir-aba="abaMetas">Ver metas</button></div>
@@ -3968,7 +4031,7 @@
   /* --- Tela de login --- */
   function mostrarLogin(motivo) {
     var t = $('telaLogin');
-    $('lgEntrar').hidden = false; $('lgRecuperar').hidden = true; $('lgCriar').hidden = true;
+    $('lgEntrar').hidden = false; $('lgRecuperar').hidden = true; $('lgCriar').hidden = true; $('lgPrimeiro').hidden = true;
     $('lgErro').hidden = true; $('lg_senha').value = ''; esconderSenhas();
     $('lgMotivo').textContent = motivo || '';
     $('lgMotivo').hidden = !motivo;
@@ -4898,7 +4961,7 @@
       avisar('Não foi possível salvar: verifique os campos destacados.', 'erro');
       return;
     }
-    var novo = r.limpo;
+    var novo = r.limpo, orcAntes = novo.tipo === 'despesa' ? fotoOrcamento() : null;
     if (comPagamentos) sincronizarStatusObjeto(novo);
     var ocVincular = !original ? vinculoOcorrenciaId : null;
     /* Grava o lançamento; retorna o registro gravado. silencioso: usado antes de um pagamento. */
@@ -4920,6 +4983,7 @@
       marcarAlterado();
       render();
       avisar((original ? 'Lançamento atualizado.' : 'Lançamento cadastrado.') + msgRec + (lancarOutro && !original ? ' Pronto para o próximo.' : ''), 'sucesso');
+      avisosOrcamento(orcAntes);
       seguirParaOutro();
       return novo;
     }
@@ -7678,7 +7742,7 @@
      fica escondido (os dados continuam no arquivo e voltam a aparecer quando o módulo for ligado).
      Para ver tudo (testes ou uso avançado): localStorage 'controle-financeiro-nivel' = 7. */
   /* Versão do app: atualize a cada entrega (o sw.js usa o mesmo número no nome do cache). */
-  var VERSAO_APP = { numero: '27', data: '2026-11-18', novidade: 'senha do app separada no Chaveiro do iPhone (Face ID)' };
+  var VERSAO_APP = { numero: '30', data: '2026-11-19', novidade: 'aparelho novo entra só com usuário e senha (arquivo nuvem.json)' };
   var CHAVE_VERSAO_VISTA = 'controle-financeiro-versao-vista';
   function textoVersao() { return 'Versão ' + VERSAO_APP.numero + ' · atualizada em ' + dataBR(VERSAO_APP.data) + '.'; }
   /* Procurar atualização: confere se há internet, apaga só a cópia do app (código e ícones; os dados
@@ -8036,6 +8100,7 @@
     renderFaturasMvp();
     renderPrevistasMes();
     renderComparacaoMes(t);
+    renderOrcSimples(t);
     renderEvolucao();
     // Para onde foi o dinheiro: rosca + lista (as 6 maiores com cor própria; o resto em “Outras”)
     $('hojeCatsMes').textContent = rot;
@@ -8337,6 +8402,151 @@
     if (c) { c.scrollIntoView({ block: 'center' }); c.classList.add('destacado'); setTimeout(function () { c.classList.remove('destacado'); }, 1600); }
   }
 
+
+  /* ---------- Orçamento por categoria (modo simples) ----------
+     Usa os mesmos limites do modo completo (estado.orcamentos: categoria → R$ por mês). O gasto é o mesmo
+     do “Para onde foi o dinheiro”: cartão no mês da fatura, parcela pelo valor da parcela e, nos meses
+     futuros, as contas fixas previstas. */
+  function situacaoOrcSimples(mes, t) {
+    var cats = (t || totaisDoMes(mes)).cats;
+    var linhas = Object.keys(estado.orcamentos).map(function (cat) {
+      var lim = centavos(estado.orcamentos[cat]), g = cats[cat] || 0, pct = lim ? Math.round(g / lim * 100) : 0;
+      return { cat: cat, limite: lim, gasto: g, pct: pct, resta: lim - g, status: g > lim ? 'estourado' : pct >= 80 ? 'atencao' : 'ok' };
+    });
+    var ordem = { estourado: 0, atencao: 1, ok: 2 };
+    linhas.sort(function (a, b) { return ordem[a.status] - ordem[b.status] || b.pct - a.pct || a.cat.localeCompare(b.cat, 'pt-BR'); });
+    return linhas;
+  }
+  function renderOrcSimples(t) {
+    var box = $('hojeOrcS');
+    if (!box) return;
+    var L = situacaoOrcSimples(mesVisao, t), btn = $('btnOrcSEditar');
+    btn.textContent = L.length ? 'Editar limites' : 'Definir limites';
+    box.replaceChildren();
+    if (!L.length) {
+      box.append(el('div', { class: 'orcs-vazio' },
+        el('p', null, 'Defina quanto quer gastar por mês em cada categoria (ex.: Mercado R$ 1.500). O app mostra quanto já usou e avisa quando chegar a 80% e quando passar do limite.'),
+        el('button', { type: 'button', class: 'btn primario', 'data-orc-s': 'editar' }, 'Definir limites')));
+      return;
+    }
+    var lim = L.reduce(function (a, x) { return a + x.limite; }, 0), gas = L.reduce(function (a, x) { return a + x.gasto; }, 0);
+    var est = L.filter(function (x) { return x.status === 'estourado'; }).length, ate = L.filter(function (x) { return x.status === 'atencao'; }).length;
+    var pctT = lim ? Math.round(gas / lim * 100) : 0;
+    box.append(el('div', { class: 'orcs-total' },
+      el('div', { class: 'orcs-total-txt' }, el('span', null, 'Usado'), el('strong', { class: 'orcs-v' }, moeda(gas / 100)), el('span', { class: 'orcs-de' }, 'de ' + moeda(lim / 100)), el('span', { class: 'orcs-pct' }, pctT + '%')),
+      el('div', { class: 'orcs-trilho grande' }, el('div', { class: 'orcs-barra orcs-' + (gas > lim ? 'estourado' : pctT >= 80 ? 'atencao' : 'ok'), style: 'width:' + Math.min(100, pctT) + '%' })),
+      el('p', { class: 'orcs-aviso' + (est ? ' ruim' : ate ? ' atento' : '') }, est ? plural(est, 'categoria passou', 'categorias passaram') + ' do limite' + (ate ? ' e ' + plural(ate, 'está', 'estão') + ' perto' : '') + '.'
+        : ate ? plural(ate, 'categoria está perto', 'categorias estão perto') + ' do limite (80% ou mais).' : 'Tudo dentro do limite neste mês.')));
+    var ul = el('ul', { class: 'orcs-lista' });
+    L.forEach(function (x) {
+      var txt = x.status === 'estourado' ? 'Passou ' + moeda(-x.resta / 100) : 'Restam ' + moeda(x.resta / 100);
+      ul.append(el('li', { class: 'orcs-item orcs-it-' + x.status, tabindex: '0', role: 'button', 'data-ver-cat': x.cat,
+        'aria-label': x.cat + ': ' + moeda(x.gasto / 100) + ' de ' + moeda(x.limite / 100) + ', ' + x.pct + '%. ' + txt + '. Ver lançamentos' },
+        el('span', { class: 'lanc-ic', 'aria-hidden': 'true' }, emojiCategoria(x.cat, 'despesa')),
+        el('span', { class: 'orcs-nome' }, x.cat, x.status !== 'ok' ? el('span', { class: 'selo ' + (x.status === 'estourado' ? 's-vencida' : 's-pendente') }, x.status === 'estourado' ? 'Estourou' : 'Perto do limite') : null),
+        el('span', { class: 'orcs-val' }, el('b', null, moeda(x.gasto / 100)), el('span', { class: 'uso' }, ' de ' + moeda(x.limite / 100))),
+        el('span', { class: 'orcs-trilho' }, el('span', { class: 'orcs-barra orcs-' + x.status, style: 'width:' + Math.min(100, x.pct) + '%' })),
+        el('span', { class: 'orcs-resta ' + (x.status === 'estourado' ? 'v-despesa' : '') }, txt + ' · ' + x.pct + '%')));
+    });
+    box.append(ul);
+  }
+  /* Média do gasto da categoria nos 3 últimos meses fechados com registros (para sugerir o limite). */
+  function mediaCatSimples(cat) {
+    var primeiro = estado.lancamentos.reduce(function (m, l) { var c = chaveMes(l.data); return !m || c < m ? c : m; }, '');
+    if (!primeiro) return null;
+    var meses = [-3, -2, -1].map(function (d) { return somarMesesChave(mesAtual(), d); }).filter(function (m) { return m >= primeiro; });
+    if (!meses.length) return null;
+    var tot = meses.reduce(function (a, m) { return a + (totaisDoMes(m).cats[cat] || 0); }, 0);
+    return tot > 0 ? Math.ceil(tot / meses.length / 1000) * 10 : null; // R$, múltiplo de 10 para cima
+  }
+  function formLimitesSimples(foco) {
+    var gMes = totaisDoMes(mesVisao).cats, cats = estado.categorias.slice();
+    Object.keys(estado.orcamentos).forEach(function (c) { if (cats.indexOf(c) < 0) cats.push(c); });
+    cats.sort(function (a, b) {
+      var pa = (estado.orcamentos[a] ? 1e15 : 0) + (gMes[a] || 0), pb = (estado.orcamentos[b] ? 1e15 : 0) + (gMes[b] || 0);
+      return pb - pa || a.localeCompare(b, 'pt-BR');
+    });
+    var ul = el('ul', { class: 'orcs-editar' }), algumaMedia = false;
+    cats.forEach(function (cat) {
+      var med = mediaCatSimples(cat), inp = el('input', { type: 'text', inputmode: 'numeric', 'data-moeda': true, class: 'orc-input', 'data-cat': cat, placeholder: 'Sem limite', 'aria-label': 'Limite mensal de ' + cat });
+      if (med) algumaMedia = true;
+      inp.value = estado.orcamentos[cat] ? valorParaCampo(estado.orcamentos[cat]) : '';
+      ul.append(el('li', { 'data-lim': cat },
+        el('span', { class: 'lanc-ic', 'aria-hidden': 'true' }, emojiCategoria(cat, 'despesa')),
+        el('span', { class: 'orcs-ed-nome' }, el('strong', null, cat),
+          el('span', { class: 'uso' }, (gMes[cat] ? 'Neste mês: ' + moeda(gMes[cat] / 100) : 'Sem gasto neste mês') + (med ? ' · média ' : ''),
+            med ? el('button', { type: 'button', class: 'btn link orcs-media', 'data-usar-media': cat, 'data-valor': String(med), title: 'Usar a média como limite' }, moeda(med)) : null)),
+        inp));
+    });
+    abrirGen('Limites por categoria', [{ tipo: 'html', conteudo: el('div', null,
+      el('p', { class: 'uso' }, 'Quanto você quer gastar por mês em cada categoria. Deixe em branco para não ter limite. O limite vale para todos os meses.'),
+      algumaMedia ? el('div', { class: 'aj-acoes' }, el('button', { type: 'button', class: 'btn pequeno', id: 'btnOrcSMedias' }, 'Preencher vazios com a média dos últimos 3 meses')) : null,
+      ul) }],
+      function () {
+        var novos = {}, errosL = [];
+        Array.prototype.forEach.call($('corpoGen').querySelectorAll('.orc-input'), function (inp) {
+          var tx = inp.value.trim(), cat = inp.getAttribute('data-cat');
+          inp.classList.remove('invalido');
+          if (!tx) return;
+          var v = parseValor(tx);
+          if (!isFinite(v) || v <= 0) { errosL.push('Limite inválido em “' + cat + '”.'); inp.classList.add('invalido'); }
+          else novos[cat] = dinheiro(v);
+        });
+        if (errosL.length) return errosL;
+        estado.orcamentos = novos;
+        marcarAlterado(); render();
+        avisar(Object.keys(novos).length ? 'Limites salvos para ' + plural(Object.keys(novos).length, 'categoria', 'categorias') + '.' : 'Todos os limites foram removidos.', 'sucesso');
+        return [];
+      }, 'Salvar limites');
+    var corpo = $('corpoGen');
+    corpo.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-usar-media]');
+      if (b) { var i = corpo.querySelector('.orc-input[data-cat="' + CSS.escape(b.getAttribute('data-usar-media')) + '"]'); if (i) { i.value = valorParaCampo(+b.getAttribute('data-valor')); i.focus(); } }
+      if (e.target.closest('#btnOrcSMedias')) Array.prototype.forEach.call(corpo.querySelectorAll('[data-usar-media]'), function (m) {
+        var i = corpo.querySelector('.orc-input[data-cat="' + CSS.escape(m.getAttribute('data-usar-media')) + '"]');
+        if (i && !i.value.trim()) i.value = valorParaCampo(+m.getAttribute('data-valor'));
+      });
+    });
+    if (foco) { var f = corpo.querySelector('.orc-input[data-cat="' + CSS.escape(foco) + '"]'); if (f && f.scrollIntoView) f.scrollIntoView({ block: 'center' }); }
+  }
+  /* Avisos ao salvar um gasto: quando uma categoria com limite chega a 80% ou passa do limite. */
+  function fotoOrcamento() {
+    if (!modoSimples() || !Object.keys(estado.orcamentos).length) return null;
+    var f = {};
+    for (var d = -1; d <= 12; d++) {
+      var m = somarMesesChave(mesAtual(), d), cats = totaisDoMes(m).cats;
+      Object.keys(estado.orcamentos).forEach(function (c) { f[m + '|' + c] = cats[c] || 0; });
+    }
+    return f;
+  }
+  function avisosOrcamento(antes) {
+    if (!antes) return;
+    var depois = fotoOrcamento();
+    if (!depois) return;
+    var pior = null;
+    Object.keys(depois).sort().forEach(function (k) {
+      var cat = k.slice(8), lim = centavos(estado.orcamentos[cat] || 0);
+      if (!lim) return;
+      var a = antes[k] || 0, b = depois[k];
+      var nivelA = a > lim ? 2 : a >= lim * 0.8 ? 1 : 0, nivelB = b > lim ? 2 : b >= lim * 0.8 ? 1 : 0;
+      if (nivelB > nivelA && (!pior || nivelB > pior.nivel)) pior = { nivel: nivelB, mes: k.slice(0, 7), cat: cat, gasto: b, lim: lim };
+    });
+    if (!pior) return;
+    var nomeMes = MESES_LONGOS[+pior.mes.slice(5, 7) - 1];
+    if (pior.nivel === 2) avisar('Atenção: “' + pior.cat + '” passou do limite de ' + nomeMes + ' (' + moeda(pior.gasto / 100) + ' de ' + moeda(pior.lim / 100) + ').', 'erro');
+    else avisar('“' + pior.cat + '” chegou a ' + Math.round(pior.gasto / pior.lim * 100) + '% do limite de ' + nomeMes + ' (' + moeda(pior.gasto / 100) + ' de ' + moeda(pior.lim / 100) + ').', '');
+  }
+  function ligarOrcSimples() {
+    var bloco = $('hojeOrcSBloco');
+    bloco.addEventListener('click', function (e) {
+      if (e.target.closest('[data-orc-s="editar"]')) { formLimitesSimples(); return; }
+      var it = e.target.closest('[data-ver-cat]'); if (it) verCategoria(it.getAttribute('data-ver-cat'));
+    });
+    bloco.addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      var it = e.target.closest('[data-ver-cat]'); if (it) { e.preventDefault(); verCategoria(it.getAttribute('data-ver-cat')); }
+    });
+  }
   /* Esconder valores: preferência deste aparelho (não vai para o arquivo nem para o backup). */
   var CHAVE_OCULTAR = 'controle-financeiro-ocultar-valores';
   function aplicarOcultar(sim) {
@@ -9104,7 +9314,7 @@
       var pendenteAntes = versaoDados;
       return montarEnvelope({}, dk).then(function (r) {
         var envTxt = JSON.stringify(r.env);
-        return chamar(nuvem, { acao: 'gravar', base: base, env: envTxt, aparelho: (navigator.platform || '') }).then(function (resp) {
+        return provaEscrita().then(function (prova) { return chamar(nuvem, { acao: 'gravar', base: base, env: envTxt, aparelho: (navigator.platform || ''), prova: prova }); }).then(function (resp) {
           if (resp.conflito) { if (++tentativas > 3) throw new Error('Outro aparelho está gravando ao mesmo tempo. Tente de novo.'); return ciclo(); }
           nuvem.versao = resp.versao; nuvem.baseEnv = envTxt; nuvem.sincEm = new Date().toISOString();
           if (versaoDados === pendenteAntes) nuvem.pendente = false;
@@ -9155,8 +9365,55 @@
   /* ---- Script da planilha (o app gera com a chave de acesso já dentro) ---- */
   /* Script pronto do Google Apps Script (o mesmo do arquivo controle-financeiro-sync.gs). Ele cria a pasta e a planilha no Drive
      e gera a chave de acesso na primeira execução da função “configurar”. */
-  var SCRIPT_SYNC = "// =====================================================================\n//  Controle Financeiro — sincronização pela sua conta Google\n//\n//  Este script cria sozinho, no SEU Google Drive:\n//    • a pasta \"Controle Financeiro\"\n//    • a planilha \"Controle Financeiro – nuvem (não editar)\", com as abas:\n//        nuvem    → os dados do app, CIFRADOS (o Google não consegue ler)\n//        registro → data, aparelho e versão de cada gravação\n//        leia-me  → explicações\n//  e gera uma CHAVE DE ACESSO só sua, que você cola no app.\n//\n//  Como usar (uma vez só):\n//    1. Selecione a função \"configurar\" lá em cima e clique em Executar.\n//       Autorize com sua conta Google.\n//    2. Copie a CHAVE DE ACESSO que aparece no \"Registro de execução\".\n//    3. Implantar › Nova implantação › App da Web\n//       (Executar como: Eu · Quem pode acessar: Qualquer pessoa).\n//    4. No app: cole a URL do app da Web (termina em /exec) e a chave.\n//\n//  Não compartilhe a chave: com ela e a URL dá para ler e gravar o\n//  arquivo cifrado (mas não para abrir os dados, que pedem usuário e senha).\n// =====================================================================\n\nvar NOME_PASTA = 'Controle Financeiro';\nvar NOME_PLANILHA = 'Controle Financeiro – nuvem (não editar)';\nvar TAM_PEDACO = 40000;      // caracteres por célula (limite do Google: 50.000)\nvar MAX_REGISTRO = 500;      // linhas guardadas na aba \"registro\"\n\n// Rode esta função uma vez pelo editor. Pode rodar de novo quando quiser\n// ver a chave: ela não muda e a planilha não é recriada.\nfunction configurar() {\n  var props = PropertiesService.getScriptProperties();\n  var chave = props.getProperty('CHAVE_ACESSO');\n  if (!chave) {\n    chave = (Utilities.getUuid() + Utilities.getUuid()).replace(/-/g, '').slice(0, 40);\n    props.setProperty('CHAVE_ACESSO', chave);\n  }\n  var ss = planilha_();\n  Logger.log('Tudo pronto!');\n  Logger.log('Planilha: ' + ss.getUrl());\n  Logger.log('CHAVE DE ACESSO (cole no app): ' + chave);\n  Logger.log('Agora: Implantar › Nova implantação › App da Web (Executar como: Eu · Quem pode acessar: Qualquer pessoa).');\n  return chave;\n}\n\n// Só se precisar trocar a chave (ex.: alguém indevido ficou com ela).\n// Depois, reconecte os aparelhos com a chave nova.\nfunction trocarChave() {\n  PropertiesService.getScriptProperties().deleteProperty('CHAVE_ACESSO');\n  return configurar();\n}\n\nfunction resp_(o) {\n  return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);\n}\n\nfunction doGet() {\n  return resp_({ ok: true, app: 'controle-financeiro', configurado: !!PropertiesService.getScriptProperties().getProperty('CHAVE_ACESSO') });\n}\n\nfunction doPost(e) {\n  var req;\n  try { req = JSON.parse(e.postData.contents); } catch (x) { return resp_({ erro: 'pedido inválido' }); }\n  var chave = PropertiesService.getScriptProperties().getProperty('CHAVE_ACESSO');\n  if (!chave) return resp_({ erro: 'script ainda não configurado: no editor do Apps Script, rode a função \"configurar\"' });\n  if (!req || req.chave !== chave) return resp_({ erro: 'acesso negado (confira a chave de acesso)' });\n\n  var lock = LockService.getScriptLock();\n  lock.waitLock(25000);\n  try {\n    var ss = planilha_();\n    var sh = ss.getSheetByName('nuvem');\n    var versao = Number(sh.getRange('A1').getValue()) || 0;\n\n    if (req.acao === 'ler') {\n      if (req.desde !== undefined && Number(req.desde) === versao && versao > 0) return resp_({ versao: versao, igual: true });\n      var n = sh.getLastRow(), env = '';\n      if (n >= 3) env = sh.getRange(3, 1, n - 2, 1).getValues().map(function (r) { return String(r[0]).slice(1); }).join('');\n      return resp_({ versao: versao, env: env || null });\n    }\n\n    if (req.acao === 'gravar') {\n      if (Number(req.base) !== versao) return resp_({ conflito: true, versao: versao });\n      var txt = String(req.env || ''), partes = [];\n      for (var i = 0; i < txt.length; i += TAM_PEDACO) partes.push(['x' + txt.substr(i, TAM_PEDACO)]);\n      var ultima = sh.getLastRow();\n      if (ultima >= 3) sh.getRange(3, 1, ultima - 2, 1).clearContent();\n      if (partes.length) sh.getRange(3, 1, partes.length, 1).setValues(partes);\n      versao++;\n      sh.getRange('A1:C1').setValues([[versao, new Date(), String(req.aparelho || '')]]);\n      sh.getRange('A2').setValue('Dados cifrados do Controle Financeiro. Não edite esta aba.');\n      registrar_(ss, versao, String(req.aparelho || ''), txt.length);\n      return resp_({ ok: true, versao: versao });\n    }\n\n    return resp_({ erro: 'ação desconhecida' });\n  } finally {\n    lock.releaseLock();\n  }\n}\n\n// Abre a planilha do app; se ainda não existir (ou tiver sido apagada), cria.\nfunction planilha_() {\n  var props = PropertiesService.getScriptProperties();\n  var id = props.getProperty('PLANILHA_ID');\n  if (id) {\n    try {\n      var existente = SpreadsheetApp.openById(id);\n      if (!DriveApp.getFileById(id).isTrashed()) { prepararAbas_(existente); return existente; }\n    } catch (x) { /* apagada ou sem acesso: cria outra */ }\n  }\n  var ss = SpreadsheetApp.create(NOME_PLANILHA);\n  var pastas = DriveApp.getFoldersByName(NOME_PASTA);\n  var pasta = pastas.hasNext() ? pastas.next() : DriveApp.createFolder(NOME_PASTA);\n  DriveApp.getFileById(ss.getId()).moveTo(pasta);\n  prepararAbas_(ss);\n  props.setProperty('PLANILHA_ID', ss.getId());\n  return ss;\n}\n\nfunction prepararAbas_(ss) {\n  var nuvem = ss.getSheetByName('nuvem');\n  if (!nuvem) {\n    var primeira = ss.getSheets()[0];\n    if (primeira && primeira.getLastRow() === 0 && ss.getSheets().length === 1 && !ss.getSheetByName('registro')) {\n      nuvem = primeira.setName('nuvem');\n    } else {\n      nuvem = ss.insertSheet('nuvem');\n    }\n    nuvem.getRange('A1:C1').setValues([[0, '', '']]);\n    nuvem.getRange('A2').setValue('Dados cifrados do Controle Financeiro. Não edite esta aba.');\n    nuvem.setColumnWidth(1, 220);\n  }\n  var reg = ss.getSheetByName('registro');\n  if (!reg) {\n    reg = ss.insertSheet('registro');\n    reg.getRange('A1:D1').setValues([['Quando', 'Aparelho', 'Versão', 'Tamanho (caracteres)']]).setFontWeight('bold');\n    reg.setFrozenRows(1);\n    reg.setColumnWidth(1, 170); reg.setColumnWidth(2, 220);\n  }\n  var leia = ss.getSheetByName('leia-me');\n  if (!leia) {\n    leia = ss.insertSheet('leia-me');\n    leia.getRange('A1:A8').setValues([\n      ['Controle Financeiro — planilha de sincronização'],\n      ['• A aba \"nuvem\" guarda os dados do app CIFRADOS. Não edite, não ordene e não apague nada nela.'],\n      ['• A aba \"registro\" mostra cada gravação feita pelos aparelhos (só para conferência).'],\n      ['• Para abrir os dados é preciso o usuário e a senha do app: esta planilha sozinha não mostra nada.'],\n      ['• Não compartilhe esta planilha. Quem usa o app com você só precisa do código de conexão (no app: Ajustes › Sincronização).'],\n      ['• Se apagar esta planilha, o script cria outra vazia; os aparelhos enviam de novo os dados que têm.'],\n      ['• Para trocar a chave de acesso: no Apps Script, rode a função \"trocarChave\" e reconecte os aparelhos.'],\n      ['']\n    ]);\n    leia.getRange('A1').setFontWeight('bold').setFontSize(13);\n    leia.setColumnWidth(1, 820);\n  }\n}\n\nfunction registrar_(ss, versao, aparelho, tamanho) {\n  try {\n    var reg = ss.getSheetByName('registro');\n    reg.appendRow([new Date(), aparelho || '—', versao, tamanho]);\n    var excesso = reg.getLastRow() - 1 - MAX_REGISTRO;\n    if (excesso > 0) reg.deleteRows(2, excesso);\n  } catch (x) { /* o registro é só informativo */ }\n}\n";
+  var SCRIPT_SYNC = "// =====================================================================\n//  Controle Financeiro — sincronização pela sua conta Google\n//\n//  Este script cria sozinho, no SEU Google Drive:\n//    • a pasta \"Controle Financeiro\"\n//    • a planilha \"Controle Financeiro – nuvem (não editar)\", com as abas:\n//        nuvem    → os dados do app, CIFRADOS (o Google não consegue ler)\n//        registro → data, aparelho e versão de cada gravação\n//        leia-me  → explicações\n//  e gera uma CHAVE DE ACESSO só sua, que você cola no app.\n//\n//  Como usar (uma vez só):\n//    1. Selecione a função \"configurar\" lá em cima e clique em Executar.\n//       Autorize com sua conta Google.\n//    2. Copie a CHAVE DE ACESSO que aparece no \"Registro de execução\".\n//    3. Implantar › Nova implantação › App da Web\n//       (Executar como: Eu · Quem pode acessar: Qualquer pessoa).\n//    4. No app: cole a URL do app da Web (termina em /exec) e a chave.\n//\n//  Os dados chegam aqui sempre cifrados: para abri-los é preciso o usuário\n//  e a senha do app. Gravar também exige uma prova que só o app com a sua\n//  senha consegue gerar — assim, mesmo quem souber a URL e a chave não\n//  consegue apagar nem trocar os seus dados.\n//\n//  Atualizou este script? Implantar › Gerenciar implantações › lápis ›\n//  Versão: Nova versão › Implantar. A URL continua a mesma.\n// =====================================================================\n\nvar NOME_PASTA = 'Controle Financeiro';\nvar NOME_PLANILHA = 'Controle Financeiro – nuvem (não editar)';\nvar TAM_PEDACO = 40000;      // caracteres por célula (limite do Google: 50.000)\nvar MAX_REGISTRO = 500;      // linhas guardadas na aba \"registro\"\n\n// Rode esta função uma vez pelo editor. Pode rodar de novo quando quiser\n// ver a chave: ela não muda e a planilha não é recriada.\nfunction configurar() {\n  var props = PropertiesService.getScriptProperties();\n  var chave = props.getProperty('CHAVE_ACESSO');\n  if (!chave) {\n    chave = (Utilities.getUuid() + Utilities.getUuid()).replace(/-/g, '').slice(0, 40);\n    props.setProperty('CHAVE_ACESSO', chave);\n  }\n  var ss = planilha_();\n  Logger.log('Tudo pronto!');\n  Logger.log('Planilha: ' + ss.getUrl());\n  Logger.log('CHAVE DE ACESSO (cole no app): ' + chave);\n  Logger.log('Agora: Implantar › Nova implantação › App da Web (Executar como: Eu · Quem pode acessar: Qualquer pessoa).');\n  return chave;\n}\n\n// Use só se o app avisar que a planilha está ligada a outra conta (ex.: você\n// recriou a conta do zero). O próximo aparelho que gravar passa a ser o dono.\nfunction liberarEscrita() {\n  PropertiesService.getScriptProperties().deleteProperty('ESCRITA_HASH');\n  Logger.log('Pronto: a próxima gravação do app define a nova prova de escrita.');\n}\n\nfunction hashEscrita_(prova) {\n  return Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, String(prova), Utilities.Charset.UTF_8)\n    .map(function (b) { return ('0' + (b & 255).toString(16)).slice(-2); }).join('');\n}\n\n// Só se precisar trocar a chave (ex.: alguém indevido ficou com ela).\n// Depois, reconecte os aparelhos com a chave nova.\nfunction trocarChave() {\n  PropertiesService.getScriptProperties().deleteProperty('CHAVE_ACESSO');\n  return configurar();\n}\n\nfunction resp_(o) {\n  return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);\n}\n\nfunction doGet() {\n  return resp_({ ok: true, app: 'controle-financeiro', configurado: !!PropertiesService.getScriptProperties().getProperty('CHAVE_ACESSO') });\n}\n\nfunction doPost(e) {\n  var req;\n  try { req = JSON.parse(e.postData.contents); } catch (x) { return resp_({ erro: 'pedido inválido' }); }\n  var chave = PropertiesService.getScriptProperties().getProperty('CHAVE_ACESSO');\n  if (!chave) return resp_({ erro: 'script ainda não configurado: no editor do Apps Script, rode a função \"configurar\"' });\n  if (!req || req.chave !== chave) return resp_({ erro: 'acesso negado (confira a chave de acesso)' });\n\n  var lock = LockService.getScriptLock();\n  lock.waitLock(25000);\n  try {\n    var ss = planilha_();\n    var sh = ss.getSheetByName('nuvem');\n    var versao = Number(sh.getRange('A1').getValue()) || 0;\n\n    if (req.acao === 'ler') {\n      if (req.desde !== undefined && Number(req.desde) === versao && versao > 0) return resp_({ versao: versao, igual: true });\n      var n = sh.getLastRow(), env = '';\n      if (n >= 3) env = sh.getRange(3, 1, n - 2, 1).getValues().map(function (r) { return String(r[0]).slice(1); }).join('');\n      return resp_({ versao: versao, env: env || null });\n    }\n\n    if (req.acao === 'gravar') {\n      var props = PropertiesService.getScriptProperties(), dono = props.getProperty('ESCRITA_HASH');\n      if (req.prova) {\n        var h = hashEscrita_(req.prova);\n        if (!dono) props.setProperty('ESCRITA_HASH', h);\n        else if (dono !== h) return resp_({ erro: 'escrita negada: esta planilha pertence a outra conta do app' });\n      } else if (dono) {\n        return resp_({ erro: 'escrita negada: atualize o app neste aparelho' });\n      }\n      if (Number(req.base) !== versao) return resp_({ conflito: true, versao: versao });\n      var txt = String(req.env || ''), partes = [];\n      for (var i = 0; i < txt.length; i += TAM_PEDACO) partes.push(['x' + txt.substr(i, TAM_PEDACO)]);\n      var ultima = sh.getLastRow();\n      if (ultima >= 3) sh.getRange(3, 1, ultima - 2, 1).clearContent();\n      if (partes.length) sh.getRange(3, 1, partes.length, 1).setValues(partes);\n      versao++;\n      sh.getRange('A1:C1').setValues([[versao, new Date(), String(req.aparelho || '')]]);\n      sh.getRange('A2').setValue('Dados cifrados do Controle Financeiro. Não edite esta aba.');\n      registrar_(ss, versao, String(req.aparelho || ''), txt.length);\n      return resp_({ ok: true, versao: versao });\n    }\n\n    return resp_({ erro: 'ação desconhecida' });\n  } finally {\n    lock.releaseLock();\n  }\n}\n\n// Abre a planilha do app; se ainda não existir (ou tiver sido apagada), cria.\nfunction planilha_() {\n  var props = PropertiesService.getScriptProperties();\n  var id = props.getProperty('PLANILHA_ID');\n  if (id) {\n    try {\n      var existente = SpreadsheetApp.openById(id);\n      if (!DriveApp.getFileById(id).isTrashed()) { prepararAbas_(existente); return existente; }\n    } catch (x) { /* apagada ou sem acesso: cria outra */ }\n  }\n  var ss = SpreadsheetApp.create(NOME_PLANILHA);\n  var pastas = DriveApp.getFoldersByName(NOME_PASTA);\n  var pasta = pastas.hasNext() ? pastas.next() : DriveApp.createFolder(NOME_PASTA);\n  DriveApp.getFileById(ss.getId()).moveTo(pasta);\n  prepararAbas_(ss);\n  props.setProperty('PLANILHA_ID', ss.getId());\n  return ss;\n}\n\nfunction prepararAbas_(ss) {\n  var nuvem = ss.getSheetByName('nuvem');\n  if (!nuvem) {\n    var primeira = ss.getSheets()[0];\n    if (primeira && primeira.getLastRow() === 0 && ss.getSheets().length === 1 && !ss.getSheetByName('registro')) {\n      nuvem = primeira.setName('nuvem');\n    } else {\n      nuvem = ss.insertSheet('nuvem');\n    }\n    nuvem.getRange('A1:C1').setValues([[0, '', '']]);\n    nuvem.getRange('A2').setValue('Dados cifrados do Controle Financeiro. Não edite esta aba.');\n    nuvem.setColumnWidth(1, 220);\n  }\n  var reg = ss.getSheetByName('registro');\n  if (!reg) {\n    reg = ss.insertSheet('registro');\n    reg.getRange('A1:D1').setValues([['Quando', 'Aparelho', 'Versão', 'Tamanho (caracteres)']]).setFontWeight('bold');\n    reg.setFrozenRows(1);\n    reg.setColumnWidth(1, 170); reg.setColumnWidth(2, 220);\n  }\n  var leia = ss.getSheetByName('leia-me');\n  if (!leia) {\n    leia = ss.insertSheet('leia-me');\n    leia.getRange('A1:A8').setValues([\n      ['Controle Financeiro — planilha de sincronização'],\n      ['• A aba \"nuvem\" guarda os dados do app CIFRADOS. Não edite, não ordene e não apague nada nela.'],\n      ['• A aba \"registro\" mostra cada gravação feita pelos aparelhos (só para conferência).'],\n      ['• Para abrir os dados é preciso o usuário e a senha do app: esta planilha sozinha não mostra nada.'],\n      ['• Não compartilhe esta planilha. Quem usa o app com você só precisa do código de conexão (no app: Ajustes › Sincronização).'],\n      ['• Se apagar esta planilha, o script cria outra vazia; os aparelhos enviam de novo os dados que têm.'],\n      ['• Para trocar a chave de acesso: no Apps Script, rode a função \"trocarChave\" e reconecte os aparelhos.'],\n      ['']\n    ]);\n    leia.getRange('A1').setFontWeight('bold').setFontSize(13);\n    leia.setColumnWidth(1, 820);\n  }\n}\n\nfunction registrar_(ss, versao, aparelho, tamanho) {\n  try {\n    var reg = ss.getSheetByName('registro');\n    reg.appendRow([new Date(), aparelho || '—', versao, tamanho]);\n    var excesso = reg.getLastRow() - 1 - MAX_REGISTRO;\n    if (excesso > 0) reg.deleteRows(2, excesso);\n  } catch (x) { /* o registro é só informativo */ }\n}\n";
   function scriptPlanilha() { return SCRIPT_SYNC; }
+  /* Prova de escrita: derivada da chave dos dados (só quem entrou com usuário e senha tem). A planilha guarda
+     só um resumo dela e recusa gravações sem a prova certa — a URL e a chave sozinhas não apagam seus dados. */
+  function provaEscrita() {
+    if (!chaveDados || !(window.crypto && crypto.subtle)) return Promise.resolve(undefined);
+    var rot = new TextEncoder().encode('cf-escrita-v1'), buf = new Uint8Array(chaveDados.length + rot.length);
+    buf.set(chaveDados, 0); buf.set(rot, chaveDados.length);
+    return crypto.subtle.digest('SHA-256', buf).then(function (h) {
+      return Array.prototype.map.call(new Uint8Array(h), function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
+    });
+  }
+  /* Arquivo nuvem.json, publicado junto do app: diz onde está a planilha. Assim, num aparelho novo,
+     basta usuário e senha. Os dados continuam cifrados e a planilha só aceita gravação com a prova acima. */
+  var ARQ_NUVEM = 'nuvem.json';
+  function conteudoNuvemJson() { return JSON.stringify({ app: 'controle-financeiro', u: nuvem.url, k: nuvem.chave }, null, 2) + '\n'; }
+  function buscarNuvemPublicada() {
+    return fetch('./' + ARQ_NUVEM + '?nocache=' + Date.now(), { cache: 'no-store' }).then(function (r) {
+      if (!r.ok) return null;
+      return r.json().then(function (j) { return j && j.u && j.k ? { url: j.u, chave: j.k } : null; }, function () { return null; });
+    }, function () { return undefined; }); // undefined = sem internet
+  }
+  function formPublicarNuvem() {
+    var conteudo = conteudoNuvemJson();
+    abrirGen('Entrar só com usuário e senha', [
+      { tipo: 'html', conteudo: el('div', { class: 'dica-form' }, 'Publique o arquivo ', el('b', null, ARQ_NUVEM), ' junto do app no GitHub. Ele diz ao app onde está a sua planilha. Depois disso, qualquer aparelho novo entra só com usuário e senha, sem código.') },
+      { tipo: 'html', conteudo: el('ol', { class: 'nuvem-passos' },
+        el('li', null, 'Toque em ', el('b', null, 'Copiar conteúdo'), ' abaixo.'),
+        el('li', null, 'No GitHub, no repositório do app (onde está o index.html): ', el('b', null, 'Add file › Create new file'), '.'),
+        el('li', null, 'No nome do arquivo, escreva ', el('b', null, ARQ_NUVEM), '. Cole o conteúdo e clique em ', el('b', null, 'Commit changes'), '.'),
+        el('li', null, 'Espere 1 a 2 minutos e toque em ', el('b', null, 'Conferir'), ' aqui.')) },
+      { tipo: 'html', conteudo: el('pre', { class: 'nuvem-codigo', id: 'nuvemJsonTexto' }, conteudo) },
+      { tipo: 'html', conteudo: el('div', { class: 'aj-acoes' },
+        el('button', { type: 'button', class: 'btn primario', id: 'btnCopiarNuvemJson' }, ico('copy', 'ico-inline'), ' Copiar conteúdo'),
+        el('button', { type: 'button', class: 'btn', id: 'btnConferirNuvemJson' }, 'Conferir')) },
+      { tipo: 'html', conteudo: el('p', { class: 'uso', id: 'nuvemJsonStatus' }, '') },
+      { tipo: 'html', conteudo: el('div', { class: 'dica-form' }, 'Segurança: o arquivo fica público, como o resto do app. Com ele dá para baixar a planilha, mas os dados estão cifrados e só abrem com usuário e senha — por isso use uma senha forte (uma frase). Para gravar, a planilha exige uma prova que só o app com a sua senha gera; atualize o script (Ajustes › Sincronização › Configurar planilha › Copiar o script) para ativar essa proteção.') }
+    ], function () { return []; }, 'Fechar');
+    $('btnCopiarNuvemJson').addEventListener('click', function () { copiarTexto(conteudo, 'Conteúdo copiado. Crie o arquivo ' + ARQ_NUVEM + ' no GitHub.'); });
+    $('btnConferirNuvemJson').addEventListener('click', function () {
+      var st = $('nuvemJsonStatus'); st.textContent = 'Conferindo…';
+      buscarNuvemPublicada().then(function (cfg) {
+        if (cfg === undefined) st.textContent = 'Sem internet para conferir agora.';
+        else if (!cfg) st.textContent = 'Ainda não encontrei o ' + ARQ_NUVEM + ' publicado. Confira o nome do arquivo e espere mais um pouco.';
+        else if (cfg.url === nuvem.url && cfg.chave === nuvem.chave) { st.textContent = '✓ Tudo certo: aparelhos novos já entram só com usuário e senha.'; renderNuvem(); }
+        else st.textContent = 'O ' + ARQ_NUVEM + ' publicado aponta para outra planilha. Substitua o conteúdo pelo de cima.';
+      });
+    });
+  }
   function codigoConexao(cfg) { return 'CFN1.' + btoa(unescape(encodeURIComponent(JSON.stringify({ u: cfg.url, k: cfg.chave })))); }
   function lerCodigoConexao(t) {
     t = String(t || '').trim().replace(/\s+/g, '');
@@ -9192,6 +9449,7 @@
       : nuvem.pendente ? 'Há mudanças esperando para ir para a planilha.'
       : nuvem.sincEm ? '✓ Sincronizado em ' + dataHoraBR(nuvem.sincEm) + '.' : '';
     ac.append(el('button', { type: 'button', class: 'btn primario', 'data-nuvem': 'sincronizar' }, ico('refresh', 'ico-inline'), ' Sincronizar agora'),
+      el('button', { type: 'button', class: 'btn', 'data-nuvem': 'publicar' }, 'Entrar só com usuário e senha'),
       el('button', { type: 'button', class: 'btn', 'data-nuvem': 'codigo' }, 'Conectar outro aparelho'),
       el('button', { type: 'button', class: 'btn link perigo-txt', 'data-nuvem': 'desconectar' }, 'Desconectar'));
   }
@@ -9201,9 +9459,10 @@
     var endereco = /github\.io$/.test(location.hostname) ? location.hostname + location.pathname.replace(/index\.html$/, '') : null;
     var passos = el('ol', { class: 'nuvem-passos' },
       el('li', null, 'Se for ', el('b', null, 'outra pessoa'), ', crie antes um usuário e senha para ela em ', el('b', null, 'Login e senha › + Novo usuário'), '. Se for você em outro aparelho, use o seu', u ? [' (', el('b', null, u.usuario), ')'] : '', '.'),
-      el('li', null, 'Neste aparelho, toque em ', el('b', null, 'Copiar código de conexão'), ' e envie o código para o outro aparelho, por exemplo por WhatsApp.'),
-      el('li', null, 'No outro aparelho, abra ', endereco ? el('b', null, endereco) : 'o app pelo mesmo endereço deste', ' e crie um acesso qualquer. Ele será trocado.'),
-      el('li', null, 'Lá, vá em ', el('b', null, 'Ajustes › Sincronização › Conectar a uma planilha existente'), ', cole o código e entre com o usuário e a senha do passo 1.'),
+      el('li', null, 'Uma vez só: em ', el('b', null, 'Ajustes › Sincronização › Entrar só com usuário e senha'), ', publique o arquivo nuvem.json no GitHub.'),
+      el('li', null, 'No outro aparelho, abra ', endereco ? el('b', null, endereco) : 'o app pelo mesmo endereço deste', ' e, na tela ', el('b', null, 'Entrar'), ', digite o usuário e a senha do passo 1. Pronto.'),
+      el('li', null, 'Sem o nuvem.json, toque em ', el('b', null, 'Tenho um código de conexão'), ' e cole o código copiado aqui (botão abaixo).'),
+      el('li', null, 'Se o outro aparelho já tiver uma conta própria, use lá ', el('b', null, 'Ajustes › Sincronização › Conectar a uma planilha existente'), ': os dados dos dois são juntados.'),
       el('li', null, 'Pronto: os aparelhos passam a ver os mesmos dados. Faça o mesmo no Safari e no computador, se quiser usá-los.'));
     var fim;
     if (ativa) {
@@ -9258,9 +9517,9 @@
     abrirGen('Conectar outro aparelho', [
       { tipo: 'html', conteudo: el('ol', { class: 'nuvem-passos' },
         el('li', null, 'Para outra pessoa, crie antes um usuário e senha para ela em Login e senha › + Novo usuário.'),
-        el('li', null, 'No outro aparelho, abra o app pelo mesmo endereço e crie um acesso qualquer (ele será trocado).'),
-        el('li', null, 'Em Ajustes › Sincronização › ', el('b', null, 'Conectar a uma planilha existente'), ', cole o código abaixo.'),
-        el('li', null, 'Entre com um usuário e senha ', el('b', null, 'deste'), ' app. Para outra pessoa, crie antes um usuário para ela em Login e senha › Gerenciar.')) },
+        el('li', null, 'No outro aparelho, abra o app pelo mesmo endereço. Na tela ', el('b', null, 'Entrar'), ', toque em ', el('b', null, 'Tenho um código de conexão'), ', cole o código abaixo e entre com usuário e senha.'),
+        el('li', null, 'Para não precisar de código: Ajustes › Sincronização › ', el('b', null, 'Entrar só com usuário e senha'), '.'),
+        el('li', null, 'Se o outro aparelho já tiver uma conta própria, use lá Ajustes › Sincronização › ', el('b', null, 'Conectar a uma planilha existente'), ' (os dados são juntados).')) },
       { tipo: 'html', conteudo: el('div', { class: 'nuvem-codigo', id: 'codConexao' }, cod) },
       { tipo: 'html', conteudo: el('div', { class: 'aj-acoes' }, el('button', { type: 'button', class: 'btn primario', id: 'btnCopiarCodigo' }, ico('copy', 'ico-inline'), ' Copiar código')) },
       { tipo: 'html', conteudo: el('div', { class: 'dica-form' }, 'Envie o código só para quem vai usar o app com você (ex.: por mensagem direta). Ele sozinho não abre os dados: ainda é preciso um usuário e senha.') }
@@ -9274,28 +9533,36 @@
       { id: 'usuario', rotulo: 'Usuário (do app que já usa a planilha)', obrig: true, autocomplete: 'username', max: 40 },
       { id: 'senha', rotulo: 'Senha desse usuário', obrig: true, tipo: 'senha', autocomplete: 'current-password' }
     ], function (v) {
-      var cfg; try { cfg = lerCodigoConexao(v.codigo); } catch (e) { return [e.message]; }
-      return chamar(cfg, { acao: 'ler' }).then(function (rem) {
-        if (!rem.env) return ['A planilha ainda está vazia. Use “Configurar planilha” no aparelho principal primeiro.'];
-        var envR = JSON.parse(rem.env), prot;
-        try { prot = protecaoDoEnvelope(envR); } catch (e) { return ['Os dados da planilha não puderam ser lidos.']; }
-        var u = usuarioPorNome(prot, v.usuario);
-        if (!u) return ['Usuário ou senha incorretos.'];
-        return desembrulhar(u, v.senha).then(function (dk) {
-          return decifrarPayload(envR, dk).then(function (remoto) {
-            var local = montarPayload(), junto = juntarPayload(null, local, remoto), val = validarDados(junto);
-            if (!val.ok) return ['Não foi possível juntar os dados (' + val.erro + ').'];
-            aplicarDados(val.dados);
-            protecao = protecaoComoObj(prot); chaveDados = dk; usuarioAtual = u.id;
-            nuvem = { url: cfg.url, chave: cfg.chave, versao: rem.versao, baseEnv: rem.env, pendente: !igualJ(junto, remoto), sincEm: new Date().toISOString(), erro: '' };
-            salvarNuvem(); versaoDados++; agendarCopia(); render();
-            setTimeout(function () { sincronizarNuvem(false); }, 0);
-            avisar('Conectado. A partir de agora, entre com o usuário “' + u.usuario + '”.', 'sucesso');
-            return [];
-          });
-        }, function () { return ['Usuário ou senha incorretos.']; });
-      }, function (e) { return [e.message]; });
+      return conectarPorCodigo(v.codigo, v.usuario, v.senha).then(function (r) {
+        if (r.erros) return r.erros;
+        avisar('Conectado. A partir de agora, entre com o usuário “' + r.usuario + '”.', 'sucesso');
+        return [];
+      });
     }, 'Conectar');
+  }
+  /* Liga este aparelho à planilha com o código de conexão + usuário e senha de quem já usa o app.
+     Os dados deste aparelho (se houver) são juntados aos da planilha. Resolve com { erros } ou { usuario }. */
+  function conectarPorCodigo(codigo, usuario, senha) {
+    var cfg; try { cfg = lerCodigoConexao(codigo); } catch (e) { return Promise.resolve({ erros: [e.message] }); }
+    return chamar(cfg, { acao: 'ler' }).then(function (rem) {
+      if (!rem.env) return { erros: ['A planilha ainda está vazia. No aparelho principal, use “Configurar planilha” primeiro.'] };
+      var envR = JSON.parse(rem.env), prot;
+      try { prot = protecaoDoEnvelope(envR); } catch (e) { return { erros: ['Os dados da planilha não puderam ser lidos.'] }; }
+      var u = usuarioPorNome(prot, usuario);
+      if (!u) return { erros: ['Usuário ou senha incorretos.'] };
+      return desembrulhar(u, senha).then(function (dk) {
+        return decifrarPayload(envR, dk).then(function (remoto) {
+          var local = montarPayload(), junto = juntarPayload(null, local, remoto), val = validarDados(junto);
+          if (!val.ok) return { erros: ['Não foi possível juntar os dados (' + val.erro + ').'] };
+          aplicarDados(val.dados);
+          protecao = protecaoComoObj(prot); chaveDados = dk; usuarioAtual = u.id;
+          nuvem = { url: cfg.url, chave: cfg.chave, versao: rem.versao, baseEnv: rem.env, pendente: !igualJ(junto, remoto), sincEm: new Date().toISOString(), erro: '' };
+          salvarNuvem(); versaoDados++; agendarCopia(); render();
+          setTimeout(function () { sincronizarNuvem(false); }, 0);
+          return { usuario: u.usuario };
+        });
+      }, function () { return { erros: ['Usuário ou senha incorretos.'] }; });
+    }, function (e) { return { erros: [e.message] }; });
   }
   function desconectarNuvem() {
     confirmar('Desconectar da planilha?', ['Os dados continuam neste aparelho e na planilha. Este aparelho só para de sincronizar.'], 'Desconectar').then(function (ok) {
@@ -9312,6 +9579,7 @@
       else if (a === 'conectar') formConectarNuvem();
       else if (a === 'sincronizar') sincronizarNuvem(true);
       else if (a === 'codigo') mostrarCodigoConexao();
+      else if (a === 'publicar') formPublicarNuvem();
       else if (a === 'desconectar') desconectarNuvem();
     });
     document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') sincronizarNuvem(false); });
@@ -9423,8 +9691,51 @@
     try { pular = localStorage.getItem('controle-financeiro-sem-login-inicial') === '1'; } catch (e) { /* ok */ }
     return modoSimples() && moduloAtivo('senha') && CRIPTO_OK && !protecao && !pular;
   }
+  /* Primeiro acesso neste aparelho: primeiro “Entrar” (quem já tem conta em outro aparelho),
+     com “Criar conta” embaixo para quem está começando. */
+  function mostrarPrimeiroAcesso() {
+    $('lgEntrar').hidden = true; $('lgRecuperar').hidden = true; $('lgCriar').hidden = true; $('lgPrimeiro').hidden = false;
+    $('lgMotivo').hidden = true; erroLogin('');
+    $('lgInfo').textContent = 'Primeiro acesso neste aparelho';
+    $('lgNota').hidden = true;
+    $('lp_senha').value = '';
+    var cod = codigoDoEndereco();
+    if (cod) $('lp_codigo').value = cod;
+    $('lpCodigoBox').hidden = !$('lp_codigo').value; $('btnTenhoCodigo').hidden = !$('lpCodigoBox').hidden;
+    $('telaLogin').hidden = false;
+    document.documentElement.classList.add('trancado');
+    setTimeout(function () { focoAuto($('lp_usuario')); }, 0);
+  }
+  /* Link de conexão: …/financas/#conectar=CFN1.… já preenche o código. */
+  function codigoDoEndereco() {
+    var m = /[#&]conectar=([^&]+)/.exec(location.hash || '');
+    if (!m) return '';
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* ok */ }
+    try { return decodeURIComponent(m[1]); } catch (e) { return m[1]; }
+  }
+  function entrarPrimeiroAcesso(ev) {
+    ev.preventDefault();
+    var nome = $('lp_usuario').value.trim(), senha = $('lp_senha').value, cod = $('lp_codigo').value.trim();
+    if (!nome || !senha) { erroLogin('Informe o usuário e a senha.'); return; }
+    erroLogin('');
+    ocupado($('btnEntrarPrimeiro'), true, 'Buscando seus dados…');
+    var achar = cod ? Promise.resolve(cod) : buscarNuvemPublicada().then(function (cfg) {
+      if (cfg === undefined) throw new Error('Sem internet. Para entrar num aparelho novo, o app precisa buscar seus dados na planilha.');
+      if (!cfg) throw new Error('Ainda não há uma conta ligada a este app para entrar com usuário e senha. No aparelho que você já usa: Ajustes › Sincronização › “Entrar só com usuário e senha”. Se é a primeira vez usando o app, toque em “Criar conta”.');
+      return codigoConexao(cfg);
+    });
+    achar.then(function (c) { return conectarPorCodigo(c, nome, senha); }, function (e) { return { erros: [e.message] }; }).then(function (r) {
+      if (r.erros) { erroLogin(r.erros.join(' ')); return; }
+      $('telaLogin').hidden = true; $('lgPrimeiro').hidden = true; $('lgNota').hidden = false;
+      document.documentElement.classList.remove('trancado');
+      primeiraEntrada = false; ultimaAtividade = Date.now();
+      limparFiltros(false); render(); atualizarStatusSalvamento();
+      avisar('Bem-vindo de volta, ' + r.usuario + '. Seus dados foram trazidos da planilha.', 'sucesso');
+      mostrarDicaIOS();
+    }).then(function () { ocupado($('btnEntrarPrimeiro'), false); });
+  }
   function mostrarCriarLogin() {
-    $('lgEntrar').hidden = true; $('lgRecuperar').hidden = true; $('lgCriar').hidden = false;
+    $('lgEntrar').hidden = true; $('lgRecuperar').hidden = true; $('lgCriar').hidden = false; $('lgPrimeiro').hidden = true;
     $('lgMotivo').hidden = true; erroLogin('');
     $('lgInfo').textContent = 'Primeiro acesso';
     $('lgNota').hidden = true;
@@ -9441,7 +9752,7 @@
     erroLogin('');
     ocupado($('btnCriarAcesso'), true, 'Criando…');
     ativarProtecao(v).then(function (r) {
-      $('telaLogin').hidden = true; $('lgCriar').hidden = true; $('lgNota').hidden = false;
+      $('telaLogin').hidden = true; $('lgCriar').hidden = true; $('lgPrimeiro').hidden = true; $('lgNota').hidden = false;
       document.documentElement.classList.remove('trancado');
       ultimaAtividade = Date.now();
       mostrarCodigo(r.cod, true, null);
@@ -9588,7 +9899,7 @@
         limparFiltros(false);
         marcarAlterado(); render();
         avisar((tudo ? 'Tudo apagado. ' : 'Movimentos apagados. ') + 'Clique em “Salvar versão atual” para gerar o arquivo ' + (tudo ? 'limpo para compartilhar.' : 'sem os movimentos.'), 'sucesso', desfazerPara(foto));
-        if (tudo && precisaCriarLogin()) setTimeout(mostrarCriarLogin, 60);
+        if (tudo && precisaCriarLogin()) setTimeout(mostrarPrimeiroAcesso, 60);
         return [];
       }
       if (protecao) return verificarSenhaAtual(v.atual).then(function (ok) { return ok ? executar() : ['Senha incorreta. Nada foi apagado.']; });
@@ -10515,6 +10826,10 @@
     // Senha e dados
     $('lgEntrar').addEventListener('submit', entrar);
     $('lgCriar').addEventListener('submit', criarAcesso);
+    $('lgPrimeiro').addEventListener('submit', entrarPrimeiroAcesso);
+    $('btnTenhoCodigo').addEventListener('click', function () { $('lpCodigoBox').hidden = false; $('btnTenhoCodigo').hidden = true; $('lp_codigo').focus(); });
+    $('btnIrCadastro').addEventListener('click', function () { $('lc_usuario').value = $('lp_usuario').value; $('lc_usuario').dispatchEvent(new Event('input')); mostrarCriarLogin(); });
+    $('btnIrEntrar').addEventListener('click', function () { $('lp_usuario').value = $('lc_usuario').value; $('lp_usuario').dispatchEvent(new Event('input')); mostrarPrimeiroAcesso(); });
     $('lgRecuperar').addEventListener('submit', recuperarSenha);
     $('btnEsqueci').addEventListener('click', function () { erroLogin(''); $('lgEntrar').hidden = true; $('lgRecuperar').hidden = false; $('lg_usuario2').value = $('lg_usuario').value; ($('lg_usuario2').value ? $('lg_codigo') : $('lg_usuario2')).focus(); });
     $('btnVoltarLogin').addEventListener('click', function () { erroLogin(''); $('lgRecuperar').hidden = true; $('lgEntrar').hidden = false; $('lg_senha').focus(); });
@@ -10929,6 +11244,7 @@
   ligarEventosMvp3();
   ligarEventosMetas();
   ligarCoresCartao();
+  ligarOrcSimples();
   ligarCamposMoeda();
   ligarTecladoRolagem();
   ligarVistaCartoes();
@@ -10950,7 +11266,7 @@
     } else mostrarLogin();
   } else {
     primeiraEntrada = false;
-    if (precisaCriarLogin()) mostrarCriarLogin();
+    if (precisaCriarLogin()) mostrarPrimeiroAcesso();
     else { verificarCopiaAoAbrir(); mostrarDicaIOS(); }
   }
 })();
