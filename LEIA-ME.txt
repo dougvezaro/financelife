@@ -6,7 +6,8 @@ O que tem nesta pasta
 - sw.js ................. faz o app abrir sem internet depois da primeira vez
 - icone-*.png ........... ícones para a Tela de Início
 
-Seus dados NÃO ficam nesta pasta nem no site: ficam só no aparelho de quem usa.
+Seus dados NÃO ficam nesta pasta nem no site: ficam no aparelho de quem usa e numa cópia
+cifrada na nuvem do app (Google Apps Script), que só abre com o usuário e a senha.
 
 Para testar agora no computador: abra o index.html com dois cliques (funciona como antes).
 O modo "app" (ícone na Tela de Início, sem internet, salvar sozinho no aparelho) só funciona

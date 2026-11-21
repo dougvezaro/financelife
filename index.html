@@ -1698,23 +1698,13 @@
 
   /* Primeiro acesso: entrar primeiro, criar conta embaixo */
   .lp-dica { margin: -6px 0 14px !important; }
+  .hoje-cal { margin-top: 10px; font-size: .88rem; }
+  .chip-autor { background: var(--primaria-suave); color: var(--texto); }
   .lp-ou { display: flex; align-items: center; gap: 10px; margin: 18px 0 10px; color: var(--suave); font-size: .84rem; }
   .lp-ou::before, .lp-ou::after { content: ''; flex: 1; height: 1px; background: var(--borda-suave); }
   .login-cartao .lp-cadastro { width: 100%; min-height: 46px; }
-  .login-cartao .lp-voltar, .login-cartao .lp-tenho-codigo { display: block; margin: 12px auto 0; }
+  .login-cartao .lp-voltar { display: block; margin: 12px auto 0; }
 
-  /* Google Drive */
-  .lp-google { margin-bottom: 6px; }
-  .login-cartao .lp-btn-google { width: 100%; min-height: 48px; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 600; background: #FFFFFF; color: #1F1F1F; border: 1px solid #DADCE0; }
-  .login-cartao .lp-btn-google:hover { background: #F7F8F8; }
-  .g-logo { width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-family: Arial, sans-serif; font-size: .95rem;
-    color: #FFFFFF; background: conic-gradient(#EA4335 0 25%, #FBBC05 0 50%, #34A853 0 75%, #4285F4 0); }
-  .lp-google-ok { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: var(--raio-md); background: var(--receita-suave); color: var(--texto); font-size: .88rem; margin-bottom: 12px; }
-  .lp-google-ok > span:nth-child(2) { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .lp-g-check { color: var(--receita); font-weight: 800; }
-  .lp-google-ok .btn.link { padding: 2px 6px; min-height: 0; font-size: .84rem; }
-  .nuvem-outras { margin-top: 10px; }
-  .nuvem-outras > summary { cursor: pointer; color: var(--suave); font-size: .86rem; padding: 6px 0; }
 </style>
 </head>
 <body>
@@ -1756,23 +1746,13 @@
     </form>
     <form id="lgPrimeiro" novalidate hidden>
       <h2>Entrar</h2>
-      <div id="lpGoogle" class="lp-google" hidden>
-       <p class="uso" id="lpGoogleTxt">Já usa o app em outro aparelho? Entre com a sua conta Google para buscar os seus dados.</p>
-       <button type="button" class="btn lp-btn-google" id="btnEntrarGoogle"><span class="g-logo" aria-hidden="true">G</span> Entrar com Google</button>
-       <div class="lp-google-ok" id="lpGoogleOk" hidden><span class="lp-g-check" aria-hidden="true">✓</span><span id="lpGoogleConta">Google conectado</span><button type="button" class="btn link" id="btnTrocarGoogle">trocar</button></div>
-      </div>
       <div id="lpCampos">
-      <p class="uso" id="lpTxtCampos">Já usa o app em outro aparelho? Entre com o seu usuário e senha.</p>
+      <p class="uso" id="lpTxtCampos">Já usa o app? Entre com o seu usuário e senha: seus dados vêm da nuvem.</p>
       <input type="text" class="conta-chaveiro" data-conta-de="lp_usuario" autocomplete="username" tabindex="-1" aria-hidden="true">
       <label>Usuário<input type="text" id="lp_usuario" autocomplete="off" data-1p-ignore autocapitalize="none" spellcheck="false" maxlength="40"></label>
       <label>Senha<input type="password" id="lp_senha" autocomplete="current-password" maxlength="200"></label>
-      <div id="lpCodigoBox" hidden>
-       <label>Código de conexão<input type="text" id="lp_codigo" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="2000" placeholder="CFN1.…"></label>
-       <p class="uso lc-dica lp-dica">Pegue no aparelho que já usa o app: <b>Ajustes › Sincronização › Conectar outro aparelho</b>.</p>
-      </div>
       <button type="submit" class="btn primario" id="btnEntrarPrimeiro">Entrar</button>
       </div>
-      <button type="button" class="btn link lp-tenho-codigo" id="btnTenhoCodigo">Tenho um código de conexão</button>
       <div class="lp-ou"><span>Primeira vez usando o app?</span></div>
       <button type="button" class="btn lp-cadastro" id="btnIrCadastro">Criar conta</button>
     </form>
@@ -1979,7 +1959,8 @@
   <section class="cards" id="hojeCards" aria-label="Resumo do mês" data-modulo="analise"></section>
   <div class="hoje-grade">
    <section class="bloco hoje-bloco" data-modulo="obrigacoes"><div class="hoje-cab"><h3>Vence nos próximos 7 dias</h3><button type="button" class="btn link" data-ir-aba="abaObr" data-modulo="contas">Ver o mês</button><button type="button" class="btn link so-simples" data-ir-aba="abaRec">Contas fixas</button></div>
-    <div id="hojeVence"></div></section>
+    <div id="hojeVence"></div>
+    <button type="button" class="btn link hoje-cal" id="btnLembretesCal"><i class="ico-ph" data-ico="bell"></i> Lembretes no calendário do celular</button></section>
    <section class="bloco hoje-bloco so-simples" data-modulo="cartoes" id="hojeFaturasBloco"><div class="hoje-cab"><h3>Faturas dos cartões</h3><button type="button" class="btn link" data-ir-aba="abaCartoes">Ver cartões</button></div>
     <div id="hojeFaturas"></div></section>
    <section class="bloco hoje-bloco hoje-orcs so-simples" id="hojeOrcSBloco"><div class="hoje-cab"><h3>Orçamento do mês</h3><button type="button" class="btn link" data-orc-s="editar" id="btnOrcSEditar">Definir limites</button></div>
@@ -2034,6 +2015,7 @@
         </select>
       </label>
       <label>Categoria <select id="fCategoria"></select></label>
+      <label id="fAutorBox" hidden>Lançado por <select id="fAutor"></select></label>
       <label data-modulo="detalhes">Responsável <select id="fResponsavel"></select></label>
       <label data-modulo="detalhes">Fonte de recurso <select id="fFonte"></select></label>
       <label data-modulo="obrigacoes">Status <select id="fStatus"></select></label>
@@ -2489,7 +2471,7 @@
    <div class="aj-acoes"><button type="button" class="btn primario" id="ajSenhaBtn">Criar login</button></div>
   </section>
   <section class="painel aj-bloco so-simples" id="ajNuvem">
-   <h3><i class="ico-ph" data-ico="cloud"></i> <span id="nuvemTitulo">Sincronização (Planilha Google)</span></h3>
+   <h3><i class="ico-ph" data-ico="cloud"></i> <span id="nuvemTitulo">Sincronização na nuvem</span></h3>
    <p class="uso" id="nuvemTexto"></p>
    <p class="nuvem-status" id="nuvemStatus" hidden></p>
    <div class="aj-acoes" id="nuvemAcoes"></div>
@@ -3015,6 +2997,7 @@
       criadoEm: typeof l.criadoEm === 'string' ? l.criadoEm : new Date().toISOString(),
       atualizadoEm: typeof l.atualizadoEm === 'string' ? l.atualizadoEm : new Date().toISOString()
     };
+    if (l.criadoPor) limpo.criadoPor = texto(l.criadoPor, 60); // id do usuário do app que lançou (opcional)
     if (limpo.classificacao && !CLASSIFICACOES[limpo.classificacao]) erros.classificacao = 'Classificação inválida.';
     if (limpo.natureza && !NATUREZAS[limpo.natureza]) erros.natureza = 'Natureza inválida.';
     if (limpo.tipo !== 'despesa') limpo.natureza = '';
@@ -4022,6 +4005,10 @@
     };
   }
   function usuarioPorNome(prot, nome) { var n = normalizar(nome); return (prot || protecao).usuarios.filter(function (u) { return normalizar(u.usuario) === n; })[0] || null; }
+  /* Uso em dupla: quem lançou. Só aparece quando o app tem mais de um usuário. */
+  function variosUsuarios() { return !!(protecao && protecao.usuarios.length > 1); }
+  function nomeAutor(id) { var u = id ? usuarioPorId(id) : null; return u ? u.usuario : ''; }
+  function marcarAutor(l) { if (l && !l.criadoPor && protecao && usuarioAtual && usuarioPorId(usuarioAtual)) l.criadoPor = usuarioAtual; return l; }
   function usuarioPorId(id) { return protecao ? protecao.usuarios.filter(function (u) { return u.id === id; })[0] || null : null; }
   /* Código de recuperação: 20 letras/números sem os que confundem (0/O, 1/I/L). */
   var ALFABETO_COD = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
@@ -4081,8 +4068,8 @@
       render();
       atualizarStatusSalvamento();
       if (primeiraEntrada) { primeiraEntrada = false; verificarCopiaAoAbrir(); mostrarDicaIOS(); }
-      if (lerArmaz(CHAVE_GOOGLE_PENDENTE) === 'conectar' && tokenGoogle()) setTimeout(finalizarConexaoGoogle, 300);
-      else if (!nuvemAtiva() && nuvemPadrao()) setTimeout(conectarNuvemPadrao, 300);
+      avisoVencimentosAoEntrar();
+      if (!nuvemAtiva() && nuvemPadrao()) setTimeout(conectarNuvemPadrao, 300);
       else setTimeout(function () { sincronizarNuvem(false); }, 300);
     });
   }
@@ -4173,7 +4160,8 @@
       categoria: $('fCategoria').value,
       responsavel: $('fResponsavel').value,
       fonte: $('fFonte').value,
-      status: $('fStatus').value
+      status: $('fStatus').value,
+      autor: $('fAutor').value
     };
   }
   function filtrosAtivos(f) {
@@ -4196,6 +4184,7 @@
       if (f.responsavel && l.responsavel !== f.responsavel) return false;
       if (f.fonte && l.fonte !== f.fonte) return false;
       if (f.status && l.status !== f.status) return false;
+      if (f.autor && (l.criadoPor || '') !== (f.autor === '-' ? '' : f.autor)) return false;
       return true;
     });
   }
@@ -4228,6 +4217,14 @@
     preencherSelect($('fResponsavel'), opcoesComUso(estado.responsaveis, 'responsavel'), 'Todos');
     preencherSelect($('fFonte'), opcoesComUso(estado.fontes, 'fonte'), 'Todas');
     preencherSelect($('fStatus'), TODOS_STATUS, 'Todos');
+    var sa = $('fAutor'), atual = sa.value, varios = variosUsuarios();
+    $('fAutorBox').hidden = !varios;
+    sa.replaceChildren(el('option', { value: '' }, 'Todos'));
+    if (varios) {
+      protecao.usuarios.forEach(function (u) { sa.append(el('option', { value: u.id }, u.usuario)); });
+      sa.append(el('option', { value: '-' }, 'Sem registro (antigos)'));
+    }
+    sa.value = Array.prototype.some.call(sa.options, function (o) { return o.value === atual; }) ? atual : '';
   }
 
   /* ---------- Renderização ---------- */
@@ -4288,6 +4285,7 @@
       });
       if (l.responsavel) chips.push(el('span', { class: 'chip chip-mudo' }, 'Resp.: ' + l.responsavel));
       if (l.fonte) chips.push(el('span', { class: 'chip chip-mudo' }, 'Fonte: ' + l.fonte));
+      if (variosUsuarios() && nomeAutor(l.criadoPor)) chips.push(el('span', { class: 'chip chip-autor' }, 'por ' + nomeAutor(l.criadoPor)));
       var infoMes = usaMesVisao() ? infoCartaoNoMes(l, mesVisao) : null;
       var parcMes = infoMes && infoMes.item && infoMes.item.n ? infoMes.item : null;
       var tr = el('tr', { class: (l.status === 'Cancelado' ? 'cancelado ' : '') + 'linha-' + l.tipo + (usaCaixaPagLanc(l) && l.status === 'Pendente' ? ' a-pagar' : ''), 'data-id': l.id, 'data-tipo': l.tipo },
@@ -4315,7 +4313,7 @@
 
   function renderInfo(lista) {
     var f = lerFiltros();
-    var nAtivos = ['fTipo', 'fCategoria', 'fStatus'].filter(function (id) { return $(id).value !== ''; }).length;
+    var nAtivos = ['fTipo', 'fCategoria', 'fStatus', 'fAutor'].filter(function (id) { return $(id).value !== ''; }).length;
     if (nAtivos) $('btnFiltros').setAttribute('data-ativos', String(nAtivos)); else $('btnFiltros').removeAttribute('data-ativos');
     var total = estado.lancamentos.length;
     var info = $('infoFiltro');
@@ -4991,9 +4989,10 @@
       if (original) {
         var idx = estado.lancamentos.indexOf(original);
         if (idx < 0) { avisar('O lançamento não existe mais.', 'erro'); return null; }
+        if (original.criadoPor) novo.criadoPor = original.criadoPor;
         estado.lancamentos[idx] = novo; // substitui o registro: as parcelas são recalculadas, nunca duplicadas
       } else {
-        estado.lancamentos.push(novo);
+        estado.lancamentos.push(marcarAutor(novo));
       }
       if (ocVincular) vincularOcorrencia(ocVincular, novo.id, true);
       var msgRec = planoRec ? aplicarPlanoRec(planoRec, novo.id) : '';
@@ -5890,7 +5889,7 @@
   }
 
   function limparFiltros(redesenhar) {
-    ['fBusca', 'fDataIni', 'fDataFim', 'fTipo', 'fCategoria', 'fResponsavel', 'fFonte', 'fStatus']
+    ['fBusca', 'fDataIni', 'fDataFim', 'fTipo', 'fCategoria', 'fResponsavel', 'fFonte', 'fStatus', 'fAutor']
       .forEach(function (id) { $(id).value = ''; });
     if (redesenhar !== false) render();
   }
@@ -6337,7 +6336,7 @@
         var rp = validarPagamento({ tipo: l.tipo, lancamentoId: l.id, contaId: i.contaPag.id, valor: l.valor, data: l.data, observacoes: 'Importado de ' + impEstado.nome, criadoEm: agora });
         if (rp.ok) { estado.pagamentos.push(rp.limpo); l.controlePagamento = true; pagos++; }
       }
-      estado.lancamentos.push(l);
+      estado.lancamentos.push(marcarAutor(l));
       ids.push(l.id);
       if (i.oc) {
         var o = ocorrencia(i.oc.regra.id, i.oc.competencia);
@@ -7764,7 +7763,7 @@
      fica escondido (os dados continuam no arquivo e voltam a aparecer quando o módulo for ligado).
      Para ver tudo (testes ou uso avançado): localStorage 'controle-financeiro-nivel' = 7. */
   /* Versão do app: atualize a cada entrega (o sw.js usa o mesmo número no nome do cache). */
-  var VERSAO_APP = { numero: '31', data: '2026-11-19', novidade: 'nuvem dentro do app: em qualquer aparelho, só usuário e senha' };
+  var VERSAO_APP = { numero: '32', data: '2026-11-21', novidade: 'aviso de contas ao entrar, lembretes no calendário e quem lançou cada gasto' };
   var CHAVE_VERSAO_VISTA = 'controle-financeiro-versao-vista';
   function textoVersao() { return 'Versão ' + VERSAO_APP.numero + ' · atualizada em ' + dataBR(VERSAO_APP.data) + '.'; }
   /* Procurar atualização: confere se há internet, apaga só a cópia do app (código e ícones; os dados
@@ -7904,6 +7903,7 @@
     scissors: '<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.1 15.9M14.5 14.5 20 20M8.1 8.1 12 12"/>',
     users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
     shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+    bell: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
     dumbbell: '<path d="M6 7v10M3 9v6M18 7v10M21 9v6M6 12h12"/>',
     briefcase: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><path d="M2 13h20"/>',
     wrench: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9z"/>',
@@ -8015,7 +8015,7 @@
   ICO.food = ICO.utensils; ICO.resto = ICO.utensils;
   var EMOJI_ICONE = { food: '🍽️', resto: '🍔', bag: '🛍️', utensils: '🍽️', users: '🧸', droplet: '💧', cart: '🛒', home: '🏠', car: '🚗', health: '💊', book: '📚',
     ticket: '🎉', plane: '✈️', shirt: '👕', zap: '⚡', phone: '📱', tv: '📺', heart: '🐾', gift: '🎁', file: '🧾', scissors: '💇',
-    shield: '🛡️', dumbbell: '🏋️', briefcase: '💼', wrench: '🧰', trending: '📈', 'rotate-ccw': '↩️', key: '🔑', tag: '🏷️',
+    shield: '🛡️', bell: '🔔', dumbbell: '🏋️', briefcase: '💼', wrench: '🧰', trending: '📈', 'rotate-ccw': '↩️', key: '🔑', tag: '🏷️',
     award: '🏆', card: '💳', landmark: '🏦', package: '📦', coins: '💰' };
   function emojiCategoria(nome, tipo) {
     return el('span', { class: 'emoji-cat' }, EMOJI_ICONE[nomeIconeCategoria(nome, tipo)] || (tipo === 'receita' ? '💰' : '🏷️'));
@@ -9227,18 +9227,18 @@
   }
 
   /* =====================================================================
-     Sincronização pela Planilha Google (Apps Script)
-     - A planilha guarda só o arquivo CIFRADO (o mesmo envelope do backup protegido): o Google não lê os dados.
+     Sincronização na nuvem do app (Google Apps Script)
+     - A nuvem guarda só o arquivo CIFRADO (o mesmo envelope do backup protegido): o Google não lê os dados.
      - Cada gravação aumenta a "versão" da nuvem. Se outro aparelho gravou antes, o app baixa, junta
        (item a item, pelo id; o que só um lado mudou prevalece; se os dois mudaram, vale o mais recente)
        e grava de novo.
-     - O endereço do script e a chave de acesso ficam neste aparelho. O "código de conexão" leva os dois
-       para outro aparelho; quem entra ainda precisa de um usuário e senha do app.
+     - O endereço do script e a chave de acesso ficam dentro do app (NUVEM_PADRAO): em qualquer aparelho
+       basta o usuário e a senha.
      ===================================================================== */
   var CHAVE_NUVEM = 'controle-financeiro-nuvem';
   var nuvem = lerArmaz(CHAVE_NUVEM); // { url, chave, versao, baseEnv, pendente, sincEm, erro }
   var nuvemOcupada = false, timerNuvem = null, nuvemDeNovo = false;
-  function nuvemAtiva() { return !!(nuvem && (nuvem.tipo === 'gdrive' || (nuvem.url && nuvem.chave))); }
+  function nuvemAtiva() { return !!(nuvem && nuvem.url && nuvem.chave); }
   /* Nuvem do app (como no Crefi360): o endereço do servidor fica dentro do app. Assim nenhum aparelho
      precisa de código, chave nem planilha — só usuário e senha. Os dados vão sempre cifrados. */
   var NUVEM_PADRAO = { url: 'https://script.google.com/macros/s/AKfycbwBX7-GKHtcszWj3qyTbi2s0doa5K-01KtWfPPeZLdrizxfogT-mf0nZ9sdOlP3Jerbig/exec', chave: '4c362d66678a409b9b5cd4fc68898ff1357852ab' };
@@ -9248,8 +9248,10 @@
     var c = o && o.url ? o : NUVEM_PADRAO;
     return c && c.url && c.chave && /^https?:$/.test(location.protocol) ? { url: c.url, chave: c.chave } : null;
   }
-  function usaNuvemPadrao() { var p = nuvemPadrao(); return !!p && (!nuvemAtiva() || (nuvem.url === p.url && nuvem.chave === p.chave)); }
-  function chamarNuvem(cfg, corpo) { return cfg && cfg.tipo === 'gdrive' ? chamarGoogle(cfg, corpo) : chamar(cfg, corpo); }
+  /* Aparelho ligado a uma nuvem antiga (Google Drive ou planilha manual, versões até a 31): solta,
+     para ligar sozinho à nuvem do app no próximo login. Os dados locais continuam. */
+  (function () { var p = nuvemPadrao(); if (nuvem && (!p || nuvem.tipo || nuvem.url !== p.url || nuvem.chave !== p.chave)) { nuvem = null; apagarArmaz(CHAVE_NUVEM); } })();
+  ['controle-financeiro-google', 'controle-financeiro-google-estado', 'controle-financeiro-google-pendente', 'controle-financeiro-google-tentou', 'controle-financeiro-google-cliente'].forEach(function (k) { apagarArmaz(k); });
   function salvarNuvem() { if (nuvem) gravarArmaz(CHAVE_NUVEM, nuvem); else apagarArmaz(CHAVE_NUVEM); }
   function nuvemAlterou() {
     if (!nuvemAtiva()) return;
@@ -9263,8 +9265,8 @@
       var ctrl = window.AbortController ? new AbortController() : null, t = ctrl ? setTimeout(function () { ctrl.abort(); }, 30000) : null;
       fetch(cfg.url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(Object.assign({ chave: cfg.chave }, corpo)),
         redirect: 'follow', cache: 'no-store', signal: ctrl ? ctrl.signal : undefined })
-        .then(function (r) { if (!r.ok) throw new Error('A planilha respondeu com erro (' + r.status + ').'); return r.text(); },
-          function (e) { throw new Error(e && e.name === 'AbortError' ? 'A planilha demorou demais para responder.' : 'Sem conexão com a planilha.'); })
+        .then(function (r) { if (!r.ok) throw new Error('A nuvem respondeu com erro (' + r.status + ').'); return r.text(); },
+          function (e) { throw new Error(e && e.name === 'AbortError' ? 'A nuvem demorou demais para responder.' : 'Sem conexão com a nuvem.'); })
         .then(function (txt) {
           var j; try { j = JSON.parse(txt); } catch (e) { throw new Error('Resposta inesperada. Confira se o endereço é o do “App da Web” e se o acesso está como “Qualquer pessoa”.'); }
           if (j.erro) throw new Error(String(j.erro).indexOf('acesso negado') === 0 ? 'A chave de acesso não confere com a do script.' : j.erro);
@@ -9335,185 +9337,6 @@
   }
   function protecaoComoObj(p) { return { usuarios: p.usuarios.map(function (u) { return Object.assign({}, u); }), recuperacao: Object.assign({}, p.recuperacao) }; }
 
-
-  /* ================= Google Drive =================
-     Os dados vão para um arquivo no SEU Google Drive, sempre cifrados (o Google não lê).
-     Login do Google por redirecionamento (funciona no app da tela inicial do iPhone). A permissão
-     é só “arquivos criados por este app” (drive.file): o app não vê mais nada do seu Drive.
-     O acesso do Google dura ~1 hora; ao abrir o app depois disso, ele renova sozinho num pulo rápido. */
-  var GOOGLE_CLIENT_ID = '';   // ID do cliente OAuth (público). Preenchido na publicação.
-  var CHAVE_GOOGLE = 'controle-financeiro-google', CHAVE_GOOGLE_ESTADO = 'controle-financeiro-google-estado',
-    CHAVE_GOOGLE_PENDENTE = 'controle-financeiro-google-pendente', CHAVE_GOOGLE_TENTOU = 'controle-financeiro-google-tentou';
-  var ESCOPO_GOOGLE = 'https://www.googleapis.com/auth/drive.file email';
-  var NOME_ARQ_DRIVE = 'Controle Financeiro – dados (cifrado).json';
-  function idClienteGoogle() {
-    var t = null; try { t = localStorage.getItem('controle-financeiro-google-cliente'); } catch (e) { /* ok */ }
-    return t || GOOGLE_CLIENT_ID;
-  }
-  function googleDisponivel() { return !!idClienteGoogle() && /^https?:$/.test(location.protocol) && !!window.fetch; }
-  function tokenGoogle() { var t = lerArmaz(CHAVE_GOOGLE); return t && t.token && t.exp > Date.now() + 60000 ? t : null; }
-  function emailGoogle() { var t = lerArmaz(CHAVE_GOOGLE); return (t && t.email) || (nuvem && nuvem.email) || ''; }
-  function nuvemGoogle() { return !!(nuvem && nuvem.tipo === 'gdrive'); }
-  function enderecoRetorno() { return location.origin + location.pathname; }
-  function irParaGoogle(motivo, silencioso) {
-    var st = b64(aleatorio(18)).replace(/[^A-Za-z0-9]/g, '');
-    gravarArmaz(CHAVE_GOOGLE_ESTADO, { st: st, motivo: motivo, em: Date.now() });
-    var p = { client_id: idClienteGoogle(), redirect_uri: enderecoRetorno(), response_type: 'token', scope: ESCOPO_GOOGLE,
-      include_granted_scopes: 'true', state: st, prompt: silencioso ? 'none' : 'select_account' };
-    var em = emailGoogle(); if (em) p.login_hint = em;
-    location.assign('https://accounts.google.com/o/oauth2/v2/auth?' + Object.keys(p).map(function (k) { return k + '=' + encodeURIComponent(p[k]); }).join('&'));
-  }
-  /* Volta do Google: o token vem no endereço (#access_token=…). Guarda e limpa o endereço. */
-  var retornoGoogle = null;
-  function processarRetornoGoogle() {
-    var h = location.hash || '';
-    if (!/[#&](access_token|error)=/.test(h) || !/[#&]state=/.test(h)) return null;
-    var q = {}; h.slice(1).split('&').forEach(function (par) { var i = par.indexOf('='); if (i > 0) q[decodeURIComponent(par.slice(0, i))] = decodeURIComponent(par.slice(i + 1).replace(/\+/g, ' ')); });
-    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* ok */ }
-    var est = lerArmaz(CHAVE_GOOGLE_ESTADO); apagarArmaz(CHAVE_GOOGLE_ESTADO);
-    if (!est || est.st !== q.state) return { erro: 'A resposta do Google não confere. Tente de novo.' };
-    if (q.error) return { erro: q.error, motivo: est.motivo };
-    var antigo = lerArmaz(CHAVE_GOOGLE) || {};
-    gravarArmaz(CHAVE_GOOGLE, { token: q.access_token, exp: Date.now() + (Number(q.expires_in) || 3600) * 1000, email: antigo.email || '' });
-    return { ok: true, motivo: est.motivo };
-  }
-  /* Ao abrir: se o app usa o Drive e o acesso venceu, renova sem pedir nada (uma vez a cada 2 min, no máximo). */
-  function renovarGoogleAoAbrir() {
-    if (!nuvemGoogle() || !googleDisponivel() || tokenGoogle() || !navigator.onLine) return false;
-    var ult = Number(lerArmaz(CHAVE_GOOGLE_TENTOU) || 0);
-    if (Date.now() - ult < 120000) return false;
-    gravarArmaz(CHAVE_GOOGLE_TENTOU, Date.now());
-    irParaGoogle('renovar', true);
-    return true;
-  }
-  function erroGoogle(r) {
-    var e = new Error(r === 401 || r === 403 ? 'GOOGLE_EXPIROU' : 'O Google Drive respondeu com erro (' + r + ').');
-    e.status = r; return e;
-  }
-  function chamarDrive(metodo, url, corpo, tipo) {
-    var t = tokenGoogle();
-    if (!t) return Promise.reject(new Error('GOOGLE_EXPIROU'));
-    var cab = { Authorization: 'Bearer ' + t.token };
-    if (tipo) cab['Content-Type'] = tipo;
-    return fetch(url, { method: metodo, headers: cab, body: corpo, cache: 'no-store' }).then(function (r) {
-      if (r.status === 404) return null;
-      if (!r.ok) throw erroGoogle(r.status);
-      var ct = r.headers.get('Content-Type') || '';
-      return ct.indexOf('json') >= 0 ? r.json() : r.text();
-    }, function () { throw new Error('Sem conexão com o Google Drive.'); });
-  }
-  function emailDoGoogle() {
-    return chamarDrive('GET', 'https://www.googleapis.com/oauth2/v3/userinfo').then(function (u) {
-      var t = lerArmaz(CHAVE_GOOGLE); if (t && u && u.email) { t.email = u.email; gravarArmaz(CHAVE_GOOGLE, t); }
-      return u && u.email || '';
-    }, function () { return ''; });
-  }
-  function acharArquivoDrive() {
-    var q = "appProperties has { key='app' and value='controle-financeiro' } and trashed=false";
-    return chamarDrive('GET', 'https://www.googleapis.com/drive/v3/files?spaces=drive&pageSize=10&orderBy=modifiedTime%20desc&fields=files(id%2Cname%2CmodifiedTime)&q=' + encodeURIComponent(q))
-      .then(function (r) { return r && r.files && r.files.length ? r.files[0] : null; });
-  }
-  function lerArquivoDrive(id) {
-    return chamarDrive('GET', 'https://www.googleapis.com/drive/v3/files/' + encodeURIComponent(id) + '?alt=media').then(function (t) {
-      if (t === null) return null;
-      var j = typeof t === 'string' ? (t ? JSON.parse(t) : {}) : t;
-      return { versao: Number(j.versao) || 0, env: j.env || null };
-    });
-  }
-  function conteudoDrive(versao, env) {
-    return JSON.stringify({ app: 'controle-financeiro', aviso: 'Dados do Controle Financeiro, cifrados. Não edite este arquivo.', versao: versao, env: env, em: new Date().toISOString() });
-  }
-  function criarArquivoDrive(versao, env) {
-    var limite = 'cf' + Date.now(), meta = { name: NOME_ARQ_DRIVE, mimeType: 'application/json', appProperties: { app: 'controle-financeiro', tipo: 'dados' },
-      description: 'Dados do app Controle Financeiro, cifrados (só abrem com o usuário e a senha do app). Não edite nem apague.' };
-    var corpo = '--' + limite + '\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n' + JSON.stringify(meta) + '\r\n--' + limite +
-      '\r\nContent-Type: application/json\r\n\r\n' + conteudoDrive(versao, env) + '\r\n--' + limite + '--';
-    return chamarDrive('POST', 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id', corpo, 'multipart/related; boundary=' + limite)
-      .then(function (r) { return r.id; });
-  }
-  function gravarArquivoDrive(id, versao, env) {
-    return chamarDrive('PATCH', 'https://www.googleapis.com/upload/drive/v3/files/' + encodeURIComponent(id) + '?uploadType=media&fields=id', conteudoDrive(versao, env), 'application/json');
-  }
-  /* Mesmo “contrato” do script da planilha (ler / gravar com versão), para o resto da sincronização não mudar. */
-  function chamarGoogle(cfg, corpo) {
-    function ler() {
-      if (!cfg.fileId) return acharArquivoDrive().then(function (f) {
-        if (!f) return { versao: 0, env: null };
-        cfg.fileId = f.id; if (cfg === nuvem) salvarNuvem();
-        return lerArquivoDrive(f.id);
-      });
-      return lerArquivoDrive(cfg.fileId).then(function (r) {
-        if (r) return r;
-        cfg.fileId = null; if (cfg === nuvem) salvarNuvem(); // arquivo apagado: será criado de novo
-        return { versao: 0, env: null };
-      });
-    }
-    if (corpo.acao === 'ler') return ler().then(function (r) {
-      if (corpo.desde !== undefined && Number(corpo.desde) === r.versao && r.versao > 0) return { versao: r.versao, igual: true };
-      return r;
-    });
-    if (corpo.acao === 'gravar') return ler().then(function (r) {
-      if (Number(corpo.base) !== r.versao) return { conflito: true, versao: r.versao };
-      var nova = r.versao + 1;
-      var p = cfg.fileId ? gravarArquivoDrive(cfg.fileId, nova, corpo.env) : criarArquivoDrive(nova, corpo.env).then(function (id) { cfg.fileId = id; if (cfg === nuvem) salvarNuvem(); });
-      return p.then(function () { return { ok: true, versao: nova }; });
-    });
-    return Promise.reject(new Error('Ação desconhecida.'));
-  }
-  function textoErroGoogle(e) {
-    return e && e.message === 'GOOGLE_EXPIROU' ? 'O acesso ao Google Drive venceu (ele dura cerca de 1 hora). É renovado sozinho quando você abre o app de novo.' : (e && e.message) || 'Falha ao falar com o Google Drive.';
-  }
-  /* Liga este aparelho (já com login no app) ao Drive: cria o arquivo ou junta com o que já está lá. */
-  function finalizarConexaoGoogle() {
-    apagarArmaz(CHAVE_GOOGLE_PENDENTE);
-    if (!tokenGoogle() || !chaveDados) return;
-    renderNuvem('Conectando ao Google Drive…');
-    emailDoGoogle().then(function (email) {
-      return acharArquivoDrive().then(function (f) {
-        if (!f) {
-          nuvem = { tipo: 'gdrive', fileId: null, email: email, versao: 0, baseEnv: null, pendente: true, sincEm: null, erro: '' };
-          salvarNuvem();
-          return sincronizarNuvem(false).then(function () { if (!nuvem.erro) avisar('Pronto: seus dados agora também ficam no seu Google Drive (cifrados).', 'sucesso'); });
-        }
-        return lerArquivoDrive(f.id).then(function (r) {
-          var ok = r && r.env ? decifrarPayload(JSON.parse(r.env), chaveDados).then(function () { return true; }, function () { return false; }) : Promise.resolve(true);
-          return ok.then(function (mesmaConta) {
-            if (mesmaConta) {
-              nuvem = { tipo: 'gdrive', fileId: f.id, email: email, versao: 0, baseEnv: null, pendente: true, sincEm: null, erro: '' };
-              salvarNuvem();
-              return sincronizarNuvem(false).then(function () { if (!nuvem.erro) avisar('Conectado ao seu Google Drive. Os dados foram juntados.', 'sucesso'); });
-            }
-            formEntrarDadosGoogle(f.id, email);
-          });
-        });
-      });
-    }).catch(function (e) { avisar(textoErroGoogle(e), 'erro'); renderNuvem(); });
-  }
-  /* Já existem dados no Drive de outra conta do app: entra com o usuário e a senha de lá e junta tudo. */
-  function formEntrarDadosGoogle(fileId, email) {
-    abrirGen('Já existem dados no seu Google Drive', [
-      { tipo: 'html', conteudo: el('div', { class: 'dica-form' }, 'O seu Google Drive' + (email ? ' (' + email + ')' : '') + ' já tem dados deste app, criados com outro usuário. Entre com o usuário e a senha usados lá: os dados dos dois são juntados e você passa a usar esse acesso.') },
-      { id: 'usuario', rotulo: 'Usuário', obrig: true, max: 40, autocomplete: 'off' },
-      { id: 'senha', rotulo: 'Senha', tipo: 'password', obrig: true, max: 200, autocomplete: 'current-password' }
-    ], function (v) {
-      return conectarNuvemCfg({ tipo: 'gdrive', fileId: fileId, email: email }, v.usuario, v.senha).then(function (r) {
-        if (r.erros) return r.erros;
-        avisar('Conectado ao Google Drive. A partir de agora, entre com o usuário “' + r.usuario + '”.', 'sucesso');
-        return [];
-      });
-    }, 'Entrar e juntar');
-  }
-  function conectarGoogleAgora() {
-    confirmar('Salvar no Google Drive', ['Você vai para a página do Google, escolhe a sua conta e volta para o app.',
-      'Depois, entre de novo com o seu usuário e senha do app para terminar.',
-      'O app só pode ver os arquivos que ele mesmo criar no seu Drive.'], 'Continuar').then(function (ok) {
-      if (!ok) return;
-      gravarArmaz(CHAVE_GOOGLE_PENDENTE, 'conectar');
-      if (timerCopia) gravarCopia();
-      irParaGoogle('conectar', false);
-    });
-  }
-
   /* Liga este aparelho (já com login) à nuvem do app: envia os dados, ou junta com o que já está lá. */
   var conectandoPadrao = false;
   function conectarNuvemPadrao() {
@@ -9564,7 +9387,7 @@
       var pendenteAntes = versaoDados;
       return montarEnvelope({}, dk).then(function (r) {
         var envTxt = JSON.stringify(r.env);
-        return provaEscrita().then(function (prova) { return chamarNuvem(nuvem, { acao: 'gravar', base: base, env: envTxt, aparelho: (navigator.platform || ''), prova: prova }); }).then(function (resp) {
+        return provaEscrita().then(function (prova) { return chamar(nuvem, { acao: 'gravar', base: base, env: envTxt, aparelho: (navigator.platform || ''), prova: prova }); }).then(function (resp) {
           if (resp.conflito) { if (++tentativas > 3) throw new Error('Outro aparelho está gravando ao mesmo tempo. Tente de novo.'); return ciclo(); }
           nuvem.versao = resp.versao; nuvem.baseEnv = envTxt; nuvem.sincEm = new Date().toISOString();
           if (versaoDados === pendenteAntes) nuvem.pendente = false;
@@ -9573,16 +9396,16 @@
       });
     }
     function ciclo() {
-      return chamarNuvem(nuvem, { acao: 'ler', desde: nuvem.versao || 0 }).then(function (rem) {
+      return chamar(nuvem, { acao: 'ler', desde: nuvem.versao || 0 }).then(function (rem) {
         if (rem.igual || (!rem.env && !rem.versao)) {
           // nada novo lá: envia se há mudança aqui (ou se a nuvem está vazia)
           if (nuvem.pendente || !rem.versao) return enviar(rem.versao || 0);
           nuvem.sincEm = new Date().toISOString(); salvarNuvem(); return;
         }
-        if (!rem.env) throw new Error(nuvemGoogle() ? 'O Google Drive não devolveu os dados.' : 'A planilha não devolveu os dados.');
+        if (!rem.env) throw new Error('A nuvem não devolveu os dados.');
         var envR = JSON.parse(rem.env), envB = nuvem.baseEnv ? JSON.parse(nuvem.baseEnv) : null;
         return Promise.all([decifrarPayload(envR, dk), envB ? decifrarPayload(envB, dk).catch(function () { return null; }) : Promise.resolve(null)])
-          .catch(function () { throw new Error(nuvemGoogle() ? 'Os dados do Google Drive estão cifrados com outro acesso. Desconecte e conecte de novo para juntar os dados.' : 'Os dados da planilha estão cifrados com outra chave. Use “Conectar a uma planilha existente” com um usuário de lá.'); })
+          .catch(function () { throw new Error('Os dados da nuvem estão cifrados com outro acesso. Saia e entre de novo com o usuário e a senha usados na nuvem.'); })
           .then(function (ps) {
             var local = montarPayload(), base = ps[1], junto = juntarPayload(base, local, ps[0]);
             var v = validarDados(junto);
@@ -9604,20 +9427,15 @@
     }
     return ciclo().then(function () {
       nuvemOcupada = false; renderNuvem();
-      if (manual) avisar(nuvemGoogle() ? 'Sincronizado com o Google Drive.' : usaNuvemPadrao() ? 'Sincronizado com a nuvem.' : 'Sincronizado com a planilha.', 'sucesso');
+      if (manual) avisar('Sincronizado com a nuvem.', 'sucesso');
       if (nuvemDeNovo) { nuvemDeNovo = false; sincronizarNuvem(false); }
     }, function (e) {
-      nuvemOcupada = false; nuvem.erro = nuvemGoogle() ? textoErroGoogle(e) : (e.message || 'Falha ao sincronizar.'); salvarNuvem(); renderNuvem();
+      nuvemOcupada = false; nuvem.erro = e.message || 'Falha ao sincronizar.'; salvarNuvem(); renderNuvem();
       if (manual) avisar(nuvem.erro, 'erro');
     });
   }
 
-  /* ---- Script da planilha (o app gera com a chave de acesso já dentro) ---- */
-  /* Script pronto do Google Apps Script (o mesmo do arquivo controle-financeiro-sync.gs). Ele cria a pasta e a planilha no Drive
-     e gera a chave de acesso na primeira execução da função “configurar”. */
-  var SCRIPT_SYNC = "// =====================================================================\n//  Controle Financeiro — sincronização pela sua conta Google\n//\n//  Este script cria sozinho, no SEU Google Drive:\n//    • a pasta \"Controle Financeiro\"\n//    • a planilha \"Controle Financeiro – nuvem (não editar)\", com as abas:\n//        nuvem    → os dados do app, CIFRADOS (o Google não consegue ler)\n//        registro → data, aparelho e versão de cada gravação\n//        leia-me  → explicações\n//  e gera uma CHAVE DE ACESSO só sua, que você cola no app.\n//\n//  Como usar (uma vez só):\n//    1. Selecione a função \"configurar\" lá em cima e clique em Executar.\n//       Autorize com sua conta Google.\n//    2. Copie a CHAVE DE ACESSO que aparece no \"Registro de execução\".\n//    3. Implantar › Nova implantação › App da Web\n//       (Executar como: Eu · Quem pode acessar: Qualquer pessoa).\n//    4. No app: cole a URL do app da Web (termina em /exec) e a chave.\n//\n//  Os dados chegam aqui sempre cifrados: para abri-los é preciso o usuário\n//  e a senha do app. Gravar também exige uma prova que só o app com a sua\n//  senha consegue gerar — assim, mesmo quem souber a URL e a chave não\n//  consegue apagar nem trocar os seus dados.\n//\n//  Atualizou este script? Implantar › Gerenciar implantações › lápis ›\n//  Versão: Nova versão › Implantar. A URL continua a mesma.\n// =====================================================================\n\nvar NOME_PASTA = 'Controle Financeiro';\nvar NOME_PLANILHA = 'Controle Financeiro – nuvem (não editar)';\nvar TAM_PEDACO = 40000;      // caracteres por célula (limite do Google: 50.000)\nvar MAX_REGISTRO = 500;      // linhas guardadas na aba \"registro\"\n\n// Rode esta função uma vez pelo editor. Pode rodar de novo quando quiser\n// ver a chave: ela não muda e a planilha não é recriada.\nfunction configurar() {\n  var props = PropertiesService.getScriptProperties();\n  var chave = props.getProperty('CHAVE_ACESSO');\n  if (!chave) {\n    chave = (Utilities.getUuid() + Utilities.getUuid()).replace(/-/g, '').slice(0, 40);\n    props.setProperty('CHAVE_ACESSO', chave);\n  }\n  var ss = planilha_();\n  Logger.log('Tudo pronto!');\n  Logger.log('Planilha: ' + ss.getUrl());\n  Logger.log('CHAVE DE ACESSO (cole no app): ' + chave);\n  Logger.log('Agora: Implantar › Nova implantação › App da Web (Executar como: Eu · Quem pode acessar: Qualquer pessoa).');\n  return chave;\n}\n\n// Use só se o app avisar que a planilha está ligada a outra conta (ex.: você\n// recriou a conta do zero). O próximo aparelho que gravar passa a ser o dono.\nfunction liberarEscrita() {\n  PropertiesService.getScriptProperties().deleteProperty('ESCRITA_HASH');\n  Logger.log('Pronto: a próxima gravação do app define a nova prova de escrita.');\n}\n\nfunction hashEscrita_(prova) {\n  return Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, String(prova), Utilities.Charset.UTF_8)\n    .map(function (b) { return ('0' + (b & 255).toString(16)).slice(-2); }).join('');\n}\n\n// Só se precisar trocar a chave (ex.: alguém indevido ficou com ela).\n// Depois, reconecte os aparelhos com a chave nova.\nfunction trocarChave() {\n  PropertiesService.getScriptProperties().deleteProperty('CHAVE_ACESSO');\n  return configurar();\n}\n\nfunction resp_(o) {\n  return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);\n}\n\nfunction doGet() {\n  return resp_({ ok: true, app: 'controle-financeiro', configurado: !!PropertiesService.getScriptProperties().getProperty('CHAVE_ACESSO') });\n}\n\nfunction doPost(e) {\n  var req;\n  try { req = JSON.parse(e.postData.contents); } catch (x) { return resp_({ erro: 'pedido inválido' }); }\n  var chave = PropertiesService.getScriptProperties().getProperty('CHAVE_ACESSO');\n  if (!chave) return resp_({ erro: 'script ainda não configurado: no editor do Apps Script, rode a função \"configurar\"' });\n  if (!req || req.chave !== chave) return resp_({ erro: 'acesso negado (confira a chave de acesso)' });\n\n  var lock = LockService.getScriptLock();\n  lock.waitLock(25000);\n  try {\n    var ss = planilha_();\n    var sh = ss.getSheetByName('nuvem');\n    var versao = Number(sh.getRange('A1').getValue()) || 0;\n\n    if (req.acao === 'ler') {\n      if (req.desde !== undefined && Number(req.desde) === versao && versao > 0) return resp_({ versao: versao, igual: true });\n      var n = sh.getLastRow(), env = '';\n      if (n >= 3) env = sh.getRange(3, 1, n - 2, 1).getValues().map(function (r) { return String(r[0]).slice(1); }).join('');\n      return resp_({ versao: versao, env: env || null });\n    }\n\n    if (req.acao === 'gravar') {\n      var props = PropertiesService.getScriptProperties(), dono = props.getProperty('ESCRITA_HASH');\n      if (req.prova) {\n        var h = hashEscrita_(req.prova);\n        if (!dono) props.setProperty('ESCRITA_HASH', h);\n        else if (dono !== h) return resp_({ erro: 'escrita negada: esta planilha pertence a outra conta do app' });\n      } else if (dono) {\n        return resp_({ erro: 'escrita negada: atualize o app neste aparelho' });\n      }\n      if (Number(req.base) !== versao) return resp_({ conflito: true, versao: versao });\n      var txt = String(req.env || ''), partes = [];\n      for (var i = 0; i < txt.length; i += TAM_PEDACO) partes.push(['x' + txt.substr(i, TAM_PEDACO)]);\n      var ultima = sh.getLastRow();\n      if (ultima >= 3) sh.getRange(3, 1, ultima - 2, 1).clearContent();\n      if (partes.length) sh.getRange(3, 1, partes.length, 1).setValues(partes);\n      versao++;\n      sh.getRange('A1:C1').setValues([[versao, new Date(), String(req.aparelho || '')]]);\n      sh.getRange('A2').setValue('Dados cifrados do Controle Financeiro. Não edite esta aba.');\n      registrar_(ss, versao, String(req.aparelho || ''), txt.length);\n      return resp_({ ok: true, versao: versao });\n    }\n\n    return resp_({ erro: 'ação desconhecida' });\n  } finally {\n    lock.releaseLock();\n  }\n}\n\n// Abre a planilha do app; se ainda não existir (ou tiver sido apagada), cria.\nfunction planilha_() {\n  var props = PropertiesService.getScriptProperties();\n  var id = props.getProperty('PLANILHA_ID');\n  if (id) {\n    try {\n      var existente = SpreadsheetApp.openById(id);\n      if (!DriveApp.getFileById(id).isTrashed()) { prepararAbas_(existente); return existente; }\n    } catch (x) { /* apagada ou sem acesso: cria outra */ }\n  }\n  var ss = SpreadsheetApp.create(NOME_PLANILHA);\n  var pastas = DriveApp.getFoldersByName(NOME_PASTA);\n  var pasta = pastas.hasNext() ? pastas.next() : DriveApp.createFolder(NOME_PASTA);\n  DriveApp.getFileById(ss.getId()).moveTo(pasta);\n  prepararAbas_(ss);\n  props.setProperty('PLANILHA_ID', ss.getId());\n  return ss;\n}\n\nfunction prepararAbas_(ss) {\n  var nuvem = ss.getSheetByName('nuvem');\n  if (!nuvem) {\n    var primeira = ss.getSheets()[0];\n    if (primeira && primeira.getLastRow() === 0 && ss.getSheets().length === 1 && !ss.getSheetByName('registro')) {\n      nuvem = primeira.setName('nuvem');\n    } else {\n      nuvem = ss.insertSheet('nuvem');\n    }\n    nuvem.getRange('A1:C1').setValues([[0, '', '']]);\n    nuvem.getRange('A2').setValue('Dados cifrados do Controle Financeiro. Não edite esta aba.');\n    nuvem.setColumnWidth(1, 220);\n  }\n  var reg = ss.getSheetByName('registro');\n  if (!reg) {\n    reg = ss.insertSheet('registro');\n    reg.getRange('A1:D1').setValues([['Quando', 'Aparelho', 'Versão', 'Tamanho (caracteres)']]).setFontWeight('bold');\n    reg.setFrozenRows(1);\n    reg.setColumnWidth(1, 170); reg.setColumnWidth(2, 220);\n  }\n  var leia = ss.getSheetByName('leia-me');\n  if (!leia) {\n    leia = ss.insertSheet('leia-me');\n    leia.getRange('A1:A8').setValues([\n      ['Controle Financeiro — planilha de sincronização'],\n      ['• A aba \"nuvem\" guarda os dados do app CIFRADOS. Não edite, não ordene e não apague nada nela.'],\n      ['• A aba \"registro\" mostra cada gravação feita pelos aparelhos (só para conferência).'],\n      ['• Para abrir os dados é preciso o usuário e a senha do app: esta planilha sozinha não mostra nada.'],\n      ['• Não compartilhe esta planilha. Quem usa o app com você só precisa do código de conexão (no app: Ajustes › Sincronização).'],\n      ['• Se apagar esta planilha, o script cria outra vazia; os aparelhos enviam de novo os dados que têm.'],\n      ['• Para trocar a chave de acesso: no Apps Script, rode a função \"trocarChave\" e reconecte os aparelhos.'],\n      ['']\n    ]);\n    leia.getRange('A1').setFontWeight('bold').setFontSize(13);\n    leia.setColumnWidth(1, 820);\n  }\n}\n\nfunction registrar_(ss, versao, aparelho, tamanho) {\n  try {\n    var reg = ss.getSheetByName('registro');\n    reg.appendRow([new Date(), aparelho || '—', versao, tamanho]);\n    var excesso = reg.getLastRow() - 1 - MAX_REGISTRO;\n    if (excesso > 0) reg.deleteRows(2, excesso);\n  } catch (x) { /* o registro é só informativo */ }\n}\n";
-  function scriptPlanilha() { return SCRIPT_SYNC; }
-  /* Prova de escrita: derivada da chave dos dados (só quem entrou com usuário e senha tem). A planilha guarda
+  /* Prova de escrita: derivada da chave dos dados (só quem entrou com usuário e senha tem). A nuvem guarda
      só um resumo dela e recusa gravações sem a prova certa — a URL e a chave sozinhas não apagam seus dados. */
   function provaEscrita() {
     if (!chaveDados || !(window.crypto && crypto.subtle)) return Promise.resolve(undefined);
@@ -9627,52 +9445,6 @@
       return Array.prototype.map.call(new Uint8Array(h), function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
     });
   }
-  /* Arquivo nuvem.json, publicado junto do app: diz onde está a planilha. Assim, num aparelho novo,
-     basta usuário e senha. Os dados continuam cifrados e a planilha só aceita gravação com a prova acima. */
-  var ARQ_NUVEM = 'nuvem.json';
-  function conteudoNuvemJson() { return JSON.stringify({ app: 'controle-financeiro', u: nuvem.url, k: nuvem.chave }, null, 2) + '\n'; }
-  function buscarNuvemPublicada() {
-    return fetch('./' + ARQ_NUVEM + '?nocache=' + Date.now(), { cache: 'no-store' }).then(function (r) {
-      if (!r.ok) return null;
-      return r.json().then(function (j) { return j && j.u && j.k ? { url: j.u, chave: j.k } : null; }, function () { return null; });
-    }, function () { return undefined; }); // undefined = sem internet
-  }
-  function formPublicarNuvem() {
-    var conteudo = conteudoNuvemJson();
-    abrirGen('Entrar só com usuário e senha', [
-      { tipo: 'html', conteudo: el('div', { class: 'dica-form' }, 'Publique o arquivo ', el('b', null, ARQ_NUVEM), ' junto do app no GitHub. Ele diz ao app onde está a sua planilha. Depois disso, qualquer aparelho novo entra só com usuário e senha, sem código.') },
-      { tipo: 'html', conteudo: el('ol', { class: 'nuvem-passos' },
-        el('li', null, 'Toque em ', el('b', null, 'Copiar conteúdo'), ' abaixo.'),
-        el('li', null, 'No GitHub, no repositório do app (onde está o index.html): ', el('b', null, 'Add file › Create new file'), '.'),
-        el('li', null, 'No nome do arquivo, escreva ', el('b', null, ARQ_NUVEM), '. Cole o conteúdo e clique em ', el('b', null, 'Commit changes'), '.'),
-        el('li', null, 'Espere 1 a 2 minutos e toque em ', el('b', null, 'Conferir'), ' aqui.')) },
-      { tipo: 'html', conteudo: el('pre', { class: 'nuvem-codigo', id: 'nuvemJsonTexto' }, conteudo) },
-      { tipo: 'html', conteudo: el('div', { class: 'aj-acoes' },
-        el('button', { type: 'button', class: 'btn primario', id: 'btnCopiarNuvemJson' }, ico('copy', 'ico-inline'), ' Copiar conteúdo'),
-        el('button', { type: 'button', class: 'btn', id: 'btnConferirNuvemJson' }, 'Conferir')) },
-      { tipo: 'html', conteudo: el('p', { class: 'uso', id: 'nuvemJsonStatus' }, '') },
-      { tipo: 'html', conteudo: el('div', { class: 'dica-form' }, 'Segurança: o arquivo fica público, como o resto do app. Com ele dá para baixar a planilha, mas os dados estão cifrados e só abrem com usuário e senha — por isso use uma senha forte (uma frase). Para gravar, a planilha exige uma prova que só o app com a sua senha gera; atualize o script (Ajustes › Sincronização › Configurar planilha › Copiar o script) para ativar essa proteção.') }
-    ], function () { return []; }, 'Fechar');
-    $('btnCopiarNuvemJson').addEventListener('click', function () { copiarTexto(conteudo, 'Conteúdo copiado. Crie o arquivo ' + ARQ_NUVEM + ' no GitHub.'); });
-    $('btnConferirNuvemJson').addEventListener('click', function () {
-      var st = $('nuvemJsonStatus'); st.textContent = 'Conferindo…';
-      buscarNuvemPublicada().then(function (cfg) {
-        if (cfg === undefined) st.textContent = 'Sem internet para conferir agora.';
-        else if (!cfg) st.textContent = 'Ainda não encontrei o ' + ARQ_NUVEM + ' publicado. Confira o nome do arquivo e espere mais um pouco.';
-        else if (cfg.url === nuvem.url && cfg.chave === nuvem.chave) { st.textContent = '✓ Tudo certo: aparelhos novos já entram só com usuário e senha.'; renderNuvem(); }
-        else st.textContent = 'O ' + ARQ_NUVEM + ' publicado aponta para outra planilha. Substitua o conteúdo pelo de cima.';
-      });
-    });
-  }
-  function codigoConexao(cfg) { return 'CFN1.' + btoa(unescape(encodeURIComponent(JSON.stringify({ u: cfg.url, k: cfg.chave })))); }
-  function lerCodigoConexao(t) {
-    t = String(t || '').trim().replace(/\s+/g, '');
-    if (t.indexOf('CFN1.') !== 0) throw new Error('Código de conexão inválido (ele começa com CFN1.).');
-    var o = JSON.parse(decodeURIComponent(escape(atob(t.slice(5)))));
-    if (!o.u || !o.k) throw new Error('Código de conexão incompleto.');
-    return { url: o.u, chave: o.k };
-  }
-  function urlScriptValida(u) { return /^https:\/\/script\.google(usercontent)?\.com\/.+/.test(u) || /^https?:\/\/(127\.0\.0\.1|localhost)(:\d+)?\//.test(u); }
   function copiarTexto(t, okMsg) {
     var p = navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(t) : Promise.reject();
     return p.then(function () { avisar(okMsg, 'sucesso'); }, function () { avisar('Não deu para copiar sozinho: toque e segure no texto para copiar.', 'erro'); });
@@ -9684,106 +9456,35 @@
     if (!txt) return;
     ac.replaceChildren();
     renderGuiasAparelhos();
-    $('nuvemTitulo').textContent = usaNuvemPadrao() ? 'Sincronização na nuvem' : (nuvemAtiva() ? nuvemGoogle() : googleDisponivel()) ? 'Sincronização (Google Drive)' : 'Sincronização (Planilha Google)';
-    if (usaNuvemPadrao()) {
-      if (!nuvemAtiva()) {
-        txt.textContent = trabalhando ? 'Seus dados ficam salvos também na nuvem do app (cifrados), iguais em todos os aparelhos.' : 'Seus dados ficam salvos também na nuvem do app (cifrados), iguais em todos os aparelhos. A conexão é feita sozinha quando você entra.';
-        st.hidden = !trabalhando; st.className = 'nuvem-status trab'; st.textContent = trabalhando || '';
-        if (!trabalhando) ac.append(el('button', { type: 'button', class: 'btn primario', 'data-nuvem': 'padrao' }, ico('cloud', 'ico-inline'), ' Conectar agora'));
-        return;
-      }
-      txt.textContent = 'Seus dados ficam salvos também na nuvem do app, cifrados: só abrem com o seu usuário e senha. Em outro aparelho, é só abrir o app e entrar.';
-      st.hidden = false;
-      st.className = 'nuvem-status ' + (trabalhando ? 'trab' : nuvem.erro ? 'erro' : nuvem.pendente ? 'trab' : 'ok');
-      st.textContent = trabalhando ? trabalhando
-        : nuvem.erro ? nuvem.erro + (nuvem.pendente ? ' As mudanças ficam guardadas aqui e vão quando der.' : '')
-        : nuvem.pendente ? 'Há mudanças esperando para ir para a nuvem.'
-        : nuvem.sincEm ? '✓ Sincronizado em ' + dataHoraBR(nuvem.sincEm) + '.' : '';
-      ac.append(el('button', { type: 'button', class: 'btn primario', 'data-nuvem': 'sincronizar' }, ico('refresh', 'ico-inline'), ' Sincronizar agora'));
-      return;
+    $('nuvemTitulo').textContent = 'Sincronização na nuvem';
+    if (!nuvemPadrao()) {
+      txt.textContent = 'A nuvem funciona quando o app é aberto pelo endereço da internet (não por arquivo salvo no aparelho).';
+      st.hidden = true; return;
     }
     if (!nuvemAtiva()) {
-      st.hidden = true;
-      if (googleDisponivel()) {
-        txt.textContent = 'Guarde seus dados também no seu Google Drive: eles ficam iguais no app, no Safari e em outro celular. Vai só um arquivo cifrado — o Google não lê os dados.';
-        ac.append(el('button', { type: 'button', class: 'btn primario', 'data-nuvem': 'google' }, ico('cloud', 'ico-inline'), ' Salvar no Google Drive'),
-          el('details', { class: 'nuvem-outras' }, el('summary', null, 'Outras opções (Planilha Google com script)'),
-            el('div', { class: 'aj-acoes' }, el('button', { type: 'button', class: 'btn', 'data-nuvem': 'configurar' }, 'Configurar planilha'),
-              el('button', { type: 'button', class: 'btn', 'data-nuvem': 'conectar' }, 'Conectar a uma planilha existente'))));
-        return;
-      }
-      txt.textContent = 'Guarde seus dados também numa Planilha Google sua: eles ficam iguais no app, no Safari e no celular de outra pessoa da casa. Na planilha vai só o arquivo cifrado — o Google não lê os dados.';
-      ac.append(el('button', { type: 'button', class: 'btn primario', 'data-nuvem': 'configurar' }, 'Configurar planilha'),
-        el('button', { type: 'button', class: 'btn', 'data-nuvem': 'conectar' }, 'Conectar a uma planilha existente'));
+      txt.textContent = 'Seus dados ficam salvos também na nuvem do app (cifrados), iguais em todos os aparelhos. A conexão é feita sozinha quando você entra.';
+      st.hidden = !trabalhando; st.className = 'nuvem-status trab'; st.textContent = trabalhando || '';
+      if (!trabalhando) ac.append(el('button', { type: 'button', class: 'btn primario', 'data-nuvem': 'padrao' }, ico('cloud', 'ico-inline'), ' Conectar agora'));
       return;
     }
-    if (nuvemGoogle()) {
-      var em = nuvem.email || emailGoogle(), semToken = !tokenGoogle();
-      txt.textContent = 'Conectado ao seu Google Drive' + (em ? ' (' + em + ')' : '') + '. O app sincroniza sozinho ao abrir e depois de cada alteração (com internet). No Drive fica só o arquivo cifrado.';
-      st.hidden = false;
-      st.className = 'nuvem-status ' + (trabalhando ? 'trab' : nuvem.erro ? 'erro' : nuvem.pendente ? 'trab' : 'ok');
-      st.textContent = trabalhando ? trabalhando
-        : nuvem.erro ? nuvem.erro + (nuvem.pendente ? ' As mudanças ficam guardadas aqui e vão quando der.' : '')
-        : nuvem.pendente ? 'Há mudanças esperando para ir para o Google Drive.'
-        : nuvem.sincEm ? '✓ Sincronizado em ' + dataHoraBR(nuvem.sincEm) + '.' : '';
-      ac.append(semToken ? el('button', { type: 'button', class: 'btn primario', 'data-nuvem': 'renovar' }, 'Renovar acesso ao Google')
-        : el('button', { type: 'button', class: 'btn primario', 'data-nuvem': 'sincronizar' }, ico('refresh', 'ico-inline'), ' Sincronizar agora'),
-        el('button', { type: 'button', class: 'btn link perigo-txt', 'data-nuvem': 'desconectar' }, 'Desconectar'));
-      return;
-    }
-    txt.textContent = 'Conectado à sua Planilha Google. O app sincroniza sozinho ao abrir e depois de cada alteração (com internet).';
+    txt.textContent = 'Seus dados ficam salvos também na nuvem do app, cifrados: só abrem com o seu usuário e senha. Em outro aparelho, é só abrir o app e entrar.';
     st.hidden = false;
     st.className = 'nuvem-status ' + (trabalhando ? 'trab' : nuvem.erro ? 'erro' : nuvem.pendente ? 'trab' : 'ok');
     st.textContent = trabalhando ? trabalhando
       : nuvem.erro ? nuvem.erro + (nuvem.pendente ? ' As mudanças ficam guardadas aqui e vão quando der.' : '')
-      : nuvem.pendente ? 'Há mudanças esperando para ir para a planilha.'
+      : nuvem.pendente ? 'Há mudanças esperando para ir para a nuvem.'
       : nuvem.sincEm ? '✓ Sincronizado em ' + dataHoraBR(nuvem.sincEm) + '.' : '';
-    ac.append(el('button', { type: 'button', class: 'btn primario', 'data-nuvem': 'sincronizar' }, ico('refresh', 'ico-inline'), ' Sincronizar agora'),
-      el('button', { type: 'button', class: 'btn', 'data-nuvem': 'publicar' }, 'Entrar só com usuário e senha'),
-      el('button', { type: 'button', class: 'btn', 'data-nuvem': 'codigo' }, 'Conectar outro aparelho'),
-      el('button', { type: 'button', class: 'btn link perigo-txt', 'data-nuvem': 'desconectar' }, 'Desconectar'));
+    ac.append(el('button', { type: 'button', class: 'btn primario', 'data-nuvem': 'sincronizar' }, ico('refresh', 'ico-inline'), ' Sincronizar agora'));
   }
   /* Passo a passo para ligar outro aparelho (fica em Ajustes › Sincronização e em Login e senha). */
   function guiaOutrosAparelhos(aberto) {
-    var ativa = nuvemAtiva(), u = usuarioPorId(usuarioAtual);
+    var u = usuarioPorId(usuarioAtual);
     var endereco = /github\.io$/.test(location.hostname) ? location.hostname + location.pathname.replace(/index\.html$/, '') : null;
-    if (usaNuvemPadrao()) {
-      var dP = el('details', { class: 'guia-aparelhos' }, el('summary', null, 'Como usar em outros aparelhos'),
-        el('ol', { class: 'nuvem-passos' },
-          el('li', null, 'Se for ', el('b', null, 'outra pessoa'), ', crie antes um usuário e senha para ela em ', el('b', null, 'Login e senha › + Novo usuário'), '.'),
-          el('li', null, 'No outro aparelho, abra ', endereco ? el('b', null, endereco) : 'o app pelo mesmo endereço deste', '.'),
-          el('li', null, 'Na tela ', el('b', null, 'Entrar'), ', digite o usuário', u ? [' (o seu é ', el('b', null, u.usuario), ')'] : '', ' e a senha. Pronto: os dados aparecem.')));
-      if (aberto) dP.open = true;
-      return dP;
-    }
-    if (nuvemGoogle() || (!ativa && googleDisponivel())) {
-      var em = (nuvem && nuvem.email) || emailGoogle();
-      var dG = el('details', { class: 'guia-aparelhos' }, el('summary', null, 'Como ligar outros aparelhos'),
-        el('ol', { class: 'nuvem-passos' },
-          ativa ? null : el('li', null, 'Primeiro, neste aparelho: toque em ', el('b', null, 'Salvar no Google Drive'), ' (acima).'),
-          el('li', null, 'No outro aparelho, abra ', endereco ? el('b', null, endereco) : 'o app pelo mesmo endereço deste', '.'),
-          el('li', null, 'Toque em ', el('b', null, 'Entrar com Google'), ' e escolha a mesma conta', em ? [' (', el('b', null, em), ')'] : '', '.'),
-          el('li', null, 'Digite o seu usuário', u ? [' (', el('b', null, u.usuario), ')'] : '', ' e a senha do app. Pronto: os dados aparecem.'),
-          el('li', null, 'Faça o mesmo no Safari e no computador, se quiser usá-los.')));
-      if (aberto) dG.open = true;
-      return dG;
-    }
-    var passos = el('ol', { class: 'nuvem-passos' },
-      el('li', null, 'Se for ', el('b', null, 'outra pessoa'), ', crie antes um usuário e senha para ela em ', el('b', null, 'Login e senha › + Novo usuário'), '. Se for você em outro aparelho, use o seu', u ? [' (', el('b', null, u.usuario), ')'] : '', '.'),
-      el('li', null, 'Uma vez só: em ', el('b', null, 'Ajustes › Sincronização › Entrar só com usuário e senha'), ', publique o arquivo nuvem.json no GitHub.'),
-      el('li', null, 'No outro aparelho, abra ', endereco ? el('b', null, endereco) : 'o app pelo mesmo endereço deste', ' e, na tela ', el('b', null, 'Entrar'), ', digite o usuário e a senha do passo 1. Pronto.'),
-      el('li', null, 'Sem o nuvem.json, toque em ', el('b', null, 'Tenho um código de conexão'), ' e cole o código copiado aqui (botão abaixo).'),
-      el('li', null, 'Se o outro aparelho já tiver uma conta própria, use lá ', el('b', null, 'Ajustes › Sincronização › Conectar a uma planilha existente'), ': os dados dos dois são juntados.'),
-      el('li', null, 'Pronto: os aparelhos passam a ver os mesmos dados. Faça o mesmo no Safari e no computador, se quiser usá-los.'));
-    var fim;
-    if (ativa) {
-      fim = el('div', { class: 'aj-acoes' }, el('button', { type: 'button', class: 'btn primario guia-copiar' }, ico('copy', 'ico-inline'), ' Copiar código de conexão'));
-      fim.querySelector('button').addEventListener('click', function () { copiarTexto(codigoConexao(nuvem), 'Código copiado. Envie para o outro aparelho.'); });
-    } else {
-      fim = el('p', { class: 'dica-form' }, 'Este aparelho ainda não está ligado à planilha. Se for o primeiro, use ', el('b', null, 'Ajustes › Sincronização › Configurar planilha'),
-        '. Se for o segundo aparelho, use ', el('b', null, 'Conectar a uma planilha existente'), ' com o código que o outro aparelho gerou.');
-    }
-    var d = el('details', { class: 'guia-aparelhos' }, el('summary', null, 'Como ligar outros aparelhos'), passos, fim);
+    var d = el('details', { class: 'guia-aparelhos' }, el('summary', null, 'Como usar em outros aparelhos'),
+      el('ol', { class: 'nuvem-passos' },
+        el('li', null, 'Se for ', el('b', null, 'outra pessoa'), ', crie antes um usuário e senha para ela em ', el('b', null, 'Login e senha › + Novo usuário'), '.'),
+        el('li', null, 'No outro aparelho, abra ', endereco ? el('b', null, endereco) : 'o app pelo mesmo endereço deste', '.'),
+        el('li', null, 'Na tela ', el('b', null, 'Entrar'), ', digite o usuário', u ? [' (o seu é ', el('b', null, u.usuario), ')'] : '', ' e a senha. Pronto: os dados aparecem.')));
     if (aberto) d.open = true;
     return d;
   }
@@ -9792,77 +9493,13 @@
     if (a) { var abertoA = a.querySelector('details') ? a.querySelector('details').open : false; a.replaceChildren(guiaOutrosAparelhos(abertoA)); }
     if (b) b.replaceChildren(guiaOutrosAparelhos(true));
   }
-  function formConfigurarNuvem() {
-    if (!protecao || !chaveDados) { avisar('Crie o login do app antes de configurar a planilha.', 'erro'); return; }
-    var script = scriptPlanilha();
-    abrirGen('Configurar a Planilha Google', [
-      { tipo: 'html', conteudo: el('div', { class: 'dica-form' }, 'O script cria sozinho a pasta “Controle Financeiro” e a planilha no seu Google Drive. Faça num computador: é mais fácil.') },
-      { tipo: 'html', conteudo: el('ol', { class: 'nuvem-passos' },
-        el('li', null, 'Abra ', el('b', null, 'script.google.com'), ' (com a sua conta Google) › ', el('b', null, 'Novo projeto'), '. Apague o que estiver lá, cole o script (botão abaixo) e salve (ícone de disquete).'),
-        el('li', null, 'Lá em cima, escolha a função ', el('b', null, 'configurar'), ' e clique em ', el('b', null, 'Executar'), '. Autorize com sua conta. Se aparecer “O Google não verificou este app”: ', el('b', null, 'Avançado › Acessar (não seguro)'), ' — o script é seu.'),
-        el('li', null, 'No ', el('b', null, 'Registro de execução'), ', copie a ', el('b', null, 'CHAVE DE ACESSO'), ' e cole aqui embaixo.'),
-        el('li', null, el('b', null, 'Implantar › Nova implantação'), ' › engrenagem › ', el('b', null, 'App da Web'), '. Executar como: ', el('b', null, 'Eu'), '. Quem pode acessar: ', el('b', null, 'Qualquer pessoa'), ' › Implantar.'),
-        el('li', null, 'Copie a ', el('b', null, 'URL do app da Web'), ' (termina em /exec), cole aqui embaixo e toque em Conectar.')) },
-      { tipo: 'html', conteudo: el('div', { class: 'aj-acoes' }, el('button', { type: 'button', class: 'btn', id: 'btnCopiarScript' }, ico('copy', 'ico-inline'), ' Copiar o script'), el('button', { type: 'button', class: 'btn', id: 'btnVerScript' }, 'Mostrar o script')) },
-      { tipo: 'html', conteudo: el('pre', { class: 'nuvem-codigo', id: 'scriptTexto', hidden: 'hidden' }, script) },
-      { id: 'chave', rotulo: 'Chave de acesso (do Registro de execução)', obrig: true, largo: true, placeholder: 'ex.: 3f9c…', max: 80, autocomplete: 'off' },
-      { id: 'url', rotulo: 'URL do app da Web', obrig: true, largo: true, placeholder: 'https://script.google.com/macros/s/…/exec', max: 400 },
-      { tipo: 'html', conteudo: el('div', { class: 'dica-form' }, 'Já usava uma planilha com o script antigo? Ela continua funcionando: não precisa refazer.') }
-    ], function (v) {
-      var url = v.url.trim(), chave = v.chave.replace(/^.*CHAVE DE ACESSO[^:]*:\s*/i, '').trim();
-      if (!/^[A-Za-z0-9]{20,80}$/.test(chave)) return ['A chave de acesso tem só letras e números (40 caracteres). Copie de novo do Registro de execução.'];
-      if (!urlScriptValida(url)) return ['A URL deve começar com https://script.google.com/ (é a “URL do app da Web”).'];
-      var cfg = { url: url, chave: chave };
-      return chamar(cfg, { acao: 'ler' }).then(function (rem) {
-        if (rem.versao && rem.env) return ['Esta planilha já tem dados. Para usar os dados dela, feche e use “Conectar a uma planilha existente”.'];
-        nuvem = { url: url, chave: chave, versao: 0, baseEnv: null, pendente: true, sincEm: null, erro: '' }; salvarNuvem();
-        setTimeout(function () { sincronizarNuvem(true).then(function () { renderNuvem(); }); }, 0);
-        return [];
-      }, function (e) { return [e.message]; });
-    }, 'Conectar');
-    $('btnCopiarScript').addEventListener('click', function () { copiarTexto(script, 'Script copiado. Cole no Apps Script.'); });
-    $('btnVerScript').addEventListener('click', function () { $('scriptTexto').hidden = !$('scriptTexto').hidden; });
-  }
-  function mostrarCodigoConexao() {
-    var cod = codigoConexao(nuvem);
-    abrirGen('Conectar outro aparelho', [
-      { tipo: 'html', conteudo: el('ol', { class: 'nuvem-passos' },
-        el('li', null, 'Para outra pessoa, crie antes um usuário e senha para ela em Login e senha › + Novo usuário.'),
-        el('li', null, 'No outro aparelho, abra o app pelo mesmo endereço. Na tela ', el('b', null, 'Entrar'), ', toque em ', el('b', null, 'Tenho um código de conexão'), ', cole o código abaixo e entre com usuário e senha.'),
-        el('li', null, 'Para não precisar de código: Ajustes › Sincronização › ', el('b', null, 'Entrar só com usuário e senha'), '.'),
-        el('li', null, 'Se o outro aparelho já tiver uma conta própria, use lá Ajustes › Sincronização › ', el('b', null, 'Conectar a uma planilha existente'), ' (os dados são juntados).')) },
-      { tipo: 'html', conteudo: el('div', { class: 'nuvem-codigo', id: 'codConexao' }, cod) },
-      { tipo: 'html', conteudo: el('div', { class: 'aj-acoes' }, el('button', { type: 'button', class: 'btn primario', id: 'btnCopiarCodigo' }, ico('copy', 'ico-inline'), ' Copiar código')) },
-      { tipo: 'html', conteudo: el('div', { class: 'dica-form' }, 'Envie o código só para quem vai usar o app com você (ex.: por mensagem direta). Ele sozinho não abre os dados: ainda é preciso um usuário e senha.') }
-    ], function () { return []; }, 'Fechar');
-    $('btnCopiarCodigo').addEventListener('click', function () { copiarTexto(cod, 'Código copiado.'); });
-  }
-  function formConectarNuvem() {
-    abrirGen('Conectar a uma planilha existente', [
-      { tipo: 'html', conteudo: el('div', { class: 'dica-form' }, 'No aparelho que já usa a planilha: Ajustes › Sincronização › “Conectar outro aparelho” mostra o código. Os dados deste aparelho são juntados com os da planilha (nada é apagado).') },
-      { id: 'codigo', rotulo: 'Código de conexão', obrig: true, largo: true, placeholder: 'CFN1.…', max: 2000, autocomplete: 'off' },
-      { id: 'usuario', rotulo: 'Usuário (do app que já usa a planilha)', obrig: true, autocomplete: 'username', max: 40 },
-      { id: 'senha', rotulo: 'Senha desse usuário', obrig: true, tipo: 'senha', autocomplete: 'current-password' }
-    ], function (v) {
-      return conectarPorCodigo(v.codigo, v.usuario, v.senha).then(function (r) {
-        if (r.erros) return r.erros;
-        avisar('Conectado. A partir de agora, entre com o usuário “' + r.usuario + '”.', 'sucesso');
-        return [];
-      });
-    }, 'Conectar');
-  }
-  /* Liga este aparelho à planilha com o código de conexão + usuário e senha de quem já usa o app.
-     Os dados deste aparelho (se houver) são juntados aos da planilha. Resolve com { erros } ou { usuario }. */
-  function conectarPorCodigo(codigo, usuario, senha) {
-    var cfg; try { cfg = lerCodigoConexao(codigo); } catch (e) { return Promise.resolve({ erros: [e.message] }); }
-    return conectarNuvemCfg(cfg, usuario, senha);
-  }
+  /* Entra na nuvem do app com o usuário e a senha de quem já usa o app. Os dados deste aparelho
+     (se houver) são juntados aos da nuvem. Resolve com { erros } ou { usuario }. */
   function conectarNuvemCfg(cfg, usuario, senha) {
-    var g = cfg.tipo === 'gdrive';
-    return chamarNuvem(cfg, { acao: 'ler' }).then(function (rem) {
-      if (!rem.env) return { erros: [g ? 'Não encontrei dados deste app no seu Google Drive.' : (nuvemPadrao() && cfg.url === nuvemPadrao().url) ? 'Ainda não há nenhuma conta na nuvem. Se é a primeira vez usando o app, toque em “Criar conta”.' : 'A planilha ainda está vazia. No aparelho principal, use “Configurar planilha” primeiro.'] };
+    return chamar(cfg, { acao: 'ler' }).then(function (rem) {
+      if (!rem.env) return { erros: ['Ainda não há nenhuma conta na nuvem. Se é a primeira vez usando o app, toque em “Criar conta”.'] };
       var envR = JSON.parse(rem.env), prot;
-      try { prot = protecaoDoEnvelope(envR); } catch (e) { return { erros: ['Os dados da planilha não puderam ser lidos.'] }; }
+      try { prot = protecaoDoEnvelope(envR); } catch (e) { return { erros: ['Os dados da nuvem não puderam ser lidos.'] }; }
       var u = usuarioPorNome(prot, usuario);
       if (!u) return { erros: ['Usuário ou senha incorretos.'] };
       return desembrulhar(u, senha).then(function (dk) {
@@ -9871,38 +9508,20 @@
           if (!val.ok) return { erros: ['Não foi possível juntar os dados (' + val.erro + ').'] };
           aplicarDados(val.dados);
           protecao = protecaoComoObj(prot); chaveDados = dk; usuarioAtual = u.id;
-          nuvem = g ? { tipo: 'gdrive', fileId: cfg.fileId, email: cfg.email || emailGoogle(), versao: rem.versao, baseEnv: rem.env, pendente: !igualJ(junto, remoto), sincEm: new Date().toISOString(), erro: '' }
-            : { url: cfg.url, chave: cfg.chave, versao: rem.versao, baseEnv: rem.env, pendente: !igualJ(junto, remoto), sincEm: new Date().toISOString(), erro: '' };
+          nuvem = { url: cfg.url, chave: cfg.chave, versao: rem.versao, baseEnv: rem.env, pendente: !igualJ(junto, remoto), sincEm: new Date().toISOString(), erro: '' };
           salvarNuvem(); versaoDados++; agendarCopia(); render();
           setTimeout(function () { sincronizarNuvem(false); }, 0);
           return { usuario: u.usuario };
         });
       }, function () { return { erros: ['Usuário ou senha incorretos.'] }; });
-    }, function (e) { return { erros: [g ? textoErroGoogle(e) : e.message] }; });
-  }
-  function desconectarNuvem() {
-    confirmar(nuvemGoogle() ? 'Desconectar do Google Drive?' : 'Desconectar da planilha?', [nuvemGoogle() ? 'Os dados continuam neste aparelho e no seu Google Drive. Este aparelho só para de sincronizar.' : 'Os dados continuam neste aparelho e na planilha. Este aparelho só para de sincronizar.'], 'Desconectar').then(function (ok) {
-      if (!ok) return;
-      var g = nuvemGoogle();
-      nuvem = null; salvarNuvem(); if (g) apagarArmaz(CHAVE_GOOGLE); renderNuvem();
-      avisar(g ? 'Desconectado do Google Drive.' : 'Desconectado da planilha.', 'sucesso');
-    });
+    }, function (e) { return { erros: [e.message] }; });
   }
   function ligarEventosNuvem() {
     $('nuvemAcoes').addEventListener('click', function (e) {
       var b = e.target.closest('[data-nuvem]'); if (!b) return;
       var a = b.getAttribute('data-nuvem');
-      if (a === 'configurar') formConfigurarNuvem();
-      else if (a === 'conectar') formConectarNuvem();
-      else if (a === 'sincronizar') sincronizarNuvem(true);
-      else if (a === 'codigo') mostrarCodigoConexao();
-      else if (a === 'publicar') formPublicarNuvem();
-      else if (a === 'google') conectarGoogleAgora();
+      if (a === 'sincronizar') sincronizarNuvem(true);
       else if (a === 'padrao') conectarNuvemPadrao();
-      else if (a === 'renovar') confirmar('Renovar acesso ao Google', ['O app vai ao Google e volta. Depois, entre de novo com seu usuário e senha do app.'], 'Renovar').then(function (ok) {
-        if (ok) { if (timerCopia) gravarCopia(); irParaGoogle('renovar', false); }
-      });
-      else if (a === 'desconectar') desconectarNuvem();
     });
     document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') sincronizarNuvem(false); });
     window.addEventListener('online', function () { sincronizarNuvem(false); });
@@ -10015,69 +9634,32 @@
   }
   /* Primeiro acesso neste aparelho: primeiro “Entrar” (quem já tem conta em outro aparelho),
      com “Criar conta” embaixo para quem está começando. */
-  /* Primeiro acesso com Google: primeiro “Entrar com Google”, depois usuário e senha do app. */
-  function atualizarPrimeiroGoogle() {
-    if (nuvemPadrao()) {
-      $('lpGoogle').hidden = true; $('lpCampos').hidden = false; $('btnTenhoCodigo').hidden = true; $('lpCodigoBox').hidden = true;
-      $('lpTxtCampos').textContent = 'Já usa o app? Entre com o seu usuário e senha: seus dados vêm da nuvem.';
-      return;
-    }
-    var g = googleDisponivel(), tk = g && tokenGoogle(), comCodigo = !$('lpCodigoBox').hidden;
-    $('lpGoogle').hidden = !g || comCodigo;
-    $('btnEntrarGoogle').hidden = !!tk;
-    $('lpGoogleOk').hidden = !tk;
-    $('lpGoogleTxt').hidden = !!tk;
-    $('lpGoogleConta').textContent = tk ? 'Google conectado' + (emailGoogle() ? ': ' + emailGoogle() : '') : '';
-    $('lpCampos').hidden = g && !tk && !comCodigo;
-    $('lpTxtCampos').textContent = tk ? 'Agora digite o usuário e a senha do app.' : 'Já usa o app em outro aparelho? Entre com o seu usuário e senha.';
-  }
-  function ligarGooglePrimeiro() {
-    $('btnEntrarGoogle').addEventListener('click', function () { irParaGoogle('primeiro', false); });
-    $('btnTrocarGoogle').addEventListener('click', function () { apagarArmaz(CHAVE_GOOGLE); irParaGoogle('primeiro', false); });
-  }
+
   function mostrarPrimeiroAcesso() {
     $('lgEntrar').hidden = true; $('lgRecuperar').hidden = true; $('lgCriar').hidden = true; $('lgPrimeiro').hidden = false;
     $('lgMotivo').hidden = true; erroLogin('');
     $('lgInfo').textContent = 'Primeiro acesso neste aparelho';
     $('lgNota').hidden = true;
     $('lp_senha').value = '';
-    var cod = codigoDoEndereco();
-    if (cod) $('lp_codigo').value = cod;
-    $('lpCodigoBox').hidden = !$('lp_codigo').value; $('btnTenhoCodigo').hidden = !$('lpCodigoBox').hidden;
-    atualizarPrimeiroGoogle();
     $('telaLogin').hidden = false;
     document.documentElement.classList.add('trancado');
     setTimeout(function () { focoAuto($('lp_usuario')); }, 0);
   }
-  /* Link de conexão: …/financas/#conectar=CFN1.… já preenche o código. */
-  function codigoDoEndereco() {
-    var m = /[#&]conectar=([^&]+)/.exec(location.hash || '');
-    if (!m) return '';
-    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* ok */ }
-    try { return decodeURIComponent(m[1]); } catch (e) { return m[1]; }
-  }
   function entrarPrimeiroAcesso(ev) {
     ev.preventDefault();
-    var nome = $('lp_usuario').value.trim(), senha = $('lp_senha').value, cod = $('lp_codigo').value.trim();
+    var nome = $('lp_usuario').value.trim(), senha = $('lp_senha').value, cfg = nuvemPadrao();
     if (!nome || !senha) { erroLogin('Informe o usuário e a senha.'); return; }
+    if (!cfg) { erroLogin('Abra o app pelo endereço da internet para buscar seus dados na nuvem.'); return; }
     erroLogin('');
     ocupado($('btnEntrarPrimeiro'), true, 'Buscando seus dados…');
-    var achar = !cod && nuvemPadrao() ? Promise.resolve(nuvemPadrao()) : cod ? Promise.resolve(lerCodigoConexao(cod)) : googleDisponivel() && tokenGoogle() ? acharArquivoDrive().then(function (f) {
-      if (!f) throw new Error('Não encontrei dados deste app no Google Drive' + (emailGoogle() ? ' de ' + emailGoogle() : '') + '. Se é a primeira vez usando o app, toque em “Criar conta”. Se usa outra conta Google, toque em “trocar”.');
-      return { tipo: 'gdrive', fileId: f.id, email: emailGoogle() };
-    }, function (e) { throw new Error(textoErroGoogle(e)); }) : buscarNuvemPublicada().then(function (cfg) {
-      if (cfg === undefined) throw new Error('Sem internet. Para entrar num aparelho novo, o app precisa buscar seus dados na nuvem.');
-      if (!cfg) throw new Error(googleDisponivel() ? 'Toque em “Entrar com Google” para buscar seus dados. Se é a primeira vez usando o app, toque em “Criar conta”.' : 'Ainda não há uma conta ligada a este app para entrar com usuário e senha. No aparelho que você já usa: Ajustes › Sincronização › “Entrar só com usuário e senha”. Se é a primeira vez usando o app, toque em “Criar conta”.');
-      return cfg;
-    });
-    achar.then(function (c) { return conectarNuvemCfg(c, nome, senha); }, function (e) { return { erros: [e.message] }; }).then(function (r) {
+    conectarNuvemCfg(cfg, nome, senha).then(function (r) {
       if (r.erros) { erroLogin(r.erros.join(' ')); return; }
       $('telaLogin').hidden = true; $('lgPrimeiro').hidden = true; $('lgNota').hidden = false;
       document.documentElement.classList.remove('trancado');
       primeiraEntrada = false; ultimaAtividade = Date.now();
       limparFiltros(false); render(); atualizarStatusSalvamento();
-      avisar('Bem-vindo de volta, ' + r.usuario + '. Seus dados foram trazidos ' + (nuvemGoogle() ? 'do seu Google Drive.' : usaNuvemPadrao() ? 'da nuvem.' : 'da planilha.'), 'sucesso');
-      mostrarDicaIOS();
+      avisar('Bem-vindo de volta, ' + r.usuario + '. Seus dados foram trazidos da nuvem.', 'sucesso');
+      mostrarDicaIOS(); avisoVencimentosAoEntrar();
     }).then(function () { ocupado($('btnEntrarPrimeiro'), false); });
   }
   function mostrarCriarLogin() {
@@ -10097,19 +9679,16 @@
     if (e.length) { erroLogin(e.join(' ')); return; }
     erroLogin('');
     ocupado($('btnCriarAcesso'), true, 'Criando…');
-    var comGoogle = !nuvemPadrao() && googleDisponivel() && tokenGoogle(), padrao = nuvemPadrao();
-    var checar = padrao ? chamar(padrao, { acao: 'ler' }).then(function (r) { return r.env ? 'nuvem' : null; }, function () { return null; })
-      : comGoogle ? acharArquivoDrive().catch(function () { return null; }) : Promise.resolve(null);
+    var padrao = nuvemPadrao();
+    var checar = padrao ? chamar(padrao, { acao: 'ler' }).then(function (r) { return r.env ? 'nuvem' : null; }, function () { return null; }) : Promise.resolve(null);
     checar.then(function (existente) {
       if (existente === 'nuvem') { erroLogin('Já existe uma conta na nuvem deste app. Toque em “Já tenho conta: entrar” e entre com o seu usuário e senha (ou peça para quem criou a conta criar um usuário para você).'); return; }
-      if (existente) { erroLogin('Já existem dados deste app no seu Google Drive' + (emailGoogle() ? ' (' + emailGoogle() + ')' : '') + '. Para usá-los, toque em “Já tenho conta: entrar” e entre com o seu usuário e senha.'); return; }
       return ativarProtecao(v).then(function (r) {
         $('telaLogin').hidden = true; $('lgCriar').hidden = true; $('lgPrimeiro').hidden = true; $('lgNota').hidden = false;
         document.documentElement.classList.remove('trancado');
         ultimaAtividade = Date.now();
         mostrarCodigo(r.cod, true, null);
-        if (comGoogle) setTimeout(finalizarConexaoGoogle, 400);
-        else if (padrao) setTimeout(conectarNuvemPadrao, 400);
+        if (padrao) setTimeout(conectarNuvemPadrao, 400);
       }, function () { erroLogin('Não foi possível criar o acesso neste navegador.'); });
     }).then(function () { ocupado($('btnCriarAcesso'), false); });
   }
@@ -10385,6 +9964,86 @@
   function diasAte(iso) {
     var a = hojeISO();
     return Math.round((Date.UTC(+iso.slice(0, 4), +iso.slice(5, 7) - 1, +iso.slice(8, 10)) - Date.UTC(+a.slice(0, 4), +a.slice(5, 7) - 1, +a.slice(8, 10))) / 864e5);
+  }
+  /* ---------- Aviso de vencimento ----------
+     Contas a pagar até uma data (faturas agrupadas: uma linha por fatura). Usado no aviso ao entrar
+     e nos lembretes para o calendário do celular. */
+  function aPagarAte(fim) {
+    var hoje = hojeISO(), itens = [], fat = {};
+    itensObrigacao().forEach(function (i) {
+      if (!i.venc || i.venc > fim || (i.aberto <= 0 && !i.semValor) || (i.situacao !== 'vencida' && i.venc < hoje)) return;
+      if (i.lanc && i.cartaoId) {
+        var k = 'fat|' + i.cartaoId + '|' + i.venc;
+        if (fat[k]) { fat[k].valor += i.aberto; return; }
+        var c = cartaoPorId(i.cartaoId);
+        fat[k] = { chave: k, venc: i.venc, desc: 'Fatura ' + (c ? c.nome : 'do cartão'), valor: i.aberto, semValor: false };
+        itens.push(fat[k]); return;
+      }
+      itens.push({ chave: i.chave, venc: i.venc, desc: i.descricao, valor: i.aberto, semValor: !!i.semValor });
+    });
+    return itens.sort(function (a, b) { return a.venc < b.venc ? -1 : a.venc > b.venc ? 1 : 0; });
+  }
+  function valorTxt(x) { return x.semValor ? 'valor a definir' : moeda(x.valor / 100); }
+  /* Ao entrar (uma vez por dia neste aparelho): o que venceu, vence hoje ou amanhã. */
+  function avisoVencimentosAoEntrar() {
+    if (!moduloAtivo('obrigacoes')) return;
+    var hoje = hojeISO(), amanha = somarDias(hoje, 1);
+    if (lerArmaz('controle-financeiro-aviso-venc') === hoje) return;
+    var itens = aPagarAte(amanha);
+    if (!itens.length) return;
+    gravarArmaz('controle-financeiro-aviso-venc', hoje);
+    var venc = itens.filter(function (x) { return x.venc < hoje; }), hj = itens.filter(function (x) { return x.venc === hoje; }), am = itens.filter(function (x) { return x.venc === amanha; });
+    function lista(xs) { return xs.slice(0, 2).map(function (x) { return x.desc + ' (' + valorTxt(x) + ')'; }).join(', ') + (xs.length > 2 ? ' e mais ' + (xs.length - 2) : ''); }
+    var partes = [];
+    if (venc.length) partes.push(plural(venc.length, 'conta vencida', 'contas vencidas') + ': ' + lista(venc));
+    if (hj.length) partes.push('Vence hoje: ' + lista(hj));
+    if (am.length) partes.push('Amanhã: ' + lista(am));
+    setTimeout(function () {
+      avisar(partes.join(' · '), venc.length ? 'erro' : '', { rotulo: 'Ver', fn: function () { mostrarAba('abaHoje'); } });
+    }, 700);
+  }
+  /* Lembretes no calendário do celular (.ics): cada conta vira um evento no dia do vencimento,
+     com alerta às 9h do dia anterior e às 9h do dia. Funciona mesmo com o app fechado. */
+  var CHAVE_ICS = 'controle-financeiro-lembretes-cal';
+  function icsTexto(t) { return String(t).replace(/\\/g, '\\\\').replace(/;/g, '\;').replace(/,/g, '\\,').replace(/\n/g, '\\n'); }
+  function icsDobrar(linha) { // linhas de até 75 bytes (acentos ocupam mais de 1 byte)
+    var out = [], atual = '', n = 0;
+    Array.from(linha).forEach(function (ch) {
+      var b = unescape(encodeURIComponent(ch)).length;
+      if (n + b > 74) { out.push(atual); atual = ' '; n = 1; }
+      atual += ch; n += b;
+    });
+    out.push(atual); return out.join('\r\n');
+  }
+  function gerarLembretesCalendario(todos) {
+    var hoje = hojeISO(), fim = somarDias(hoje, 60), feitos = lerArmaz(CHAVE_ICS) || {};
+    var itens = aPagarAte(fim).filter(function (x) { return x.venc >= hoje; });
+    var novos = todos ? itens : itens.filter(function (x) { return !feitos[x.chave + '|' + x.venc]; });
+    if (!novos.length) {
+      if (!itens.length) { avisar('Nenhuma conta a pagar nos próximos 60 dias.', ''); return; }
+      confirmar('Lembretes já enviados', ['Todas as ' + plural(itens.length, 'conta', 'contas') + ' dos próximos 60 dias já foram para o calendário. Gerar de novo todas (pode duplicar no calendário)?'], 'Gerar todas')
+        .then(function (ok) { if (ok) gerarLembretesCalendario(true); });
+      return;
+    }
+    var carimbo = new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z');
+    var L = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Controle Financeiro//PT-BR', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH'];
+    novos.forEach(function (x) {
+      var d = x.venc.replace(/-/g, ''), d2 = somarDias(x.venc, 1).replace(/-/g, '');
+      var uid = (x.chave + '|' + x.venc).replace(/[^A-Za-z0-9]/g, '-') + '@controle-financeiro';
+      L.push('BEGIN:VEVENT', 'UID:' + uid, 'DTSTAMP:' + carimbo, 'DTSTART;VALUE=DATE:' + d, 'DTEND;VALUE=DATE:' + d2,
+        icsDobrar('SUMMARY:' + icsTexto('Pagar: ' + x.desc + ' — ' + valorTxt(x))),
+        icsDobrar('DESCRIPTION:' + icsTexto('Lembrete do Controle Financeiro. Depois de pagar, marque como pago no app.')),
+        'TRANSP:TRANSPARENT',
+        'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:' + icsTexto('Amanhã: ' + x.desc), 'TRIGGER:-PT15H', 'END:VALARM',
+        'BEGIN:VALARM', 'ACTION:DISPLAY', 'DESCRIPTION:' + icsTexto('Vence hoje: ' + x.desc), 'TRIGGER:PT9H', 'END:VALARM',
+        'END:VEVENT');
+      feitos[x.chave + '|' + x.venc] = hoje;
+    });
+    L.push('END:VCALENDAR');
+    Object.keys(feitos).forEach(function (k) { if (k.slice(-10) < hoje) delete feitos[k]; });
+    gravarArmaz(CHAVE_ICS, feitos);
+    baixar('lembretes-contas-' + carimboArquivo() + '.ics', L.join('\r\n') + '\r\n', 'text/calendar;charset=utf-8');
+    avisar(plural(novos.length, 'lembrete', 'lembretes') + ' no arquivo. ' + (ehIOS() ? 'Escolha Calendário (ou Salvar em Arquivos e abra o arquivo) e toque em “Adicionar todos”.' : 'Abra o arquivo para adicionar ao seu calendário.'), 'sucesso');
   }
   function rotuloPrazo(iso) {
     var d = diasAte(iso);
@@ -11181,7 +10840,6 @@
     $('lgEntrar').addEventListener('submit', entrar);
     $('lgCriar').addEventListener('submit', criarAcesso);
     $('lgPrimeiro').addEventListener('submit', entrarPrimeiroAcesso);
-    $('btnTenhoCodigo').addEventListener('click', function () { $('lpCodigoBox').hidden = false; $('btnTenhoCodigo').hidden = true; atualizarPrimeiroGoogle(); $('lp_codigo').focus(); });
     $('btnIrCadastro').addEventListener('click', function () { $('lc_usuario').value = $('lp_usuario').value; $('lc_usuario').dispatchEvent(new Event('input')); mostrarCriarLogin(); });
     $('btnIrEntrar').addEventListener('click', function () { $('lp_usuario').value = $('lc_usuario').value; $('lp_usuario').dispatchEvent(new Event('input')); mostrarPrimeiroAcesso(); });
     $('lgRecuperar').addEventListener('submit', recuperarSenha);
@@ -11235,6 +10893,7 @@
     $('hojeDespesa').addEventListener('click', function () { abrirForm(null); });
     $('hojeReceita').addEventListener('click', function () { abrirForm(null); setTipoLanc('receita'); $('f_status').value = STATUS_POR_TIPO.receita[0]; $('f_status').dataset.padrao = $('f_status').value; atualizarListaDescricoes(); autoPreencher(); });
     $('hojeFatura').addEventListener('click', function () { abrirPagamentoFatura(); });
+    $('btnLembretesCal').addEventListener('click', function () { gerarLembretesCalendario(false); });
     $('abaHoje').addEventListener('click', function (e) {
       var b = e.target.closest('[data-hoje-pagar]'), o = e.target.closest('[data-hoje-lancar]'), v = e.target.closest('[data-hoje-ver]'), f = e.target.closest('[data-pagar-fatura]');
       if (b) { var l = lancamentoPorId(b.getAttribute('data-hoje-pagar')); if (l) { if (usaCaixaPagLanc(l)) marcarPagoRapido(l); else abrirPagamento(l); } }
@@ -11480,7 +11139,7 @@
     $('btnLimpar').addEventListener('click', function () { limparFiltros(true); });
 
     ['fBusca', 'fDataIni', 'fDataFim'].forEach(function (id) { $(id).addEventListener('input', render); });
-    ['fDataIni', 'fDataFim', 'fTipo', 'fCategoria', 'fResponsavel', 'fFonte', 'fStatus']
+    ['fDataIni', 'fDataFim', 'fTipo', 'fCategoria', 'fResponsavel', 'fFonte', 'fStatus', 'fAutor']
       .forEach(function (id) { $(id).addEventListener('change', render); });
 
     Array.prototype.forEach.call(document.querySelectorAll('th button[data-ordem]'), function (b) {
@@ -11576,7 +11235,6 @@
     });
   }
 
-  retornoGoogle = processarRetornoGoogle();
   carregarEmbutidos();
   modoAparelho = !temDadosEmbutidos && /^https?:$/.test(location.protocol);
   if (modoAparelho) {
@@ -11604,13 +11262,8 @@
   ligarTecladoRolagem();
   ligarVistaCartoes();
   ligarEventosNuvem();
-  ligarGooglePrimeiro();
-  if (renovarGoogleAoAbrir()) return;
   render();
   setTimeout(avisarSeAtualizou, 400);
-  if (retornoGoogle && retornoGoogle.erro && retornoGoogle.motivo !== 'renovar') setTimeout(function () { avisar('Google: ' + (retornoGoogle.erro === 'access_denied' ? 'acesso não autorizado.' : retornoGoogle.erro), 'erro'); }, 500);
-  if (retornoGoogle && retornoGoogle.erro && retornoGoogle.motivo === 'renovar' && nuvem && nuvemGoogle()) { nuvem.erro = 'Não deu para renovar o acesso ao Google sozinho. Toque em “Renovar acesso ao Google”.'; salvarNuvem(); }
-  if (retornoGoogle && retornoGoogle.ok) emailDoGoogle().then(function () { renderNuvem(); if (!$('lgPrimeiro').hidden) atualizarPrimeiroGoogle(); });
   mostrarAba('abaHoje');
   // App instalável: guarda o próprio app no aparelho para abrir sem internet (só quando servido por um endereço).
   try {
