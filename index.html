@@ -5545,6 +5545,7 @@
     'banco do brasil': '#0038A8', 'caixa economica federal': '#005CA9', 'c6 bank': '#242424', 'btg pactual': '#0B2A4A',
     'mercado pago': '#009EE3', 'neon': '#1A73E8', 'picpay': '#11C76F', 'pagbank (pagseguro)': '#1BB99A', 'sicredi': '#3FA110',
     'sicoob': '#00534C', 'will bank': '#FFD200', 'banco pan': '#0091D5', 'banrisul': '#004B8D', 'agibank': '#0099D8', '99pay': '#FFDD00',
+    'porto bank': '#0046C0', 'porto seguro': '#0046C0',
     'xp investimentos': '#1A1A1A' };
   var CORES_OPCOES = [['#820AD1', 'Roxo'], ['#EC7000', 'Laranja'], ['#CC092F', 'Vermelho'], ['#0038A8', 'Azul'], ['#009EE3', 'Azul claro'],
     ['#11C76F', 'Verde'], ['#00534C', 'Verde-escuro'], ['#FFD200', 'Amarelo'], ['#B8892A', 'Dourado'], ['#9AA5B1', 'Prata'],
@@ -6474,7 +6475,7 @@
      “Outro” libera um campo de texto; nomes já gravados que não estão na lista continuam aceitos. */
   var BANCOS = ['99Pay', 'Agibank', 'Banco do Brasil', 'Banco Pan', 'Banrisul', 'Bradesco', 'BTG Pactual', 'C6 Bank',
     'Caixa Econômica Federal', 'Inter', 'Itaú', 'Mercado Pago', 'Neon', 'Nubank', 'PagBank (PagSeguro)', 'PicPay',
-    'Santander', 'Sicoob', 'Sicredi', 'Will Bank'];
+    'Porto Bank', 'Santander', 'Sicoob', 'Sicredi', 'Will Bank'];
   // Corretoras muito usadas: aparecem só onde faz sentido (investimentos).
   var CORRETORAS = ['XP Investimentos', 'Rico', 'Clear', 'NuInvest', 'Toro Investimentos', 'Genial Investimentos', 'Ágora Investimentos', 'Warren'];
   var BANCO_OUTRO = '__outro';
@@ -7785,7 +7786,7 @@
      fica escondido (os dados continuam no arquivo e voltam a aparecer quando o módulo for ligado).
      Para ver tudo (testes ou uso avançado): localStorage 'controle-financeiro-nivel' = 7. */
   /* Versão do app: atualize a cada entrega (o sw.js usa o mesmo número no nome do cache). */
-  var VERSAO_APP = { numero: '34', data: '2026-11-21', novidade: 'correção do preenchimento automático do usuário no iPhone' };
+  var VERSAO_APP = { numero: '35', data: '2026-11-21', novidade: 'Porto Bank na lista de instituições' };
   var CHAVE_VERSAO_VISTA = 'controle-financeiro-versao-vista';
   function textoVersao() { return 'Versão ' + VERSAO_APP.numero + ' · atualizada em ' + dataBR(VERSAO_APP.data) + '.'; }
   /* Procurar atualização: confere se há internet, apaga só a cópia do app (código e ícones; os dados
