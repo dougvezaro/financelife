@@ -1699,6 +1699,21 @@
   /* Primeiro acesso: entrar primeiro, criar conta embaixo */
   .lp-dica { margin: -6px 0 14px !important; }
   .hoje-cal { margin-top: 10px; font-size: .88rem; }
+  .extras-lista { display: flex; flex-direction: column; margin-top: 6px; }
+  .extra-item { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 11px 0; border-top: 1px solid var(--borda); cursor: pointer; }
+  .extra-item:first-child { border-top: 0; }
+  .extra-txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .extra-txt b { font-weight: 700; }
+  .extra-txt small { color: var(--suave); font-size: .84rem; line-height: 1.35; }
+  .extra-coberto { opacity: .55; }
+  .extra-item input.interruptor { appearance: none; -webkit-appearance: none; flex: none; width: 46px !important; min-width: 46px; height: 28px !important; min-height: 0 !important; padding: 0 !important; border: 0 !important; box-shadow: none !important; font-size: 0; border-radius: 999px; background: var(--borda); position: relative; cursor: pointer; transition: background .18s; margin: 0; }
+  .extra-item input.interruptor::after { content: ''; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.25); transition: transform .18s; }
+  .extra-item input.interruptor:checked { background: var(--ocre); }
+  .extra-item input.interruptor:checked::after { transform: translateX(18px); }
+  .extra-item input.interruptor:focus-visible { outline: 2px solid var(--ocre); outline-offset: 2px; }
+  .extra-item input.interruptor:disabled { cursor: default; }
+  .hoje-mais { display: flex; flex-wrap: wrap; gap: 8px; }
+  .hoje-mais-btn { flex: 1 1 140px; }
   .chip-autor { background: var(--primaria-suave); color: var(--texto); }
   .lp-ou { display: flex; align-items: center; gap: 10px; margin: 18px 0 10px; color: var(--suave); font-size: .84rem; }
   .lp-ou::before, .lp-ou::after { content: ''; flex: 1; height: 1px; background: var(--borda-suave); }
@@ -1974,6 +1989,8 @@
     <div id="hojeEvolucao"></div></section>
    <section class="bloco hoje-bloco" data-modulo="orcamento"><div class="hoje-cab"><h3>Orçamento do mês</h3><button type="button" class="btn link" data-ir-aba="abaOrc">Ver orçamento</button></div>
     <div id="hojeOrc"></div></section>
+   <section class="bloco hoje-bloco hoje-largo so-simples" id="hojeMaisBloco" hidden><div class="hoje-cab"><h3>Mais funções</h3><button type="button" class="btn link" data-ir-aba="abaListas">Ligar ou desligar</button></div>
+    <div id="hojeMais" class="hoje-mais"></div></section>
    <section class="bloco hoje-bloco hoje-largo"><div class="hoje-cab"><h3>Últimos lançamentos</h3><button type="button" class="btn link" data-ir-aba="abaLanc">Ver todos</button></div>
     <div id="hojeUltimos"></div></section>
   </div>
@@ -2476,6 +2493,11 @@
    <p class="nuvem-status" id="nuvemStatus" hidden></p>
    <div class="aj-acoes" id="nuvemAcoes"></div>
    <div id="nuvemGuia"></div>
+  </section>
+  <section class="painel aj-bloco" id="ajExtras">
+   <h3><i class="ico-ph" data-ico="sparkles"></i> Funções extras</h3>
+   <p class="uso">Ligue só o que for usar. Desligar esconde a função, mas os dados continuam guardados e voltam ao ligar de novo. Vale para este aparelho.</p>
+   <div id="extrasLista" class="extras-lista"></div>
   </section>
   <section class="painel aj-bloco so-simples" id="ajBackup">
    <h3><i class="ico-ph" data-ico="archive"></i> Backup</h3>
@@ -7763,7 +7785,7 @@
      fica escondido (os dados continuam no arquivo e voltam a aparecer quando o módulo for ligado).
      Para ver tudo (testes ou uso avançado): localStorage 'controle-financeiro-nivel' = 7. */
   /* Versão do app: atualize a cada entrega (o sw.js usa o mesmo número no nome do cache). */
-  var VERSAO_APP = { numero: '32', data: '2026-11-21', novidade: 'aviso de contas ao entrar, lembretes no calendário e quem lançou cada gasto' };
+  var VERSAO_APP = { numero: '33', data: '2026-11-21', novidade: 'Funções extras em Ajustes: ligue e desligue cada função' };
   var CHAVE_VERSAO_VISTA = 'controle-financeiro-versao-vista';
   function textoVersao() { return 'Versão ' + VERSAO_APP.numero + ' · atualizada em ' + dataBR(VERSAO_APP.data) + '.'; }
   /* Procurar atualização: confere se há internet, apaga só a cópia do app (código e ícones; os dados
@@ -7797,9 +7819,29 @@
     analise: 5, orcamento: 5, filtrosDatas: 5, limites: 6, investimentos: 6, senha: 3, guia: 7, completo: 7 };
   var ABA_MODULO = { abaObr: 'contas', abaOrc: 'orcamento', abaContas: 'contas', abaCadContas: 'contas', abaLimites: 'limites',
     abaDash: 'analise', abaTend: 'analise', abaPessoas: 'pessoas', abaCartoes: 'cartoes', abaRec: 'recorrencias', abaSeguranca: 'senha', abaGuia: 'guia' };
-  function moduloAtivo(m) { return !MODULO_MVP[m] || MODULO_MVP[m] <= NIVEL; }
+  /* Funções extras: cada uma pode ser ligada em Ajustes (vale para este aparelho). */
+  var CHAVE_EXTRAS = 'controle-financeiro-extras';
+  var EXTRAS = [
+    { id: 'analise', nome: 'Análises', desc: 'Painel com gráficos, indicadores e tendências mês a mês.', mods: ['analise'], abas: [['abaDash', 'Painel'], ['abaTend', 'Tendências']] },
+    { id: 'orcamento', nome: 'Orçamento completo', desc: 'Aba própria com a projeção do mês por categoria. O orçamento simples do Início continua.', mods: ['orcamento'], abas: [['abaOrc', 'Orçamento']] },
+    { id: 'contas', nome: 'Contas bancárias', desc: 'Saldo de cada conta e do dinheiro em espécie, e a visão completa de obrigações.', mods: ['contas'], abas: [['abaCadContas', 'Contas'], ['abaContas', 'Saldos e faturas'], ['abaObr', 'Obrigações']] },
+    { id: 'investimentos', nome: 'Investimentos', desc: 'Aplicações junto das contas. Liga também Contas bancárias.', mods: ['investimentos'], requer: ['contas'] },
+    { id: 'limites', nome: 'Limites de crédito', desc: 'Quanto crédito ainda está disponível nos cartões e em outros limites.', mods: ['limites'], abas: [['abaLimites', 'Limites de crédito']] },
+    { id: 'pessoas', nome: 'Pessoas', desc: 'Cadastrar quem é da casa e ver os gastos de cada um.', mods: ['pessoas'], abas: [['abaPessoas', 'Pessoas']] },
+    { id: 'detalhes', nome: 'Campos detalhados', desc: 'Responsável, fonte e outros campos extras no lançamento.', mods: ['detalhes'] },
+    { id: 'importacao', nome: 'Importar extrato', desc: 'Trazer lançamentos de uma planilha ou CSV do banco (na tela Lançamentos).', mods: ['importacao'] },
+    { id: 'filtrosDatas', nome: 'Período livre', desc: 'Filtrar os lançamentos por qualquer intervalo de datas, em vez de mês a mês.', mods: ['filtrosDatas'] },
+    { id: 'completo', nome: 'Modo completo', desc: 'Todas as funções, status detalhados e o menu completo. Melhor no computador. O app recarrega ao mudar.', mods: [], recarrega: true }
+  ];
+  var extras = {};
+  (function () { var o = null; try { o = JSON.parse(localStorage.getItem(CHAVE_EXTRAS) || 'null'); } catch (e) { /* ok */ } if (o && typeof o === 'object') extras = o; })();
+  function extraLigado(id) { return extras[id] === true; }
+  function moduloAtivo(m) {
+    if (!MODULO_MVP[m] || MODULO_MVP[m] <= NIVEL || extraLigado('completo')) return true;
+    return EXTRAS.some(function (x) { return extraLigado(x.id) && (x.mods.indexOf(m) >= 0 || (x.requer || []).indexOf(m) >= 0); });
+  }
   function abaAtiva(id) { return !ABA_MODULO[id] || moduloAtivo(ABA_MODULO[id]); }
-  function modoSimples() { return NIVEL < 7; }
+  function modoSimples() { return NIVEL < 7 && !extraLigado('completo'); }
   function usaMesVisao() { return !moduloAtivo('filtrosDatas'); }
   function campoNoModulo(e) {
     for (var n = e; n && n.getAttribute; n = n.parentNode) {
@@ -7842,6 +7884,7 @@
     }
     iconesLateral();
     $('ajVersaoTexto').textContent = textoVersao();
+    renderExtras();
     $('ajAtualizar').closest('.aj-acoes').hidden = !(modoAparelho && navigator.serviceWorker && navigator.serviceWorker.controller);
     $('ajBaixarHtml').textContent = modoAparelho ? 'Baixar arquivo .html' : 'Salvar versão atual (.html)';
     $('ajBackupTexto').textContent = modoAparelho
@@ -7849,6 +7892,44 @@
       : 'Seus dados ficam dentro deste arquivo .html. Depois de anotar, use “Salvar versão atual” e passe a abrir o arquivo novo. O backup (.json) é uma cópia extra.';
   }
 
+
+  /* ---- Funções extras: chaves em Ajustes e atalhos no Início ---- */
+  function renderExtras() {
+    var lista = $('extrasLista'); if (!lista) return;
+    lista.replaceChildren.apply(lista, EXTRAS.map(function (x) {
+      var on = extraLigado(x.id) || (x.id !== 'completo' && x.mods.length && x.mods.every(function (m) { return MODULO_MVP[m] <= NIVEL; }));
+      var dep = !on && x.id === 'contas' && extraLigado('investimentos');
+      return el('label', { class: 'extra-item' + (extraLigado('completo') && x.id !== 'completo' ? ' extra-coberto' : '') },
+        el('span', { class: 'extra-txt' }, el('b', null, x.nome), el('small', null, x.desc)),
+        el('input', { type: 'checkbox', role: 'switch', class: 'interruptor', 'data-extra': x.id, checked: (on || dep) ? '' : null, disabled: (extraLigado('completo') && x.id !== 'completo') ? '' : null }));
+    }));
+    var mais = $('hojeMais'); if (!mais) return;
+    var vistos = {}, bts = [];
+    EXTRAS.forEach(function (x) {
+      (x.abas || []).forEach(function (a) {
+        if (vistos[a[0]] || !abaAtiva(a[0])) return; vistos[a[0]] = 1;
+        bts.push(el('button', { type: 'button', class: 'btn hoje-mais-btn', 'data-ir-aba': a[0] }, a[0] === 'abaCadContas' && moduloAtivo('investimentos') ? 'Contas e investimentos' : a[1]));
+      });
+    });
+    mais.replaceChildren.apply(mais, bts);
+    $('hojeMaisBloco').hidden = !bts.length;
+  }
+  function trocarExtra(id, ligar) {
+    var x = EXTRAS.filter(function (e) { return e.id === id; })[0]; if (!x) return;
+    if (ligar) { extras[id] = true; (x.requer || []).forEach(function (r) { extras[r] = true; }); }
+    else {
+      delete extras[id];
+      EXTRAS.forEach(function (e) { if ((e.requer || []).indexOf(id) >= 0) delete extras[e.id]; });
+    }
+    try { localStorage.setItem(CHAVE_EXTRAS, JSON.stringify(extras)); } catch (e) { /* ok */ }
+    if (x.recarrega) {
+      avisar(ligar ? 'Ligando o modo completo…' : 'Voltando ao modo simplificado…', '');
+      setTimeout(function () { location.reload(); }, 400);
+      return;
+    }
+    aplicarModulos(); render();
+    avisar(x.nome + (ligar ? ' ligado.' : ' desligado.') + (ligar && x.abas ? ' No celular, está em Início › Mais funções.' : ''), 'sucesso');
+  }
 
   /* ---------- Ícones de linha (24×24, traço fino, no estilo Lucide) ---------- */
   var ICO = {
@@ -11062,6 +11143,9 @@
     document.addEventListener('click', function (e) {
       var b = e.target.closest('[data-ir-aba]');
       if (b) mostrarAba(b.getAttribute('data-ir-aba'));
+    });
+    $('extrasLista').addEventListener('change', function (e) {
+      var c = e.target.closest('[data-extra]'); if (c) trocarExtra(c.getAttribute('data-extra'), c.checked);
     });
 
     // Tendências
