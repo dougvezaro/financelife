@@ -4097,7 +4097,7 @@
   }
   function entrar(ev) {
     ev.preventDefault();
-    var nome = $('lg_usuario').value.trim(), senha = $('lg_senha').value, u = usuarioPorNome(protecao, nome);
+    var nome = usuarioLimpo($('lg_usuario').value), senha = $('lg_senha').value, u = usuarioPorNome(protecao, nome);
     if (!nome || !senha) { erroLogin('Informe o usuário e a senha.'); return; }
     erroLogin('');
     ocupado($('btnEntrar'), true, 'Verificando…');
@@ -4109,7 +4109,7 @@
   }
   function recuperarSenha(ev) {
     ev.preventDefault();
-    var nome = $('lg_usuario2').value.trim(), cod = normalizarCodigo($('lg_codigo').value), n1 = $('lg_nova').value, n2 = $('lg_nova2').value;
+    var nome = usuarioLimpo($('lg_usuario2').value), cod = normalizarCodigo($('lg_codigo').value), n1 = $('lg_nova').value, n2 = $('lg_nova2').value;
     var u = usuarioPorNome(protecao, nome);
     if (!u) { erroLogin('Usuário não encontrado neste arquivo.'); return; }
     if (cod.length !== 20) { erroLogin('O código de recuperação tem 20 letras e números (ex.: ABCDE-FGHJK-MNPQR-STUVW).'); return; }
@@ -7785,7 +7785,7 @@
      fica escondido (os dados continuam no arquivo e voltam a aparecer quando o módulo for ligado).
      Para ver tudo (testes ou uso avançado): localStorage 'controle-financeiro-nivel' = 7. */
   /* Versão do app: atualize a cada entrega (o sw.js usa o mesmo número no nome do cache). */
-  var VERSAO_APP = { numero: '33', data: '2026-11-21', novidade: 'Funções extras em Ajustes: ligue e desligue cada função' };
+  var VERSAO_APP = { numero: '34', data: '2026-11-21', novidade: 'correção do preenchimento automático do usuário no iPhone' };
   var CHAVE_VERSAO_VISTA = 'controle-financeiro-versao-vista';
   function textoVersao() { return 'Versão ' + VERSAO_APP.numero + ' · atualizada em ' + dataBR(VERSAO_APP.data) + '.'; }
   /* Procurar atualização: confere se há internet, apaga só a cópia do app (código e ícones; os dados
@@ -8023,26 +8023,36 @@
      Para a senha deste app não se misturar com a de outros apps do mesmo site, o usuário vai para o
      chaveiro como “usuario@financas”, num campo invisível. O campo que você vê continua só com o usuário. */
   var SUFIXO_CHAVEIRO = '@financas';
+  /* Tira o sufixo do chaveiro (uma ou várias vezes) de um nome de usuário. */
+  function usuarioLimpo(v) { return String(v || '').replace(/@financas/gi, '').trim(); }
   function ligarContaChaveiro() {
     Array.prototype.forEach.call(document.querySelectorAll('.conta-chaveiro'), function (h) {
       var vis = $(h.getAttribute('data-conta-de'));
       if (!vis) return;
-      var deVisivel = function () { var v = vis.value.trim(); h.value = v ? v + SUFIXO_CHAVEIRO : ''; };
-      var deChaveiro = function () {
-        var v = h.value.trim();
-        if (!v) return;
-        var semSufixo = v.toLowerCase().slice(-SUFIXO_CHAVEIRO.length) === SUFIXO_CHAVEIRO ? v.slice(0, -SUFIXO_CHAVEIRO.length) : v;
-        if (semSufixo && vis.value.trim() !== semSufixo) { vis.value = semSufixo; vis.dispatchEvent(new Event('input', { bubbles: true })); }
+      // O campo visível nunca fica com “@financas” (o iPhone às vezes cola o valor do chaveiro nele).
+      var limparVisivel = function () {
+        if (!/@financas/i.test(vis.value)) return;
+        vis.value = usuarioLimpo(vis.value);
+        try { vis.setSelectionRange(vis.value.length, vis.value.length); } catch (e) { /* ok */ }
       };
-      vis.addEventListener('input', deVisivel);
+      // O campo escondido só é atualizado ao terminar de digitar e ao entrar, não a cada letra.
+      var deVisivel = function () { limparVisivel(); var v = usuarioLimpo(vis.value); h.value = v ? v + SUFIXO_CHAVEIRO : ''; };
+      var deChaveiro = function () {
+        var v = usuarioLimpo(h.value);
+        if (!v) return;
+        if (usuarioLimpo(vis.value) !== v) { vis.value = v; vis.dispatchEvent(new Event('input', { bubbles: true })); }
+        h.value = v + SUFIXO_CHAVEIRO;
+      };
+      vis.addEventListener('input', limparVisivel);
       vis.addEventListener('change', deVisivel);
+      vis.addEventListener('blur', deVisivel);
       h.addEventListener('input', deChaveiro);
       h.addEventListener('change', deChaveiro);
       var form = h.form;
-      if (form) form.addEventListener('submit', function () { if (!vis.value.trim()) deChaveiro(); else deVisivel(); }, true);
+      if (form) form.addEventListener('submit', function () { if (!usuarioLimpo(vis.value)) deChaveiro(); else deVisivel(); }, true);
       // O preenchimento automático às vezes não avisa: confere logo depois que a senha muda.
       var senha = form && form.querySelector('input[type="password"]');
-      if (senha) senha.addEventListener('input', function () { setTimeout(deChaveiro, 0); });
+      if (senha) senha.addEventListener('input', function () { setTimeout(function () { limparVisivel(); if (h.value && !usuarioLimpo(vis.value)) deChaveiro(); }, 0); });
       deVisivel();
     });
   }
@@ -9728,7 +9738,7 @@
   }
   function entrarPrimeiroAcesso(ev) {
     ev.preventDefault();
-    var nome = $('lp_usuario').value.trim(), senha = $('lp_senha').value, cfg = nuvemPadrao();
+    var nome = usuarioLimpo($('lp_usuario').value), senha = $('lp_senha').value, cfg = nuvemPadrao();
     if (!nome || !senha) { erroLogin('Informe o usuário e a senha.'); return; }
     if (!cfg) { erroLogin('Abra o app pelo endereço da internet para buscar seus dados na nuvem.'); return; }
     erroLogin('');
@@ -9755,7 +9765,7 @@
   }
   function criarAcesso(ev) {
     ev.preventDefault();
-    var v = { usuario: $('lc_usuario').value, senha: $('lc_senha').value, senha2: $('lc_senha2').value, pessoaId: '' };
+    var v = { usuario: usuarioLimpo($('lc_usuario').value), senha: $('lc_senha').value, senha2: $('lc_senha2').value, pessoaId: '' };
     var e = errosUsuario(v.usuario).concat(errosSenha(v));
     if (e.length) { erroLogin(e.join(' ')); return; }
     erroLogin('');
