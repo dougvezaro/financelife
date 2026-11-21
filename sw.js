@@ -3,7 +3,7 @@
    eles ficam no armazenamento do aparelho e nunca são enviados para lugar nenhum.
    Atualização: com internet, a página do app vem sempre da versão publicada (rede primeiro);
    sem internet, abre a última cópia guardada. */
-var CACHE = 'controle-financeiro-v35';
+var CACHE = 'controle-financeiro-v36';
 var ARQUIVOS = ['./', './index.html', './manifest.webmanifest', './icone-180.png', './icone-192.png', './icone-512.png', './icone-maskable-512.png'];
 
 self.addEventListener('install', function (e) {

@@ -1123,6 +1123,7 @@
   .valor-credito { color: var(--receita) !important; }
   .rot-simples { display: block; color: var(--suave); font-size: .82rem; }
   #parcModo .chips-cat { margin-top: 4px; }
+  .val-modo { margin-top: 6px; }
   @media (max-width: 900px) {
     html.modo-simples .bi-dentro { display: flex; max-width: 560px; }
     html.modo-simples .bi-dentro .bi-aba { flex: 1 1 0; min-width: 0; }
@@ -2573,7 +2574,8 @@
       <label class="largo">Descrição <span class="obrig">*</span><input type="text" id="f_descricao" maxlength="200" list="dlDescricoes"></label>
       <datalist id="dlDescricoes"></datalist>
       <div class="largo dica-sugestao" id="dicaSugestao" hidden></div>
-      <label><span id="rotValor">Valor (R$)</span> <span class="obrig">*</span><input type="text" id="f_valor" inputmode="numeric" placeholder="0,00" data-moeda></label>
+      <label><span id="rotValor">Valor (R$)</span> <span class="obrig">*</span><input type="text" id="f_valor" inputmode="numeric" placeholder="0,00" data-moeda>
+        <span class="chips-cat val-modo" id="valModo" role="group" aria-label="O valor digitado é" data-modo="parcela" hidden><button type="button" class="chip-cat" data-valmodo="parcela">Valor da parcela</button><button type="button" class="chip-cat" data-valmodo="total">Valor total</button></span></label>
       <label id="dataWrap"><span id="rotData">Data</span> <span class="obrig">*</span>
         <span class="datas-rapidas so-simples"><button type="button" class="chip-cat" data-dia-rapido="0">Hoje</button><button type="button" class="chip-cat" data-dia-rapido="-1">Ontem</button></span>
         <input type="date" id="f_data"></label>
@@ -4772,7 +4774,8 @@
     $('blocoCartao').hidden = !cartao;
     var parcelada = cartao && $('f_tipoGasto').value === 'parcelado';
     $('blocoParcelas').hidden = !parcelada;
-    $('rotValor').textContent = parcelada ? 'Valor total da compra (R$)' : (tipo !== 'transferencia' && $('f_tipoGasto').value === 'recorrente' ? 'Valor deste mês (R$)' : 'Valor (R$)');
+    $('valModo').hidden = !parcelada;
+    $('rotValor').textContent = parcelada ? ($('valModo').dataset.modo === 'parcela' ? 'Valor de cada parcela (R$)' : 'Valor total da compra (R$)') : (tipo !== 'transferencia' && $('f_tipoGasto').value === 'recorrente' ? 'Valor deste mês (R$)' : 'Valor (R$)');
     $('rotVenc').textContent = parcelada ? 'Vencimento da parcela atual' : 'Vencimento da fatura';
     $('dicaFatura').hidden = !(tipo === 'despesa' && /fatura/i.test($('f_descricao').value));
     if (!cartao) return;
@@ -4798,8 +4801,10 @@
         dp.textContent = r.n + 'x de ' + moeda(r.parcela / 100) + ' · já consideradas (parcelas anteriores): ' + moeda(r.anteriores / 100) +
           ' · futuras previstas: ' + moeda(r.futuras / 100) + (v1 ? ' · parcela ' + r.atual + ' vence em ' + dataBR(v1) : '') +
           '. A compra é contada uma única vez (' + moeda(r.total / 100) + ') no consumo.';
+        if (digitaParcela()) dp.textContent = 'Total da compra: ' + moeda(r.total / 100) + ' (' + r.n + 'x de ' + moeda(r.parcela / 100) + ').' + (r.anteriores ? ' Parcelas anteriores: ' + moeda(r.anteriores / 100) + '.' : '') + (v1 ? ' A parcela ' + r.atual + ' vence em ' + dataBR(v1) + '.' : '');
       } else {
-        dp.textContent = 'Informe o valor total, o número de parcelas (2 a ' + MAX_PARCELAS + ') e a parcela atual.';
+        dp.textContent = digitaParcela() ? 'Informe o valor de cada parcela, o número de parcelas (2 a ' + MAX_PARCELAS + ') e a parcela atual.'
+          : 'Informe o valor total, o número de parcelas (2 a ' + MAX_PARCELAS + ') e a parcela atual.';
       }
     }
   }
@@ -4896,7 +4901,11 @@
     setTipoLanc(l ? l.tipo : 'despesa', l && l.parcelamento ? 'parcelado' : 'sazonal');
     atualizarFormPorTipo();
     $('f_status').value = l && l.status ? l.status : STATUS_POR_TIPO[$('f_tipo').value][0];
-    $('f_valor').value = l && l.valor ? valorParaCampo(Math.abs(l.valor)) : '';
+    // Parcelada: abre no valor da parcela quando a divisão é exata (senão no total, para não mudar centavos).
+    var nP = l && l.parcelamento ? l.parcelamento.totalParcelas : 0, cP = l && l.valor ? Math.round(Math.abs(l.valor) * 100) : 0;
+    var modoP = l ? (nP && cP % nP === 0 ? 'parcela' : 'total') : (lerArmaz('controle-financeiro-modo-parcela') === 'total' ? 'total' : 'parcela');
+    definirModoValor(modoP, false);
+    $('f_valor').value = l && l.valor ? valorParaCampo(modoP === 'parcela' && nP ? cP / nP / 100 : Math.abs(l.valor)) : '';
     $('parcModo').dataset.credito = l && l.valor < 0 ? '1' : '';
     $('f_subcategoria').value = l ? l.subcategoria : '';
     $('f_obs').value = l ? l.observacoes : '';
@@ -7786,7 +7795,7 @@
      fica escondido (os dados continuam no arquivo e voltam a aparecer quando o módulo for ligado).
      Para ver tudo (testes ou uso avançado): localStorage 'controle-financeiro-nivel' = 7. */
   /* Versão do app: atualize a cada entrega (o sw.js usa o mesmo número no nome do cache). */
-  var VERSAO_APP = { numero: '35', data: '2026-11-21', novidade: 'Porto Bank na lista de instituições' };
+  var VERSAO_APP = { numero: '36', data: '2026-11-21', novidade: 'compra parcelada: digite o valor da parcela' };
   var CHAVE_VERSAO_VISTA = 'controle-financeiro-versao-vista';
   function textoVersao() { return 'Versão ' + VERSAO_APP.numero + ' · atualizada em ' + dataBR(VERSAO_APP.data) + '.'; }
   /* Procurar atualização: confere se há internet, apaga só a cópia do app (código e ícones; os dados
@@ -8816,10 +8825,29 @@
   function creditoForm() {
     return $('f_tipo').value === 'despesa' && $('f_meio').value === MEIO_CARTAO && $('f_tipoGasto').value !== 'parcelado' && $('parcModo').dataset.credito === '1';
   }
+  /* Compra parcelada: dá para digitar o valor de cada parcela (padrão) ou o total. Guardado sempre o total. */
+  function parceladaNoForm() { return $('f_tipo').value === 'despesa' && $('f_meio').value === MEIO_CARTAO && $('f_tipoGasto').value === 'parcelado'; }
+  function digitaParcela() { return parceladaNoForm() && $('valModo').dataset.modo === 'parcela'; }
   function valorDoForm() {
     var v = parseValorSinal($('f_valor').value);
+    if (isFinite(v) && digitaParcela()) {
+      var n = inteiroOuNulo($('f_totParc').value);
+      if (n && n >= 2) v = (Math.round(v * 100) * n) / 100;
+    }
     if (isFinite(v) && creditoForm()) v = -Math.abs(v);
     return v;
+  }
+  function definirModoValor(modo, converter) {
+    var vm = $('valModo'), antes = vm.dataset.modo;
+    if (converter && antes !== modo) {
+      var v = parseValor($('f_valor').value), n = inteiroOuNulo($('f_totParc').value);
+      if (isFinite(v) && v > 0 && n && n >= 2) {
+        var c = Math.round(v * 100);
+        $('f_valor').value = valorParaCampo((modo === 'parcela' ? Math.round(c / n) : c * n) / 100);
+      }
+    }
+    vm.dataset.modo = modo;
+    Array.prototype.forEach.call(vm.querySelectorAll('[data-valmodo]'), function (b) { b.classList.toggle('ativo', b.getAttribute('data-valmodo') === modo); b.setAttribute('aria-pressed', b.getAttribute('data-valmodo') === modo ? 'true' : 'false'); });
   }
   function escolherTipoGasto(tg) {
     var sel = $('f_tipoGasto');
@@ -8972,6 +9000,13 @@
       escolherTipoGasto(modo === 'credito' ? 'sazonal' : modo);
       renderChipsCartao();
       if (b.getAttribute('data-parc') === 'parcelado' && !$('f_totParc').value) focoAuto($('f_totParc'));
+    });
+    $('valModo').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-valmodo]'); if (!b) return;
+      e.preventDefault();
+      var m = b.getAttribute('data-valmodo');
+      definirModoValor(m, true); gravarArmaz('controle-financeiro-modo-parcela', m);
+      atualizarBlocoCartao();
     });
     $('chipsParc').addEventListener('click', function (e) {
       var b = e.target.closest('[data-nparc]'); if (!b) return;
