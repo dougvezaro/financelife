@@ -2824,9 +2824,26 @@
     transferencia: ['Concluído', 'Pendente', 'Cancelado']
   };
   var TODOS_STATUS = ['Pago', 'Recebido', 'Concluído', 'Pendente', 'Cancelado'];
-  var CATEGORIAS_PADRAO = ['Moradia', 'Mercado', 'Alimentação', 'Transporte', 'Carro', 'Saúde',
-    'Bebê e família', 'Educação', 'Lazer', 'Viagem', 'Assinaturas', 'Compras pessoais',
+  var CATEGORIAS_PADRAO = ['Moradia', 'Mercado', 'Alimentação', 'Fast food', 'Transporte', 'Carro', 'Saúde',
+    'Bebê', 'Bebê e família', 'Educação', 'Lazer', 'Viagem', 'Assinaturas', 'Roupas', 'Compras pessoais',
     'Serviços', 'Impostos e taxas', 'Outros'];
+  /* Categorias que entraram depois (v38): vão para quem já usa o app, uma vez só, ao lado da âncora.
+     Se a pessoa apagar depois, não voltam (marca neste aparelho). */
+  var CATEGORIAS_NOVAS = [['Fast food', 'Alimentação'], ['Bebê', 'Bebê e família', true], ['Roupas', 'Compras pessoais', true]];
+  function migrarCategoriasNovas() {
+    var marca = 'controle-financeiro-cats-v38';
+    if (lerArmaz(marca)) return;
+    gravarArmaz(marca, '1');
+    var mudou = false;
+    CATEGORIAS_NOVAS.forEach(function (x) {
+      var lista = estado.categorias;
+      if (lista.some(function (c) { return normalizar(c) === normalizar(x[0]); })) return;
+      var i = -1; lista.forEach(function (c, k) { if (normalizar(c) === normalizar(x[1])) i = k; });
+      var pos = i < 0 ? lista.length - (lista.length && normalizar(lista[lista.length - 1]) === 'outros' ? 1 : 0) : (x[2] ? i : i + 1);
+      lista.splice(pos, 0, x[0]); mudou = true;
+    });
+    if (mudou) { marcarAlterado(); render(); }
+  }
   /* Categorias de RECEITA ficam numa lista própria (as de cima são de despesa). */
   var CATEGORIAS_RECEITA_PADRAO = ['Salário', 'Renda extra', 'Aluguel recebido', 'Rendimentos e investimentos', 'Reembolso',
     'Benefícios (VR/VA)', 'Presentes recebidos', 'Venda de bens', 'Outros'];
@@ -4097,7 +4114,7 @@
       render();
       atualizarStatusSalvamento();
       if (primeiraEntrada) { primeiraEntrada = false; verificarCopiaAoAbrir(); mostrarDicaIOS(); }
-      avisoVencimentosAoEntrar();
+      migrarCategoriasNovas(); avisoVencimentosAoEntrar();
       if (!nuvemAtiva() && nuvemPadrao()) setTimeout(conectarNuvemPadrao, 300);
       else setTimeout(function () { sincronizarNuvem(false); }, 300);
     });
@@ -4582,7 +4599,10 @@
     ['Impostos e taxas', ['ipva', 'iptu', 'imposto', 'darf', 'multa', 'licenciamento', 'tarifa bancaria', 'anuidade', 'taxa']],
     ['Assinaturas', ['netflix', 'spotify', 'amazon prime', 'prime video', 'disney', 'hbo', 'globoplay', 'youtube premium', 'deezer', 'icloud', 'google one', 'paramount', 'assinatura']],
     ['Carro', ['posto', 'gasolina', 'combustivel', 'etanol', 'diesel', 'oficina', 'mecanico', 'estacionamento', 'pedagio', 'sem parar', 'lava rapido', 'seguro auto', 'pneu']],
-    ['Transporte', ['uber', 'taxi', 'onibus', 'metro', 'bilhete unico', 'trem', 'cabify', 'patinete']],
+    ['Transporte', ['uber', 'taxi', 'onibus', 'metro', 'bilhete unico', 'trem', 'cabify', 'patinete', '99 pop', '99pop']],
+    ['Fast food', ['mcdonalds', 'mc donalds', 'mcdonald', 'burger king', 'bk', 'habibs', 'subway', 'kfc', 'giraffas', 'bobs', 'popeyes', 'jeronimo', 'spoleto', 'china in box', 'fast food', 'hamburguer', 'hamburgueria', 'burger', 'lanche', 'lanchonete', 'hot dog', 'cachorro quente', 'pastel', 'esfiha']],
+    ['Roupas', ['roupa', 'roupas', 'sapato', 'tenis', 'calcado', 'renner', 'riachuelo', 'zara', 'c&a', 'cea', 'hering', 'marisa', 'centauro', 'netshoes', 'shein', 'havaianas', 'camisa', 'camiseta', 'calca', 'vestido', 'jaqueta']],
+    ['Bebê', ['fralda', 'fraldas', 'pediatra', 'berco', 'mamadeira', 'chupeta', 'leite em po', 'formula infantil', 'lenco umedecido', 'carrinho de bebe', 'enxoval']],
     ['Mercado', ['supermercado', 'mercado', 'atacadao', 'atacado', 'assai', 'carrefour', 'hortifruti', 'sacolao', 'feira', 'acougue']],
     ['Alimentação', ['ifood', 'restaurante', 'lanchonete', 'lanche', 'padaria', 'pizza', 'pizzaria', 'hamburguer', 'burger', 'sushi', 'almoco', 'jantar', 'cafeteria', 'rappi', 'delivery', 'marmita']],
     ['Saúde', ['farmacia', 'drogaria', 'drogasil', 'droga raia', 'remedio', 'medico', 'consulta', 'exame', 'dentista', 'plano de saude', 'unimed', 'hospital', 'laboratorio', 'psicologo', 'academia']],
@@ -7801,7 +7821,7 @@
      fica escondido (os dados continuam no arquivo e voltam a aparecer quando o módulo for ligado).
      Para ver tudo (testes ou uso avançado): localStorage 'controle-financeiro-nivel' = 7. */
   /* Versão do app: atualize a cada entrega (o sw.js usa o mesmo número no nome do cache). */
-  var VERSAO_APP = { numero: '37', data: '2026-11-21', novidade: 'contas fixas do cartão aparecem previstas nas próximas faturas' };
+  var VERSAO_APP = { numero: '38', data: '2026-11-21', novidade: 'novas categorias: Fast food, Roupas e Bebê; ônibus no Transporte' };
   var CHAVE_VERSAO_VISTA = 'controle-financeiro-versao-vista';
   function textoVersao() { return 'Versão ' + VERSAO_APP.numero + ' · atualizada em ' + dataBR(VERSAO_APP.data) + '.'; }
   /* Procurar atualização: confere se há internet, apaga só a cópia do app (código e ícones; os dados
@@ -8104,9 +8124,9 @@
 
   /* Ícones das categorias (pelo nome; categorias novas ganham um ícone genérico) */
   var ICONES_CAT = [
-    [/compra/, 'bag'], [/benef|aliment/, 'food'], [/bebe|famil/, 'users'], [/agua/, 'droplet'],
-    [/mercado|supermerc|feira|hortifruti|padaria/, 'cart'], [/restaurante|lanche|ifood|delivery|refei|bar\b|cafe/, 'resto'],
-    [/moradia|aluguel|condom|casa|lar\b|iptu/, 'home'], [/transporte|combust|gasolina|uber|onibus|metro|carro|estacion|pedagio|ipva|veicul/, 'car'],
+    [/compra/, 'bag'], [/benef|aliment/, 'food'], [/^bebe$|bebes?\b(?! e)/, 'baby'], [/bebe|famil/, 'users'], [/agua/, 'droplet'],
+    [/mercado|supermerc|feira|hortifruti|padaria/, 'cart'], [/fast ?food|burger|hamburg|restaurante|lanche|ifood|delivery|refei|bar\b|cafe/, 'resto'],
+    [/moradia|aluguel|condom|casa|lar\b|iptu/, 'home'], [/transporte|uber|onibus|metro|taxi|bilhete|trem\b/, 'bus'], [/combust|gasolina|carro|estacion|pedagio|ipva|veicul/, 'car'],
     [/saude|farmac|remedio|medic|hospital|plano de saude|dentista|consulta|exame/, 'health'], [/educa|escola|faculdade|curso|livro|material escolar/, 'book'],
     [/lazer|diversao|cinema|passeio|festa|show/, 'ticket'], [/viagem|ferias|hotel|passagem/, 'plane'], [/roupa|vestu|calcado|moda/, 'shirt'],
     [/luz|energia|agua|gas\b|contas da casa|servicos/, 'zap'], [/internet|telefone|celular|tv\b/, 'phone'], [/assinatura|streaming|netflix|spotify/, 'tv'],
@@ -8119,8 +8139,9 @@
   ];
   function iconeCategoria(nome, tipo) { return ico(nomeIconeCategoria(nome, tipo)); }
   /* Ícones coloridos (emoji) usados nos lançamentos: lista e botões de categoria do formulário. */
-  ICO.food = ICO.utensils; ICO.resto = ICO.utensils;
-  var EMOJI_ICONE = { food: '🍽️', resto: '🍔', bag: '🛍️', utensils: '🍽️', users: '🧸', droplet: '💧', cart: '🛒', home: '🏠', car: '🚗', health: '💊', book: '📚',
+  ICO.food = ICO.utensils; ICO.resto = ICO.utensils; ICO.baby = ICO.users;
+  ICO.bus = '<path d="M8 6v6"/><path d="M15 6v6"/><path d="M2 12h19.6"/><path d="M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3"/><circle cx="7" cy="18" r="2"/><path d="M9 18h5"/><circle cx="16" cy="18" r="2"/>';
+  var EMOJI_ICONE = { food: '🍽️', resto: '🍔', bag: '🛍️', utensils: '🍽️', users: '🧸', droplet: '💧', cart: '🛒', home: '🏠', car: '🚗', bus: '🚌', baby: '🍼', health: '💊', book: '📚',
     ticket: '🎉', plane: '✈️', shirt: '👕', zap: '⚡', phone: '📱', tv: '📺', heart: '🐾', gift: '🎁', file: '🧾', scissors: '💇',
     shield: '🛡️', bell: '🔔', dumbbell: '🏋️', briefcase: '💼', wrench: '🧰', trending: '📈', 'rotate-ccw': '↩️', key: '🔑', tag: '🏷️',
     award: '🏆', card: '💳', landmark: '🏦', package: '📦', coins: '💰' };
@@ -9839,7 +9860,7 @@
       primeiraEntrada = false; ultimaAtividade = Date.now();
       limparFiltros(false); render(); atualizarStatusSalvamento();
       avisar('Bem-vindo de volta, ' + r.usuario + '. Seus dados foram trazidos da nuvem.', 'sucesso');
-      mostrarDicaIOS(); avisoVencimentosAoEntrar();
+      mostrarDicaIOS(); migrarCategoriasNovas(); avisoVencimentosAoEntrar();
     }).then(function () { ocupado($('btnEntrarPrimeiro'), false); });
   }
   function mostrarCriarLogin() {
