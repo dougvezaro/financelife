@@ -2728,6 +2728,7 @@
           <div class="largo so-simples" id="parcModo"><span class="rot-simples">Pagamento</span><span class="chips-cat" role="group" aria-label="À vista ou parcelado">
             <button type="button" class="chip-cat" data-parc="sazonal">À vista</button><button type="button" class="chip-cat" data-parc="parcelado">Parcelado</button><button type="button" class="chip-cat" data-parc="credito"><i class="ico-ph" data-ico="undo"></i> Crédito / estorno</button></span>
             <p class="cred-nota" id="credNota" hidden>Entra como <b>desconto na fatura</b> (estorno, devolução, cashback). Digite o valor sem o sinal de menos.</p></div>
+          <label id="faturaWrap" class="largo"><span id="rotFatura">Entra na fatura de</span><select id="f_faturaMes"></select></label>
           <label id="vencWrap"><span id="rotVenc">Vencimento da fatura</span><input type="date" id="f_venc"></label>
           <div class="largo dica-form" id="dicaVenc"></div>
           <div class="largo grade" id="blocoParcelas" hidden>
@@ -2823,7 +2824,7 @@
     <div class="grade">
       <label class="largo">Nome do cartão <span class="obrig">*</span><input type="text" id="c_nome" maxlength="60" placeholder="Ex.: Nubank da Ana, Visa Itaú"></label>
       <label>Dia de vencimento <span class="obrig">*</span><input type="number" id="c_venc" min="1" max="31" step="1" inputmode="numeric" placeholder="1 a 31"></label>
-      <label>A fatura fecha<select id="c_modoFech"><option value="antes">Alguns dias antes do vencimento</option><option value="dia">Sempre no mesmo dia do mês</option></select></label>
+      <label>A fatura fecha<select id="c_modoFech"><option value="antes">Alguns dias antes do vencimento</option><option value="dia">Sempre no mesmo dia do mês</option><option value="manual">Não sei / escolho a fatura em cada compra</option></select></label>
       <label id="c_diasAntesBox">Quantos dias antes? <span class="obrig">*</span><input type="number" id="c_diasAntes" min="1" max="25" step="1" inputmode="numeric" placeholder="Ex.: 7"></label>
       <label id="c_fechBox" hidden>Dia de fechamento <span class="obrig">*</span><input type="number" id="c_fech" min="1" max="31" step="1" inputmode="numeric" placeholder="1 a 31"></label>
       <div class="largo dica-form" id="c_dicaFech">Veja no app do banco as datas da fatura atual. Ex.: vence 12/12 e fechou 05/12 → 7 dias antes. Quando o vencimento cai em fim de semana ou feriado, o app passa para o próximo dia útil, e o fechamento acompanha. Se algum mês fugir da regra, ajuste as datas daquela fatura na tela de Cartões.</div>
@@ -3161,6 +3162,8 @@
     if (l.criadoPor) limpo.criadoPor = texto(l.criadoPor, 60); // id do usuário do app que lançou (opcional)
     var dF = inteiroOuNulo(l.ajusteFatura); // compra movida N faturas para frente (+) ou para trás (−)
     if (dF && dF >= -3 && dF <= 3) limpo.ajusteFatura = dF;
+    // Fatura escolhida (mês do vencimento) para a parcela atual / compra à vista
+    if (typeof l.faturaMes === 'string' && /^\d{4}-(0[1-9]|1[0-2])$/.test(l.faturaMes)) limpo.faturaMes = l.faturaMes;
     if (limpo.classificacao && !CLASSIFICACOES[limpo.classificacao]) erros.classificacao = 'Classificação inválida.';
     if (limpo.natureza && !NATUREZAS[limpo.natureza]) erros.natureza = 'Natureza inválida.';
     if (limpo.tipo !== 'despesa') limpo.natureza = '';
@@ -3228,6 +3231,10 @@
       titularId: texto(c.titularId, 60),
       ativo: c.ativo !== false
     };
+    if (c.modoFechamento === 'manual') {
+      limpo.modoFechamento = 'manual';
+      if (limpo.diaVencimento >= 1 && limpo.diaVencimento <= 31) limpo.diaFechamento = ((limpo.diaVencimento - DIAS_ANTES_MANUAL - 1 + 31) % 31) + 1; // aproximado, só para exibir
+    }
     if (c.modoFechamento === 'antes') {
       limpo.modoFechamento = 'antes';
       limpo.diasAntes = inteiroOuNulo(c.diasAntes);
@@ -3658,15 +3665,19 @@
   function mesISO(iso) { return iso.slice(0, 7); }
   function somarMesYM(ym, n) { var y = +ym.slice(0, 4), m = +ym.slice(5, 7) + n; while (m > 12) { m -= 12; y++; } while (m < 1) { m += 12; y--; } return y + '-' + dois(m); }
   function textoRegraFatura(c, maiusc) {
-    var t = c.modoFechamento === 'antes' ? 'vence dia ' + c.diaVencimento + ' (dia útil) · fecha ' + c.diasAntes + ' dias antes' : 'fecha dia ' + c.diaFechamento + ' · vence dia ' + c.diaVencimento;
+    var t = c.modoFechamento === 'antes' ? 'vence dia ' + c.diaVencimento + ' (dia útil) · fecha ' + c.diasAntes + ' dias antes'
+      : c.modoFechamento === 'manual' ? 'vence dia ' + c.diaVencimento + ' (dia útil) · fatura escolhida em cada compra'
+      : 'fecha dia ' + c.diaFechamento + ' · vence dia ' + c.diaVencimento;
     return maiusc ? t.charAt(0).toUpperCase() + t.slice(1) : t;
   }
-  function cartaoTemDatas(c) { return !!(c && c.diaVencimento && (c.modoFechamento === 'antes' ? c.diasAntes : c.diaFechamento)); }
+  function cartaoTemDatas(c) { return !!(c && c.diaVencimento && (c.modoFechamento === 'manual' || (c.modoFechamento === 'antes' ? c.diasAntes : c.diaFechamento))); }
+  var DIAS_ANTES_MANUAL = 10; // sem fechamento informado: sugere a fatura que vence pelo menos 10 dias depois da compra
   function cicloFatura(c, ym) {
     var aj = c.ajustesFatura && c.ajustesFatura[ym];
     if (aj) return { ym: ym, venc: aj.vencimento, fech: aj.fechamento, ajustado: true };
     var y = +ym.slice(0, 4), m = +ym.slice(5, 7), venc = montarData(y, m, c.diaVencimento);
     if (c.modoFechamento === 'antes') { venc = diaUtil(venc); return { ym: ym, venc: venc, fech: somarDias(venc, -c.diasAntes) }; }
+    if (c.modoFechamento === 'manual') { venc = diaUtil(venc); return { ym: ym, venc: venc, fech: somarDias(venc, -DIAS_ANTES_MANUAL), fechEstimado: true }; }
     return { ym: ym, venc: venc, fech: montarData(y, c.diaVencimento > c.diaFechamento ? m : m - 1, c.diaFechamento) };
   }
   /* Fatura em que entra uma compra feita em dataISO (desloc: mover N faturas para frente/trás). */
@@ -3684,7 +3695,7 @@
     for (var i = -1; i <= 1; i++) { var cy = cicloFatura(c, somarMesYM(mesISO(venc), i)); if (cy.venc === venc) return cy; }
     return null;
   }
-  function datasAvancadas(c) { return !!(c && (c.modoFechamento === 'antes' || (c.ajustesFatura && Object.keys(c.ajustesFatura).length))); }
+  function datasAvancadas(c) { return !!(c && (c.modoFechamento === 'antes' || c.modoFechamento === 'manual' || (c.ajustesFatura && Object.keys(c.ajustesFatura).length))); }
   /* Vencimento estimado da fatura em que entra uma compra feita em dataISO. '' se não houver dados. */
   function vencimentoPorCartao(dataISO, c) { var cy = cicloDaCompra(c, dataISO); return cy ? cy.venc : ''; }
   function fechamentoPorCartao(dataISO, c) { var cy = cicloDaCompra(c, dataISO); return cy ? cy.fech : ''; }
@@ -3697,6 +3708,7 @@
   /* Vencimento da parcela k. Com vencimento informado, ele vale para a parcela atual. */
   function vencimentoParcela(l, k) {
     var atual = l.parcelamento ? l.parcelamento.parcelaAtual : 1, c = cartaoPorId(l.cartaoId);
+    if (l.faturaMes && cartaoTemDatas(c)) return cicloFatura(c, somarMesYM(l.faturaMes, k - atual)).venc; // fatura escolhida na compra
     if (l.vencimentoFatura) {
       var cyV = datasAvancadas(c) ? cicloPorVenc(c, l.vencimentoFatura) : null;
       return cyV ? cicloFatura(c, somarMesYM(cyV.ym, k - atual)).venc : somarMeses(l.vencimentoFatura, k - atual);
@@ -3828,6 +3840,7 @@
     var cy = cicloPorVenc(c, venc);
     if (cy) return cy.fech;
     if (c.modoFechamento === 'antes') return somarDias(venc, -c.diasAntes);
+    if (c.modoFechamento === 'manual') return somarDias(venc, -DIAS_ANTES_MANUAL);
     var y = +venc.slice(0, 4), m = +venc.slice(5, 7);
     return montarData(y, c.diaVencimento > c.diaFechamento ? m : m - 1, c.diaFechamento);
   }
@@ -4980,6 +4993,7 @@
       meioPagamento: $('f_meio').value,
       cartaoId: cartao ? $('f_cartao').value : '',
       vencimentoFatura: cartao ? $('f_venc').value : '',
+      faturaMes: cartao ? $('f_faturaMes').value : '',
       parcelamento: parcelada ? { totalParcelas: inteiroOuNulo($('f_totParc').value), parcelaAtual: inteiroOuNulo($('f_parcAtual').value) } : null,
       pessoaId: $('f_pessoa').value, classificacao: $('f_classif').value, natureza: $('f_tipo').value === 'despesa' ? $('f_natureza').value : '',
       contaOrigemId: $('f_tipo').value === 'transferencia' ? $('f_contaOrig').value : '',
@@ -5003,10 +5017,12 @@
     if (!cartao) return;
     var c = cartaoPorId($('f_cartao').value);
     var dica = $('dicaVenc');
+    montarSeletorFatura(c, parcelada);
     if (!c) {
       dica.textContent = estado.cartoes.length ? (modoSimples() ? 'Escolha o cartão.' : 'Selecione o cartão para estimar a fatura.') : (modoSimples() ? 'Nenhum cartão cadastrado. Cadastre na aba Cartões.' : 'Nenhum cartão cadastrado. Cadastre em Cadastros › Cartões de crédito.');
     } else {
       var est = vencimentoPorCartao($('f_data').value, c), fech = fechamentoPorCartao($('f_data').value, c);
+      dica.hidden = modoSimples() && !!$('f_faturaMes').options.length;
       dica.textContent = est
         ? (modoSimples() ? 'Vai para a fatura que fecha em ' + dataBR(fech) + ' e vence em ' + dataBR($('f_venc').value || est) + '.'
           : 'Estimativa pelo cartão: fatura que fecha em ' + dataBR(fech) + ' e vence em ' + dataBR(est) + '. Deixe o vencimento em branco para usar a estimativa, ou informe outra data para corrigir.')
@@ -5031,6 +5047,28 @@
     }
   }
 
+  /* Seletor “Entra na fatura de” (à vista) / “Primeira parcela na fatura de” (parcelado).
+     Vazio = automático pelo cartão; escolher um mês grava a fatura na compra (faturaMes). */
+  function montarSeletorFatura(c, parcelada) {
+    var sel = $('f_faturaMes'), wrap = $('faturaWrap');
+    var atualP = parcelada ? (inteiroOuNulo($('f_parcAtual').value) || 1) : 1;
+    $('rotFatura').textContent = parcelada ? (atualP > 1 ? 'Parcela ' + atualP + ' na fatura de' : 'Primeira parcela na fatura de') : 'Entra na fatura de';
+    var data = $('f_data').value;
+    if (!c || !cartaoTemDatas(c) || !dataValida(data)) { wrap.hidden = true; sel.replaceChildren(); sel.dataset.chave = ''; return; }
+    wrap.hidden = false;
+    var escolhida = sel.options.length ? sel.value : (sel.dataset.escolhida || '');
+    var base = cicloDaCompra(c, data, 0), autoYm = somarMesYM(base.ym, atualP - 1);
+    var yms = []; for (var i = -1; i <= 4; i++) yms.push(somarMesYM(autoYm, i));
+    if (escolhida && yms.indexOf(escolhida) < 0) yms.push(escolhida);
+    yms.sort();
+    var rotY = function (ym) { var r = rotuloMes(ym, true); return r.charAt(0).toUpperCase() + r.slice(1); };
+    var cyA = cicloFatura(c, autoYm);
+    var chave = c.id + '|' + data + '|' + atualP + '|' + escolhida;
+    if (sel.dataset.chave === chave) return;
+    var opts = [el('option', { value: '' }, (c.modoFechamento === 'manual' ? 'Sugerida: ' : 'Automática: ') + rotY(autoYm) + ' (vence ' + dataBR(cyA.venc) + ')')];
+    yms.forEach(function (ym) { var cy = cicloFatura(c, ym); opts.push(el('option', { value: ym }, rotY(ym) + ' · vence ' + dataBR(cy.venc))); });
+    sel.replaceChildren.apply(sel, opts); sel.value = escolhida; sel.dataset.chave = chave;
+  }
   function opcoesComAtual(lista, atual) {
     var s = lista.slice();
     if (atual && s.indexOf(atual) < 0) s.push(atual);
@@ -5113,6 +5151,7 @@
     });
     sCartao.value = cartaoPorId(cartaoId) ? cartaoId : '';
     $('f_venc').value = l ? l.vencimentoFatura : '';
+    $('f_faturaMes').dataset.escolhida = l && l.faturaMes ? l.faturaMes : ''; $('f_faturaMes').dataset.chave = ''; $('f_faturaMes').replaceChildren();
     $('f_totParc').value = l && l.parcelamento ? l.parcelamento.totalParcelas : '';
     $('f_parcAtual').value = l && l.parcelamento ? l.parcelamento.parcelaAtual : 1;
     $('f_data').value = l ? l.data : hojeISO();
@@ -5178,9 +5217,9 @@
     if (comPagamentos) {
       // Mudanças que deixariam pagamentos registrados inconsistentes exigem estorno antes.
       var mudou = function (k) { return JSON.stringify(original[k]) !== JSON.stringify(r.limpo[k]); };
-      var bloqueados = ehCompraCartao(original) ? ['tipo', 'meioPagamento', 'cartaoId', 'valor', 'data', 'vencimentoFatura', 'parcelamento'] : ['tipo', 'meioPagamento'];
+      var bloqueados = ehCompraCartao(original) ? ['tipo', 'meioPagamento', 'cartaoId', 'valor', 'data', 'vencimentoFatura', 'faturaMes', 'parcelamento'] : ['tipo', 'meioPagamento'];
       bloqueados.forEach(function (k) {
-        if (mudou(k)) { r.erros[k === 'parcelamento' ? 'totalParcelas' : k] = 'Este lançamento tem pagamentos registrados: estorne-os antes de alterar ' + ({ tipo: 'o tipo', meioPagamento: 'o meio de pagamento', cartaoId: 'o cartão', valor: 'o valor', data: 'a data', vencimentoFatura: 'o vencimento', parcelamento: 'o parcelamento' }[k]) + '.'; r.ok = false; }
+        if (mudou(k)) { r.erros[k === 'parcelamento' ? 'totalParcelas' : k] = 'Este lançamento tem pagamentos registrados: estorne-os antes de alterar ' + ({ tipo: 'o tipo', meioPagamento: 'o meio de pagamento', cartaoId: 'o cartão', valor: 'o valor', data: 'a data', vencimentoFatura: 'o vencimento', faturaMes: 'a fatura', parcelamento: 'o parcelamento' }[k]) + '.'; r.ok = false; }
       });
       if (!ehCompraCartao(original) && isFinite(r.limpo.valor) && centavos(r.limpo.valor) < centavosRealizados(original)) {
         r.erros.valor = 'O valor não pode ser menor que o já pago (' + moeda(centavosRealizados(original) / 100) + ').'; r.ok = false;
@@ -5243,7 +5282,7 @@
         var idx = estado.lancamentos.indexOf(original);
         if (idx < 0) { avisar('O lançamento não existe mais.', 'erro'); return null; }
         if (original.criadoPor) novo.criadoPor = original.criadoPor;
-        if (original.ajusteFatura && novo.cartaoId === original.cartaoId && novo.data === original.data) novo.ajusteFatura = original.ajusteFatura;
+        if (original.ajusteFatura && !novo.faturaMes && novo.cartaoId === original.cartaoId && novo.data === original.data) novo.ajusteFatura = original.ajusteFatura;
         estado.lancamentos[idx] = novo; // substitui o registro: as parcelas são recalculadas, nunca duplicadas
       } else {
         estado.lancamentos.push(marcarAutor(novo));
@@ -5830,9 +5869,9 @@
   }
 
   function ajustarModoFech() {
-    var antes = $('c_modoFech').value === 'antes';
-    $('c_diasAntesBox').hidden = !antes; $('c_fechBox').hidden = antes;
-    $('c_dicaFech').textContent = antes ? 'Veja no app do banco as datas da fatura atual. Ex.: vence 12/12 e fechou 05/12 → 7 dias antes. Quando o vencimento cai em fim de semana ou feriado, o app passa para o próximo dia útil, e o fechamento acompanha. Se algum mês fugir da regra, ajuste as datas daquela fatura na tela de Cartões.'
+    var antes = $('c_modoFech').value === 'antes', manual = $('c_modoFech').value === 'manual';
+    $('c_diasAntesBox').hidden = !antes; $('c_fechBox').hidden = antes || manual;
+    $('c_dicaFech').textContent = manual ? 'Sem fechamento: em cada compra no cartão você escolhe em qual fatura ela entra (o app já sugere a que vence pelo menos 10 dias depois da compra). Nas parceladas, você escolhe a fatura da primeira parcela.' : antes ? 'Veja no app do banco as datas da fatura atual. Ex.: vence 12/12 e fechou 05/12 → 7 dias antes. Quando o vencimento cai em fim de semana ou feriado, o app passa para o próximo dia útil, e o fechamento acompanha. Se algum mês fugir da regra, ajuste as datas daquela fatura na tela de Cartões.'
       : 'Compras feitas até o dia de fechamento (inclusive) entram na fatura daquele mês; depois dele, na seguinte. Se algum mês fugir da regra, ajuste as datas daquela fatura na tela de Cartões.';
   }
   function limparFormCartao() {
@@ -5855,7 +5894,7 @@
     editandoCartaoId = id;
     $('c_nome').value = c.nome; definirBanco('c_banco', c.banco); $('c_final4').value = c.final4;
     $('c_fech').value = c.diaFechamento; $('c_venc').value = c.diaVencimento;
-    $('c_modoFech').value = c.modoFechamento === 'antes' ? 'antes' : 'dia'; $('c_diasAntes').value = c.diasAntes || ''; ajustarModoFech();
+    $('c_modoFech').value = c.modoFechamento === 'antes' || c.modoFechamento === 'manual' ? c.modoFechamento : 'dia'; $('c_diasAntes').value = c.diasAntes || ''; ajustarModoFech();
     $('c_limite').value = c.limite !== null ? valorParaCampo(c.limite) : '';
     $('c_segmento').value = c.segmento || ''; $('c_cor').value = c.cor || '';
     renderCoresCartao();
@@ -5882,7 +5921,7 @@
     if (limiteTxt && !isFinite(limite)) { r.erros.limite = 'Limite inválido (ex.: 5000,00).'; r.ok = false; }
     var dup = estado.cartoes.some(function (c) { return c.id !== editandoCartaoId && normalizar(c.nome) === normalizar(r.limpo.nome); });
     if (dup) { r.erros.nome = 'Já existe um cartão chamado “' + r.limpo.nome + '”. Use um nome diferente.'; r.ok = false; }
-    if ($('c_modoFech').value === 'antes') delete r.erros.diaFechamento;
+    if ($('c_modoFech').value !== 'dia') delete r.erros.diaFechamento;
     r.ok = Object.keys(r.erros).length === 0;
     var mapa = { nome: 'c_nome', final4: 'c_final4', diaFechamento: 'c_fech', diaVencimento: 'c_venc', diasAntes: 'c_diasAntes', limite: 'c_limite' };
     Object.keys(mapa).forEach(function (k) { $(mapa[k]).classList.toggle('invalido', !!r.erros[k]); });
@@ -8033,7 +8072,7 @@
      fica escondido (os dados continuam no arquivo e voltam a aparecer quando o módulo for ligado).
      Para ver tudo (testes ou uso avançado): localStorage 'controle-financeiro-nivel' = 7. */
   /* Versão do app: atualize a cada entrega (o sw.js usa o mesmo número no nome do cache). */
-  var VERSAO_APP = { numero: '43', data: '2026-11-22', novidade: 'toque em Entrou, Saiu ou Sobrou para ver o resumo do mês' };
+  var VERSAO_APP = { numero: '44', data: '2026-11-22', novidade: 'escolha em qual fatura a compra entra (e de onde começa o parcelado)' };
   var CHAVE_VERSAO_VISTA = 'controle-financeiro-versao-vista';
   function textoVersao() { return 'Versão ' + VERSAO_APP.numero + ' · atualizada em ' + dataBR(VERSAO_APP.data) + '.'; }
   /* Procurar atualização: confere se há internet, apaga só a cópia do app (código e ícones; os dados
@@ -9346,7 +9385,7 @@
       if (f) {
         var cyF = cicloPorVenc(c, f.venc);
         plast.append(el('div', { class: 'fat-rot' }, futura ? 'Fatura de ' + rotuloMes(f.venc.slice(0, 7)) + (f.soPrevista ? ' (prevista)' : '') : f.soPrevista ? 'Próxima fatura (prevista)' : 'Fatura atual'), el('div', { class: 'fat-valor' }, moeda(totalExib(f) / 100)),
-          el('div', { class: 'fat-datas' }, 'Vence ', el('b', null, dataBR(f.venc)), f.fechamento ? ' · ' + (f.fechada ? 'fechou' : 'fecha') + ' em ' + dataBR(f.fechamento) : '',
+          el('div', { class: 'fat-datas' }, 'Vence ', el('b', null, dataBR(f.venc)), f.fechamento && c.modoFechamento !== 'manual' ? ' · ' + (f.fechada ? 'fechou' : 'fecha') + ' em ' + dataBR(f.fechamento) : '',
             cyF && cyF.ajustado ? ' · datas ajustadas' : '', f.pago > 0 ? ' · já pago ' + moeda(f.pago / 100) : ''),
           notaPrevista(f) ? el('div', { class: 'fat-datas fat-prev-nota' }, notaPrevista(f)) : '');
         if (!f.soPrevista) card.append(el('button', { type: 'button', class: 'btn primario', 'data-mvp-pagar': c.id + '|' + f.venc }, 'Pagar fatura'));
@@ -9355,8 +9394,8 @@
           cartaoTemDatas(c) ? el('button', { type: 'button', class: 'btn link', 'data-cart-datas': c.id + '|' + f.venc }, 'Ajustar datas desta fatura') : null));
         var ul = el('ul');
         f.itens.slice().sort(function (a, b) { return a.lanc.data < b.lanc.data ? 1 : -1; }).forEach(function (i) {
-          var pode = !(i.pago > 0) && !i.lanc.vencimentoFatura;
-          ul.append(el('li', null, el('span', null, i.lanc.descricao, el('span', { class: 'uso' }, dataBR(i.lanc.data) + (i.n ? ' · parcela ' + i.k + ' de ' + i.n : '') + (i.lanc.categoria ? ' · ' + i.lanc.categoria : '') + (i.lanc.ajusteFatura ? ' · movida' : ''))),
+          var pode = !(i.pago > 0);
+          ul.append(el('li', null, el('span', null, i.lanc.descricao, el('span', { class: 'uso' }, dataBR(i.lanc.data) + (i.n ? ' · parcela ' + i.k + ' de ' + i.n : '') + (i.lanc.categoria ? ' · ' + i.lanc.categoria : '') + (i.lanc.ajusteFatura || i.lanc.faturaMes ? ' · fatura escolhida' : ''))),
             el('span', { class: 'fat-item-fim' },
               el('b', i.credito ? { class: 'valor-credito' } : null, i.credito ? [ico('undo', 'ico-inline'), ' −' + moeda(-i.centavos / 100)] : moeda(i.centavos / 100)),
               el('span', { class: 'fat-item-acoes' },
@@ -9419,11 +9458,13 @@
   function moverCompraFatura(id, d) {
     var l = lancamentoPorId(id); if (!l) return;
     if (temPagamentoAtivo(l)) { avisar('Esta compra já tem pagamento registrado. Desfaça o pagamento da fatura antes de mover.', 'erro'); return; }
-    var novo = (l.ajusteFatura || 0) + d;
-    if (novo < -3 || novo > 3) { avisar('Dá para mover no máximo 3 faturas para frente ou para trás.', 'erro'); return; }
-    var c = cartaoPorId(l.cartaoId), cy = cicloDaCompra(c, l.data, novo);
+    var c = cartaoPorId(l.cartaoId), atualP = l.parcelamento ? l.parcelamento.parcelaAtual : 1;
+    var vAt = vencimentoParcela(l, atualP), cyAt = vAt ? cicloPorVenc(c, vAt) : null;
+    if (!cyAt) { avisar('Não consegui localizar a fatura desta compra.', 'erro'); return; }
+    var alvo = somarMesYM(cyAt.ym, d), cy = cicloFatura(c, alvo);
+    if (alvo < somarMesYM(mesISO(l.data), -1) || alvo > somarMesYM(mesISO(l.data), 12)) { avisar('Essa fatura está longe demais da data da compra.', 'erro'); return; }
     var foto = fotografia();
-    if (novo) l.ajusteFatura = novo; else delete l.ajusteFatura;
+    l.faturaMes = alvo; delete l.ajusteFatura; l.vencimentoFatura = '';
     l.atualizadoEm = new Date().toISOString();
     marcarAlterado(); render();
     avisar('“' + l.descricao + '” agora entra na fatura que vence em ' + (cy ? dataBR(cy.venc) : '—') + (l.parcelamento ? ' (e as parcelas seguintes acompanham)' : '') + '.', 'sucesso', desfazerPara(foto));
@@ -11735,6 +11776,8 @@
       if (!editandoId && $('f_meio').value === MEIO_CARTAO && $('f_tipo').value === 'despesa' && $('f_status').value === 'Pago') $('f_status').value = 'Pendente';
     });
     ['f_valor', 'f_totParc', 'f_parcAtual', 'f_venc', 'f_descricao'].forEach(function (id) { $(id).addEventListener('input', atualizarBlocoCartao); });
+    $('f_faturaMes').addEventListener('change', function () { $('f_faturaMes').dataset.escolhida = $('f_faturaMes').value; atualizarBlocoCartao(); });
+    $('f_data').addEventListener('change', atualizarBlocoCartao);
 
     // Cartões de crédito
     $('formCartao').addEventListener('submit', salvarCartao);
