@@ -1034,6 +1034,38 @@
     html.modo-simples .hoje-grade > .hoje-largo { grid-column: auto; }
   }
   @media (max-width: 900px) { html.modo-simples .topo-titulo .status-salv { display: none; } }
+  /* ---- Cabeçalho (igual em todos os modos) ---- */
+  .topo .cab { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; flex-wrap: nowrap; }
+  .cab-marca { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .cab-simbolo { flex: none; border-radius: 11px; box-shadow: 0 4px 14px -6px color-mix(in srgb, var(--ocre) 70%, transparent); }
+  .cab-txt { display: flex; flex-direction: column; min-width: 0; line-height: 1.15; }
+  .cab-app { font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ocre); white-space: nowrap; }
+  .cab-txt #tituloSecao { margin: 1px 0 0; font-size: 1.32rem; font-weight: 800; color: var(--texto); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cab-dir { display: flex; align-items: center; gap: 8px; flex: none; }
+  .cab-dir .status-salv { margin: 0 4px 0 0; text-align: right; max-width: 220px; }
+  .sessao-info { display: inline-flex; align-items: center; gap: 9px; padding: 4px 12px 4px 4px; border-radius: 999px; background: var(--superficie); border: 1px solid var(--borda); }
+  .cab-avatar { width: 32px; height: 32px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; flex: none;
+    background: linear-gradient(135deg, var(--ocre), color-mix(in srgb, var(--ocre) 60%, var(--lateral))); color: #fff; font-weight: 800; font-size: .95rem; }
+  .cab-usuario { display: flex; flex-direction: column; line-height: 1.1; min-width: 0; }
+  .cab-usuario small { font-size: .66rem; color: var(--suave); }
+  .cab-usuario b { font-size: .86rem; color: var(--texto); max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cab-sair { width: auto !important; padding: 0 12px; gap: 6px; display: inline-flex !important; }
+  .cab-sair[hidden] { display: none !important; }
+  .cab-sair-txt { font-size: .86rem; font-weight: 600; }
+  .cab-sair .ico, .icone-topo .ico { width: 19px; height: 19px; }
+  /* Onde o menu lateral aparece (computador e modo completo), a marca já está nele. */
+  html:not(.modo-simples) .cab-simbolo, html:not(.modo-simples) .cab-app { display: none; }
+  @media (min-width: 901px) { .cab-simbolo, .cab-app { display: none; } }
+  @media (max-width: 900px) {
+    .topo .cab { gap: 8px; }
+    .cab-simbolo { width: 34px; height: 34px; }
+    .cab-txt #tituloSecao { font-size: 1.12rem; }
+    .cab-app { font-size: .64rem; }
+    .cab-usuario, .cab-sair-txt, .cab-dir .status-salv { display: none !important; }
+    .sessao-info { padding: 0; border: 0; background: transparent; }
+    .cab-sair { width: 40px !important; padding: 0; }
+  }
+
   /* Lista de lançamentos compacta no celular (modo simples) */
   @media (max-width: 760px) {
     html.modo-simples #corpoTabela tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "desc valor" "data cat" "acoes acoes";
@@ -1853,19 +1885,29 @@
 
 <div class="app-main">
 <header class="topo">
-  <div class="topo-titulo">
-    <h2 id="tituloSecao">Hoje</h2>
-    <button type="button" class="btn pequeno tema-movel" id="btnTemaMovel" aria-label="Alternar tema claro/escuro">Tema</button>
-    <div id="statusSalvamento" class="status-salv"></div>
-    <div id="sessaoInfo" class="sessao-info" hidden></div>
-    <button type="button" class="icone-topo so-simples" id="btnAjustesTopo" aria-label="Ajustes" title="Ajustes"><i class="ico-ph" data-ico="sliders"></i>︎</button>
+  <div class="topo-titulo cab">
+    <div class="cab-marca">
+      <svg class="cab-simbolo" viewBox="0 0 32 32" width="38" height="38" aria-hidden="true" focusable="false">
+        <rect width="32" height="32" rx="9" style="fill: var(--ocre)"/>
+        <rect x="7.5" y="17" width="4.5" height="8" rx="1.6" style="fill: var(--lateral)"/>
+        <rect x="13.75" y="12.5" width="4.5" height="12.5" rx="1.6" style="fill: var(--lateral)"/>
+        <rect x="20" y="7" width="4.5" height="18" rx="1.6" style="fill: var(--lateral)"/>
+      </svg>
+      <div class="cab-txt"><span class="cab-app">Controle Financeiro</span><h2 id="tituloSecao">Hoje</h2></div>
+    </div>
+    <div class="cab-dir">
+      <div id="statusSalvamento" class="status-salv"></div>
+      <button type="button" class="icone-topo tema-movel" id="btnTemaMovel" aria-label="Alternar tema claro/escuro" title="Tema claro/escuro"><i class="ico-ph" data-ico="moon"></i></button>
+      <div id="sessaoInfo" class="sessao-info" hidden></div>
+      <button type="button" id="btnSair" class="icone-topo cab-sair" hidden title="Sair: tranca o app agora; para voltar, entre com usuário e senha" aria-label="Sair"><i class="ico-ph" data-ico="lock"></i><span class="cab-sair-txt">Sair</span></button>
+      <button type="button" class="icone-topo so-simples" id="btnAjustesTopo" aria-label="Ajustes" title="Ajustes"><i class="ico-ph" data-ico="sliders"></i></button>
+    </div>
   </div>
   <div class="acoes">
     <button type="button" id="btnNovo" class="btn primario">+ Novo lançamento</button>
     <button type="button" id="btnSalvar" class="btn">Salvar versão atual</button>
     <button type="button" id="btnExportar" class="btn" data-modulo="completo">Exportar backup</button>
     <button type="button" id="btnRestaurar" class="btn" data-modulo="completo">Restaurar backup</button>
-    <button type="button" id="btnSair" class="btn" hidden title="Tranca o app agora; para voltar, entre com usuário e senha">🔒 Sair</button>
     <input type="file" id="arquivoBackup" class="arquivo-oculto" tabindex="-1" aria-hidden="true" accept=".json,.html,.htm,application/json,text/html">
   </div>
 </header>
@@ -7929,7 +7971,7 @@
      fica escondido (os dados continuam no arquivo e voltam a aparecer quando o módulo for ligado).
      Para ver tudo (testes ou uso avançado): localStorage 'controle-financeiro-nivel' = 7. */
   /* Versão do app: atualize a cada entrega (o sw.js usa o mesmo número no nome do cache). */
-  var VERSAO_APP = { numero: '40', data: '2026-11-22', novidade: 'filtro por cartão nos lançamentos' };
+  var VERSAO_APP = { numero: '41', data: '2026-11-22', novidade: 'cabeçalho novo, igual em todas as versões' };
   var CHAVE_VERSAO_VISTA = 'controle-financeiro-versao-vista';
   function textoVersao() { return 'Versão ' + VERSAO_APP.numero + ' · atualizada em ' + dataBR(VERSAO_APP.data) + '.'; }
   /* Procurar atualização: confere se há internet, apaga só a cópia do app (código e ícones; os dados
@@ -9958,7 +10000,10 @@
     $('btnSair').hidden = !(protecao && chaveDados);
     var u = usuarioPorId(usuarioAtual);
     $('sessaoInfo').hidden = !u;
-    $('sessaoInfo').textContent = u ? 'Entrou como ' + u.usuario + (u.pessoaId && pessoaPorId(u.pessoaId) ? ' (' + nomePessoa(u.pessoaId) + ')' : '') : '';
+    var nomeS = u ? u.usuario + (u.pessoaId && pessoaPorId(u.pessoaId) ? ' (' + nomePessoa(u.pessoaId) + ')' : '') : '';
+    $('sessaoInfo').replaceChildren.apply($('sessaoInfo'), u ? [el('span', { class: 'cab-avatar', 'aria-hidden': 'true' }, (u.usuario.trim().charAt(0) || '?').toUpperCase()),
+      el('span', { class: 'cab-usuario' }, el('small', null, 'Entrou como'), el('b', null, nomeS))] : []);
+    $('sessaoInfo').title = u ? 'Entrou como ' + nomeS : '';
     if (!CRIPTO_OK) { res.textContent = 'Este navegador não permite criptografia nesta página. Abra o app pelo link (https) ou pelo arquivo num navegador atualizado para ativar a senha.'; return; }
     if (!protecao) {
       res.replaceChildren('Hoje o arquivo ', el('strong', null, 'não tem senha'), ': quem abrir o HTML ou o backup vê os dados. Com a senha, tudo o que é salvo fica criptografado e o app pede usuário e senha ao abrir e depois de ' + MINUTOS_BLOQUEIO + ' minutos sem uso.');
