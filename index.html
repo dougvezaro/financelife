@@ -2047,6 +2047,7 @@
         </select>
       </label>
       <label>Categoria <select id="fCategoria"></select></label>
+      <label id="fCartaoBox" data-modulo="cartoes" hidden>Cartão <select id="fCartao"></select></label>
       <label id="fAutorBox" hidden>Lançado por <select id="fAutor"></select></label>
       <label data-modulo="detalhes">Responsável <select id="fResponsavel"></select></label>
       <label data-modulo="detalhes">Fonte de recurso <select id="fFonte"></select></label>
@@ -4286,7 +4287,8 @@
       responsavel: $('fResponsavel').value,
       fonte: $('fFonte').value,
       status: $('fStatus').value,
-      autor: $('fAutor').value
+      autor: $('fAutor').value,
+      cartao: $('fCartao').value
     };
   }
   function filtrosAtivos(f) {
@@ -4310,6 +4312,10 @@
       if (f.fonte && l.fonte !== f.fonte) return false;
       if (f.status && l.status !== f.status) return false;
       if (f.autor && (l.criadoPor || '') !== (f.autor === '-' ? '' : f.autor)) return false;
+      if (f.cartao) {
+        var noCartao = ehCompraCartao(l);
+        if (f.cartao === '*' ? !noCartao : f.cartao === '-' ? noCartao : (!noCartao || l.cartaoId !== f.cartao)) return false;
+      }
       return true;
     });
   }
@@ -4350,6 +4356,15 @@
       sa.append(el('option', { value: '-' }, 'Sem registro (antigos)'));
     }
     sa.value = Array.prototype.some.call(sa.options, function (o) { return o.value === atual; }) ? atual : '';
+    var sc = $('fCartao'), atualC = sc.value;
+    $('fCartaoBox').hidden = !estado.cartoes.length;
+    sc.replaceChildren(el('option', { value: '' }, 'Todos'));
+    if (estado.cartoes.length) {
+      sc.append(el('option', { value: '*' }, 'Qualquer cartão'));
+      estado.cartoes.forEach(function (c) { sc.append(el('option', { value: c.id }, c.nome + (c.ativo ? '' : ' (desativado)'))); });
+      sc.append(el('option', { value: '-' }, 'Fora do cartão'));
+    }
+    sc.value = Array.prototype.some.call(sc.options, function (o) { return o.value === atualC; }) ? atualC : '';
   }
 
   /* ---------- Renderização ---------- */
@@ -4438,7 +4453,7 @@
 
   function renderInfo(lista) {
     var f = lerFiltros();
-    var nAtivos = ['fTipo', 'fCategoria', 'fStatus', 'fAutor'].filter(function (id) { return $(id).value !== ''; }).length;
+    var nAtivos = ['fTipo', 'fCategoria', 'fStatus', 'fAutor', 'fCartao'].filter(function (id) { return $(id).value !== ''; }).length;
     if (nAtivos) $('btnFiltros').setAttribute('data-ativos', String(nAtivos)); else $('btnFiltros').removeAttribute('data-ativos');
     var total = estado.lancamentos.length;
     var info = $('infoFiltro');
@@ -6039,7 +6054,7 @@
   }
 
   function limparFiltros(redesenhar) {
-    ['fBusca', 'fDataIni', 'fDataFim', 'fTipo', 'fCategoria', 'fResponsavel', 'fFonte', 'fStatus', 'fAutor']
+    ['fBusca', 'fDataIni', 'fDataFim', 'fTipo', 'fCategoria', 'fResponsavel', 'fFonte', 'fStatus', 'fAutor', 'fCartao']
       .forEach(function (id) { $(id).value = ''; });
     if (redesenhar !== false) render();
   }
@@ -7914,7 +7929,7 @@
      fica escondido (os dados continuam no arquivo e voltam a aparecer quando o módulo for ligado).
      Para ver tudo (testes ou uso avançado): localStorage 'controle-financeiro-nivel' = 7. */
   /* Versão do app: atualize a cada entrega (o sw.js usa o mesmo número no nome do cache). */
-  var VERSAO_APP = { numero: '39', data: '2026-11-22', novidade: 'faturas com dia útil e fechamento antes do vencimento; compras pela tela de Cartões' };
+  var VERSAO_APP = { numero: '40', data: '2026-11-22', novidade: 'filtro por cartão nos lançamentos' };
   var CHAVE_VERSAO_VISTA = 'controle-financeiro-versao-vista';
   function textoVersao() { return 'Versão ' + VERSAO_APP.numero + ' · atualizada em ' + dataBR(VERSAO_APP.data) + '.'; }
   /* Procurar atualização: confere se há internet, apaga só a cópia do app (código e ícones; os dados
@@ -11518,7 +11533,7 @@
     $('btnLimpar').addEventListener('click', function () { limparFiltros(true); });
 
     ['fBusca', 'fDataIni', 'fDataFim'].forEach(function (id) { $(id).addEventListener('input', render); });
-    ['fDataIni', 'fDataFim', 'fTipo', 'fCategoria', 'fResponsavel', 'fFonte', 'fStatus', 'fAutor']
+    ['fDataIni', 'fDataFim', 'fTipo', 'fCategoria', 'fResponsavel', 'fFonte', 'fStatus', 'fAutor', 'fCartao']
       .forEach(function (id) { $(id).addEventListener('change', render); });
 
     Array.prototype.forEach.call(document.querySelectorAll('th button[data-ordem]'), function (b) {
