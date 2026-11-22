@@ -1125,6 +1125,15 @@
   #parcModo .chips-cat { margin-top: 4px; }
   .val-modo { margin-top: 6px; }
   .fat-prev-nota { opacity: .85; font-size: .82rem; margin-top: 2px; }
+  .fat-acoes-cartao { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 10px; }
+  .fat-item-fim { display: flex; align-items: center; gap: 8px; flex: none; }
+  .fat-item-acoes { display: inline-flex; gap: 4px; }
+  .btn-mini { min-width: 32px; height: 32px; padding: 0 8px; border-radius: 8px; border: 1px solid var(--borda); background: var(--fundo-2, transparent); color: var(--texto); font-size: .95rem; line-height: 1; cursor: pointer; }
+  .btn-mini:hover { border-color: var(--suave); }
+  .btn-mini.perigo { color: var(--despesa); }
+  .fat-prox-btn { border: 1px solid var(--borda); background: transparent; color: inherit; border-radius: 999px; padding: 4px 10px; font: inherit; font-size: .84rem; cursor: pointer; }
+  .fat-prox-btn:hover { border-color: var(--ocre); }
+  .check-linha { display: flex; align-items: center; gap: 8px; font-weight: 500; }
   .fat-item-prev { opacity: .8; }
   .selo.s-prevista { background: transparent; border: 1px dashed currentColor; color: var(--suave); padding: 0 6px; font-size: .72rem; }
   .fat-prox-nota { font-size: .78rem; margin-top: 4px; }
@@ -2709,9 +2718,11 @@
     <div id="erroCartao" class="erro-form" hidden></div>
     <div class="grade">
       <label class="largo">Nome do cartão <span class="obrig">*</span><input type="text" id="c_nome" maxlength="60" placeholder="Ex.: Nubank da Ana, Visa Itaú"></label>
-      <label>Dia de fechamento <span class="obrig">*</span><input type="number" id="c_fech" min="1" max="31" step="1" inputmode="numeric" placeholder="1 a 31"></label>
       <label>Dia de vencimento <span class="obrig">*</span><input type="number" id="c_venc" min="1" max="31" step="1" inputmode="numeric" placeholder="1 a 31"></label>
-      <div class="largo dica-form">Os dois dias estão na fatura ou no app do banco. Compras feitas até o dia de fechamento (inclusive) entram na fatura daquele mês; depois dele, na seguinte.</div>
+      <label>A fatura fecha<select id="c_modoFech"><option value="antes">Alguns dias antes do vencimento</option><option value="dia">Sempre no mesmo dia do mês</option></select></label>
+      <label id="c_diasAntesBox">Quantos dias antes? <span class="obrig">*</span><input type="number" id="c_diasAntes" min="1" max="25" step="1" inputmode="numeric" placeholder="Ex.: 7"></label>
+      <label id="c_fechBox" hidden>Dia de fechamento <span class="obrig">*</span><input type="number" id="c_fech" min="1" max="31" step="1" inputmode="numeric" placeholder="1 a 31"></label>
+      <div class="largo dica-form" id="c_dicaFech">Veja no app do banco as datas da fatura atual. Ex.: vence 12/12 e fechou 05/12 → 7 dias antes. Quando o vencimento cai em fim de semana ou feriado, o app passa para o próximo dia útil, e o fechamento acompanha. Se algum mês fugir da regra, ajuste as datas daquela fatura na tela de Cartões.</div>
       <label data-modulo="pessoas">Titular<select id="c_titular"></select></label>
       <label>Banco ou instituição<select id="c_banco" data-banco></select><input type="text" id="c_banco_outro" class="banco-outro" maxlength="60" placeholder="Digite o nome do banco" aria-label="Nome do banco" hidden></label>
       <label>Últimos 4 dígitos<input type="text" id="c_final4" maxlength="4" inputmode="numeric" placeholder="Opcional"></label>
@@ -3044,6 +3055,8 @@
       atualizadoEm: typeof l.atualizadoEm === 'string' ? l.atualizadoEm : new Date().toISOString()
     };
     if (l.criadoPor) limpo.criadoPor = texto(l.criadoPor, 60); // id do usuário do app que lançou (opcional)
+    var dF = inteiroOuNulo(l.ajusteFatura); // compra movida N faturas para frente (+) ou para trás (−)
+    if (dF && dF >= -3 && dF <= 3) limpo.ajusteFatura = dF;
     if (limpo.classificacao && !CLASSIFICACOES[limpo.classificacao]) erros.classificacao = 'Classificação inválida.';
     if (limpo.natureza && !NATUREZAS[limpo.natureza]) erros.natureza = 'Natureza inválida.';
     if (limpo.tipo !== 'despesa') limpo.natureza = '';
@@ -3111,6 +3124,20 @@
       titularId: texto(c.titularId, 60),
       ativo: c.ativo !== false
     };
+    if (c.modoFechamento === 'antes') {
+      limpo.modoFechamento = 'antes';
+      limpo.diasAntes = inteiroOuNulo(c.diasAntes);
+      if (limpo.diasAntes === null || !(limpo.diasAntes >= 1 && limpo.diasAntes <= 25)) erros.diasAntes = 'Informe quantos dias antes do vencimento a fatura fecha (1 a 25).';
+      else if (limpo.diaVencimento >= 1 && limpo.diaVencimento <= 31) limpo.diaFechamento = ((limpo.diaVencimento - limpo.diasAntes - 1 + 31) % 31) + 1; // aproximado, só para exibir
+    }
+    if (c.ajustesFatura && typeof c.ajustesFatura === 'object') {
+      var aj = {};
+      Object.keys(c.ajustesFatura).forEach(function (ym) {
+        var a = c.ajustesFatura[ym];
+        if (/^\d{4}-\d{2}$/.test(ym) && a && dataValida(a.vencimento) && dataValida(a.fechamento) && a.fechamento < a.vencimento) aj[ym] = { fechamento: a.fechamento, vencimento: a.vencimento };
+      });
+      if (Object.keys(aj).length) limpo.ajustesFatura = aj;
+    }
     if (!limpo.nome) erros.nome = 'Informe o nome do cartão.';
     if (c.final4 && !/^\d{4}$/.test(String(c.final4).trim())) erros.final4 = 'Informe apenas os 4 últimos dígitos (ou deixe em branco).';
     if (limpo.diaFechamento === null || !(limpo.diaFechamento >= 1 && limpo.diaFechamento <= 31)) erros.diaFechamento = 'Dia de fechamento deve ser entre 1 e 31.';
@@ -3495,21 +3522,68 @@
     var y = +iso.slice(0, 4), m = +iso.slice(5, 7);
     return montarData(y, m + n, dia || +iso.slice(8, 10));
   }
+  /* ---------- Datas das faturas ----------
+     Cada fatura é identificada pelo mês do vencimento (AAAA-MM). Dois jeitos de calcular:
+     - 'dia' (padrão antigo): fecha sempre no mesmo dia do mês e vence no dia informado.
+     - 'antes': vence no dia informado, adiado para o próximo dia útil (fim de semana e feriados
+       nacionais), e fecha X dias antes do vencimento real — como a maioria dos bancos.
+     Em qualquer modo, um mês pode ter as datas ajustadas à mão (c.ajustesFatura[AAAA-MM]). */
+  var feriadosCache = {};
+  function pascoa(y) {
+    var a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3);
+    var h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4, L = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * L) / 451);
+    var mes = Math.floor((h + L - 7 * m + 114) / 31), dia = ((h + L - 7 * m + 114) % 31) + 1;
+    return y + '-' + dois(mes) + '-' + dois(dia);
+  }
+  function feriadosNacionais(y) {
+    if (feriadosCache[y]) return feriadosCache[y];
+    var f = {}, p = pascoa(y);
+    ['01-01', '04-21', '05-01', '09-07', '10-12', '11-02', '11-15', '12-25'].concat(y >= 2024 ? ['11-20'] : []).forEach(function (d) { f[y + '-' + d] = 1; });
+    [-48, -47, -2, 60].forEach(function (n) { f[somarDias(p, n)] = 1; }); // Carnaval (seg e ter), Sexta-feira Santa, Corpus Christi
+    return (feriadosCache[y] = f);
+  }
+  function diaUtil(iso) {
+    var d = iso;
+    for (var i = 0; i < 10; i++) {
+      var dt = new Date(d + 'T12:00:00'), w = dt.getDay();
+      if (w !== 0 && w !== 6 && !feriadosNacionais(+d.slice(0, 4))[d]) return d;
+      d = somarDias(d, 1);
+    }
+    return d;
+  }
+  function mesISO(iso) { return iso.slice(0, 7); }
+  function somarMesYM(ym, n) { var y = +ym.slice(0, 4), m = +ym.slice(5, 7) + n; while (m > 12) { m -= 12; y++; } while (m < 1) { m += 12; y--; } return y + '-' + dois(m); }
+  function textoRegraFatura(c, maiusc) {
+    var t = c.modoFechamento === 'antes' ? 'vence dia ' + c.diaVencimento + ' (dia útil) · fecha ' + c.diasAntes + ' dias antes' : 'fecha dia ' + c.diaFechamento + ' · vence dia ' + c.diaVencimento;
+    return maiusc ? t.charAt(0).toUpperCase() + t.slice(1) : t;
+  }
+  function cartaoTemDatas(c) { return !!(c && c.diaVencimento && (c.modoFechamento === 'antes' ? c.diasAntes : c.diaFechamento)); }
+  function cicloFatura(c, ym) {
+    var aj = c.ajustesFatura && c.ajustesFatura[ym];
+    if (aj) return { ym: ym, venc: aj.vencimento, fech: aj.fechamento, ajustado: true };
+    var y = +ym.slice(0, 4), m = +ym.slice(5, 7), venc = montarData(y, m, c.diaVencimento);
+    if (c.modoFechamento === 'antes') { venc = diaUtil(venc); return { ym: ym, venc: venc, fech: somarDias(venc, -c.diasAntes) }; }
+    return { ym: ym, venc: venc, fech: montarData(y, c.diaVencimento > c.diaFechamento ? m : m - 1, c.diaFechamento) };
+  }
+  /* Fatura em que entra uma compra feita em dataISO (desloc: mover N faturas para frente/trás). */
+  function cicloDaCompra(c, dataISO, desloc) {
+    if (!cartaoTemDatas(c) || !dataValida(dataISO)) return null;
+    var ym = somarMesYM(mesISO(dataISO), -2);
+    for (var i = 0; i < 16; i++) {
+      var cy = cicloFatura(c, somarMesYM(ym, i));
+      if (dataISO <= cy.fech) return desloc ? cicloFatura(c, somarMesYM(cy.ym, desloc)) : cy;
+    }
+    return null;
+  }
+  function cicloPorVenc(c, venc) {
+    if (!cartaoTemDatas(c) || !venc) return null;
+    for (var i = -1; i <= 1; i++) { var cy = cicloFatura(c, somarMesYM(mesISO(venc), i)); if (cy.venc === venc) return cy; }
+    return null;
+  }
+  function datasAvancadas(c) { return !!(c && (c.modoFechamento === 'antes' || (c.ajustesFatura && Object.keys(c.ajustesFatura).length))); }
   /* Vencimento estimado da fatura em que entra uma compra feita em dataISO. '' se não houver dados. */
-  function vencimentoPorCartao(dataISO, c) {
-    if (!c || !dataValida(dataISO) || !c.diaFechamento || !c.diaVencimento) return '';
-    var y = +dataISO.slice(0, 4), m = +dataISO.slice(5, 7), d = +dataISO.slice(8, 10);
-    var fech = Math.min(c.diaFechamento, diasNoMes(y, m));
-    var mesFech = d <= fech ? m : m + 1;
-    var mesVenc = c.diaVencimento > c.diaFechamento ? mesFech : mesFech + 1;
-    return montarData(y, mesVenc, c.diaVencimento);
-  }
-  function fechamentoPorCartao(dataISO, c) {
-    if (!c || !dataValida(dataISO) || !c.diaFechamento) return '';
-    var y = +dataISO.slice(0, 4), m = +dataISO.slice(5, 7), d = +dataISO.slice(8, 10);
-    var fech = Math.min(c.diaFechamento, diasNoMes(y, m));
-    return montarData(y, d <= fech ? m : m + 1, c.diaFechamento);
-  }
+  function vencimentoPorCartao(dataISO, c) { var cy = cicloDaCompra(c, dataISO); return cy ? cy.venc : ''; }
+  function fechamentoPorCartao(dataISO, c) { var cy = cicloDaCompra(c, dataISO); return cy ? cy.fech : ''; }
   function totalParcelas(l) { return l.parcelamento ? l.parcelamento.totalParcelas : 1; }
   /* Valor de cada parcela em centavos; a última absorve o arredondamento. */
   function centavosParcela(l, k) {
@@ -3518,11 +3592,13 @@
   }
   /* Vencimento da parcela k. Com vencimento informado, ele vale para a parcela atual. */
   function vencimentoParcela(l, k) {
-    var atual = l.parcelamento ? l.parcelamento.parcelaAtual : 1;
-    if (l.vencimentoFatura) return somarMeses(l.vencimentoFatura, k - atual);
-    var c = cartaoPorId(l.cartaoId);
-    var primeiro = vencimentoPorCartao(l.data, c);
-    return primeiro ? somarMeses(primeiro, k - 1, c.diaVencimento) : '';
+    var atual = l.parcelamento ? l.parcelamento.parcelaAtual : 1, c = cartaoPorId(l.cartaoId);
+    if (l.vencimentoFatura) {
+      var cyV = datasAvancadas(c) ? cicloPorVenc(c, l.vencimentoFatura) : null;
+      return cyV ? cicloFatura(c, somarMesYM(cyV.ym, k - atual)).venc : somarMeses(l.vencimentoFatura, k - atual);
+    }
+    var cy = cicloDaCompra(c, l.data, l.ajusteFatura || 0);
+    return cy ? cicloFatura(c, somarMesYM(cy.ym, k - 1)).venc : '';
   }
   /* Resumo financeiro de uma compra parcelada: total, parcela, já consideradas e futuras. */
   function resumoParcelas(l) {
@@ -3644,7 +3720,10 @@
 
   /* ---------- Faturas ---------- */
   function fechamentoDaFatura(venc, c) {
-    if (!venc || !c || !c.diaFechamento) return '';
+    if (!venc || !cartaoTemDatas(c)) return '';
+    var cy = cicloPorVenc(c, venc);
+    if (cy) return cy.fech;
+    if (c.modoFechamento === 'antes') return somarDias(venc, -c.diasAntes);
     var y = +venc.slice(0, 4), m = +venc.slice(5, 7);
     return montarData(y, c.diaVencimento > c.diaFechamento ? m : m - 1, c.diaFechamento);
   }
@@ -5046,6 +5125,7 @@
         var idx = estado.lancamentos.indexOf(original);
         if (idx < 0) { avisar('O lançamento não existe mais.', 'erro'); return null; }
         if (original.criadoPor) novo.criadoPor = original.criadoPor;
+        if (original.ajusteFatura && novo.cartaoId === original.cartaoId && novo.data === original.data) novo.ajusteFatura = original.ajusteFatura;
         estado.lancamentos[idx] = novo; // substitui o registro: as parcelas são recalculadas, nunca duplicadas
       } else {
         estado.lancamentos.push(marcarAutor(novo));
@@ -5559,7 +5639,7 @@
       var uso = estado.lancamentos.filter(function (l) { return l.cartaoId === c.id; }).length;
       ul.append(cadCard({ class: 'cad-card' + (c.ativo ? '' : ' inativo'), 'data-cartao': c.id },
         [el('div', null, el('div', { class: 'cad-nome' }, c.nome), el('div', { class: 'cad-sub' }, [c.banco, c.final4 ? '•••• ' + c.final4 : ''].filter(Boolean).join(' · '))), seloAtivo(c.ativo)],
-        [['Fatura', 'fecha dia ' + c.diaFechamento + ' · vence dia ' + c.diaVencimento], moduloAtivo('pessoas') ? ['Titular', nomePessoa(c.titularId)] : null,
+        [['Fatura', textoRegraFatura(c)], moduloAtivo('pessoas') ? ['Titular', nomePessoa(c.titularId)] : null,
          c.limite !== null && moduloAtivo('limites') ? ['Limite', moeda(c.limite)] : null, ['Lançamentos', String(uso)]],
         [el('button', { type: 'button', class: 'btn pequeno', 'data-acao-cartao': 'editar', 'data-id': c.id }, 'Editar'),
          el('button', { type: 'button', class: 'btn link' + (c.ativo ? ' perigo-txt' : ''), 'data-acao-cartao': 'ativo', 'data-id': c.id }, c.ativo ? 'Desativar' : 'Reativar')]));
@@ -5628,11 +5708,19 @@
     });
     ['c_nome', 'c_segmento'].forEach(function (id) { $(id).addEventListener('input', renderCoresCartao); });
     $('c_banco').addEventListener('change', renderCoresCartao);
+    $('c_modoFech').addEventListener('change', ajustarModoFech);
   }
 
+  function ajustarModoFech() {
+    var antes = $('c_modoFech').value === 'antes';
+    $('c_diasAntesBox').hidden = !antes; $('c_fechBox').hidden = antes;
+    $('c_dicaFech').textContent = antes ? 'Veja no app do banco as datas da fatura atual. Ex.: vence 12/12 e fechou 05/12 → 7 dias antes. Quando o vencimento cai em fim de semana ou feriado, o app passa para o próximo dia útil, e o fechamento acompanha. Se algum mês fugir da regra, ajuste as datas daquela fatura na tela de Cartões.'
+      : 'Compras feitas até o dia de fechamento (inclusive) entram na fatura daquele mês; depois dele, na seguinte. Se algum mês fugir da regra, ajuste as datas daquela fatura na tela de Cartões.';
+  }
   function limparFormCartao() {
     editandoCartaoId = null;
-    ['c_nome', 'c_final4', 'c_fech', 'c_venc', 'c_limite', 'c_segmento', 'c_cor'].forEach(function (id) { $(id).value = ''; $(id).classList.remove('invalido'); });
+    ['c_nome', 'c_final4', 'c_fech', 'c_venc', 'c_diasAntes', 'c_limite', 'c_segmento', 'c_cor'].forEach(function (id) { $(id).value = ''; $(id).classList.remove('invalido'); });
+    $('c_modoFech').value = 'antes'; ajustarModoFech();
     definirBanco('c_banco', '');
     renderCoresCartao();
     $('c_ativo').value = '1';
@@ -5649,6 +5737,7 @@
     editandoCartaoId = id;
     $('c_nome').value = c.nome; definirBanco('c_banco', c.banco); $('c_final4').value = c.final4;
     $('c_fech').value = c.diaFechamento; $('c_venc').value = c.diaVencimento;
+    $('c_modoFech').value = c.modoFechamento === 'antes' ? 'antes' : 'dia'; $('c_diasAntes').value = c.diasAntes || ''; ajustarModoFech();
     $('c_limite').value = c.limite !== null ? valorParaCampo(c.limite) : '';
     $('c_segmento').value = c.segmento || ''; $('c_cor').value = c.cor || '';
     renderCoresCartao();
@@ -5667,13 +5756,17 @@
     var r = validarCartao({
       id: editandoCartaoId || undefined, nome: $('c_nome').value, banco: lerBanco('c_banco'),
       final4: $('c_final4').value, diaFechamento: $('c_fech').value, diaVencimento: $('c_venc').value,
+      modoFechamento: $('c_modoFech').value, diasAntes: $('c_diasAntes').value,
+      ajustesFatura: editandoCartaoId && cartaoPorId(editandoCartaoId) ? cartaoPorId(editandoCartaoId).ajustesFatura : undefined,
       limite: limite, ativo: $('c_ativo').value === '1', titularId: $('c_titular').value,
       segmento: $('c_segmento').value, cor: $('c_cor').value
     });
     if (limiteTxt && !isFinite(limite)) { r.erros.limite = 'Limite inválido (ex.: 5000,00).'; r.ok = false; }
     var dup = estado.cartoes.some(function (c) { return c.id !== editandoCartaoId && normalizar(c.nome) === normalizar(r.limpo.nome); });
     if (dup) { r.erros.nome = 'Já existe um cartão chamado “' + r.limpo.nome + '”. Use um nome diferente.'; r.ok = false; }
-    var mapa = { nome: 'c_nome', final4: 'c_final4', diaFechamento: 'c_fech', diaVencimento: 'c_venc', limite: 'c_limite' };
+    if ($('c_modoFech').value === 'antes') delete r.erros.diaFechamento;
+    r.ok = Object.keys(r.erros).length === 0;
+    var mapa = { nome: 'c_nome', final4: 'c_final4', diaFechamento: 'c_fech', diaVencimento: 'c_venc', diasAntes: 'c_diasAntes', limite: 'c_limite' };
     Object.keys(mapa).forEach(function (k) { $(mapa[k]).classList.toggle('invalido', !!r.erros[k]); });
     var box = $('erroCartao');
     box.replaceChildren();
@@ -7821,7 +7914,7 @@
      fica escondido (os dados continuam no arquivo e voltam a aparecer quando o módulo for ligado).
      Para ver tudo (testes ou uso avançado): localStorage 'controle-financeiro-nivel' = 7. */
   /* Versão do app: atualize a cada entrega (o sw.js usa o mesmo número no nome do cache). */
-  var VERSAO_APP = { numero: '38', data: '2026-11-21', novidade: 'novas categorias: Fast food, Roupas e Bebê; ônibus no Transporte' };
+  var VERSAO_APP = { numero: '39', data: '2026-11-22', novidade: 'faturas com dia útil e fechamento antes do vencimento; compras pela tela de Cartões' };
   var CHAVE_VERSAO_VISTA = 'controle-financeiro-versao-vista';
   function textoVersao() { return 'Versão ' + VERSAO_APP.numero + ' · atualizada em ' + dataBR(VERSAO_APP.data) + '.'; }
   /* Procurar atualização: confere se há internet, apaga só a cópia do app (código e ícones; os dados
@@ -8992,7 +9085,8 @@
     }
     var ulH = el('ul', { class: 'hoje-lista' }), linhasH = 0;
     cartoes.forEach(function (c) {
-      var r = resumoFaturas(c), f = r.atual;
+      var r = resumoFaturas(c), todas = r.atual ? [r.atual].concat(r.proximas) : [];
+      var f = todas.filter(function (x) { return x.venc === faturaVista[c.id]; })[0] || r.atual, futura = !!f && f !== r.atual;
       var sub = [c.banco, c.segmento, c.final4 ? '•••• ' + c.final4 : ''].filter(Boolean).join(' · ');
       var plast = el('div', { class: 'fat-plastico' + (corClara(corDoCartao(c)) ? ' claro' : ''), style: estiloPlastico(c) });
       var card = el('article', { class: 'fat-card' + (c.ativo ? '' : ' inativo'), 'data-fat-cartao': c.id }, plast);
@@ -9001,25 +9095,41 @@
           el('div', null, el('strong', null, c.nome), sub ? el('span', { class: 'uso' }, sub) : null),
           f ? el('span', { class: 'selo ' + situacaoFatura(f)[1] }, situacaoFatura(f)[0]) : (c.ativo ? null : el('span', { class: 'selo s-cancelado' }, 'Desativado'))));
       if (f) {
-        plast.append(el('div', { class: 'fat-rot' }, f.soPrevista ? 'Próxima fatura (prevista)' : 'Fatura atual'), el('div', { class: 'fat-valor' }, moeda(totalExib(f) / 100)),
+        var cyF = cicloPorVenc(c, f.venc);
+        plast.append(el('div', { class: 'fat-rot' }, futura ? 'Fatura de ' + rotuloMes(f.venc.slice(0, 7)) + (f.soPrevista ? ' (prevista)' : '') : f.soPrevista ? 'Próxima fatura (prevista)' : 'Fatura atual'), el('div', { class: 'fat-valor' }, moeda(totalExib(f) / 100)),
           el('div', { class: 'fat-datas' }, 'Vence ', el('b', null, dataBR(f.venc)), f.fechamento ? ' · ' + (f.fechada ? 'fechou' : 'fecha') + ' em ' + dataBR(f.fechamento) : '',
-            f.pago > 0 ? ' · já pago ' + moeda(f.pago / 100) : ''),
-          notaPrevista(f) ? el('div', { class: 'fat-datas fat-prev-nota' }, notaPrevista(f)) : null);
+            cyF && cyF.ajustado ? ' · datas ajustadas' : '', f.pago > 0 ? ' · já pago ' + moeda(f.pago / 100) : ''),
+          notaPrevista(f) ? el('div', { class: 'fat-datas fat-prev-nota' }, notaPrevista(f)) : '');
         if (!f.soPrevista) card.append(el('button', { type: 'button', class: 'btn primario', 'data-mvp-pagar': c.id + '|' + f.venc }, 'Pagar fatura'));
+        if (c.ativo) card.append(el('div', { class: 'fat-acoes-cartao' },
+          el('button', { type: 'button', class: 'btn', 'data-cart-compra': c.id }, '+ Compra neste cartão'),
+          cartaoTemDatas(c) ? el('button', { type: 'button', class: 'btn link', 'data-cart-datas': c.id + '|' + f.venc }, 'Ajustar datas desta fatura') : null));
         var ul = el('ul');
         f.itens.slice().sort(function (a, b) { return a.lanc.data < b.lanc.data ? 1 : -1; }).forEach(function (i) {
-          ul.append(el('li', null, el('span', null, i.lanc.descricao, el('span', { class: 'uso' }, dataBR(i.lanc.data) + (i.n ? ' · parcela ' + i.k + ' de ' + i.n : '') + (i.lanc.categoria ? ' · ' + i.lanc.categoria : ''))),
-            el('b', i.credito ? { class: 'valor-credito' } : null, i.credito ? [ico('undo', 'ico-inline'), ' −' + moeda(-i.centavos / 100)] : moeda(i.centavos / 100))));
+          var pode = !(i.pago > 0) && !i.lanc.vencimentoFatura;
+          ul.append(el('li', null, el('span', null, i.lanc.descricao, el('span', { class: 'uso' }, dataBR(i.lanc.data) + (i.n ? ' · parcela ' + i.k + ' de ' + i.n : '') + (i.lanc.categoria ? ' · ' + i.lanc.categoria : '') + (i.lanc.ajusteFatura ? ' · movida' : ''))),
+            el('span', { class: 'fat-item-fim' },
+              el('b', i.credito ? { class: 'valor-credito' } : null, i.credito ? [ico('undo', 'ico-inline'), ' −' + moeda(-i.centavos / 100)] : moeda(i.centavos / 100)),
+              el('span', { class: 'fat-item-acoes' },
+                pode ? el('button', { type: 'button', class: 'btn-mini', 'data-fat-mover': i.lanc.id + '|-1', title: 'Mover para a fatura anterior', 'aria-label': 'Mover ' + i.lanc.descricao + ' para a fatura anterior' }, '‹') : null,
+                pode ? el('button', { type: 'button', class: 'btn-mini', 'data-fat-mover': i.lanc.id + '|1', title: 'Mover para a próxima fatura', 'aria-label': 'Mover ' + i.lanc.descricao + ' para a próxima fatura' }, '›') : null,
+                el('button', { type: 'button', class: 'btn-mini', 'data-fat-editar': i.lanc.id, title: 'Editar', 'aria-label': 'Editar ' + i.lanc.descricao }, '✎'),
+                el('button', { type: 'button', class: 'btn-mini perigo', 'data-fat-remover': i.lanc.id, title: 'Remover', 'aria-label': 'Remover ' + i.lanc.descricao }, '✕')))));
         });
         (f.prevItens || []).forEach(function (i) {
           ul.append(el('li', { class: 'fat-item-prev' }, el('span', null, i.descricao, el('span', { class: 'uso' }, dataBR(i.data) + ' · ', el('span', { class: 'selo s-prevista' }, 'prevista'), i.variavel && !i.semValor ? ' média dos últimos meses' : '')),
             el('b', null, i.semValor ? 'a definir' : moeda(i.centavos / 100))));
         });
         var nItens = f.itens.length + (f.prevItens || []).length;
-        card.append(el('details', { class: 'fat-compras' }, el('summary', null, 'Compras desta fatura (' + nItens + ')'), ul));
-        if (r.proximas.length) card.append(el('div', { class: 'fat-prox' }, [el('span', { class: 'fat-prox-rot' }, 'Próximas:')].concat(r.proximas.map(function (x) { return el('span', null, rotuloMes(x.venc.slice(0, 7)) + ' ' + moeda(totalExib(x) / 100) + (x.prevItens && x.prevItens.length ? '*' : '')); }))));
-        if (r.proximas.some(function (x) { return x.prevItens && x.prevItens.length; })) card.append(el('div', { class: 'fat-prox-nota uso' }, '* inclui contas fixas previstas'));
-        if (!f.soPrevista) {
+        var det = el('details', { class: 'fat-compras' }, el('summary', null, 'Compras desta fatura (' + nItens + ')'), ul);
+        if (comprasAbertas[c.id]) det.open = true;
+        det.addEventListener('toggle', function () { comprasAbertas[c.id] = det.open; });
+        card.append(det);
+        if (todas.length > 1) card.append(el('div', { class: 'fat-prox' }, [el('span', { class: 'fat-prox-rot' }, futura ? 'Ver:' : 'Próximas:')].concat(todas.filter(function (x) { return x !== f; }).map(function (x) {
+          return el('button', { type: 'button', class: 'fat-prox-btn', 'data-fat-ver': c.id + '|' + x.venc, title: 'Ver as compras desta fatura' }, (x === r.atual ? 'Atual · ' : '') + rotuloMes(x.venc.slice(0, 7)) + ' ' + moeda(totalExib(x) / 100) + (x.prevItens && x.prevItens.length ? '*' : ''));
+        }))));
+        if (r.proximas.some(function (x) { return x.prevItens && x.prevItens.length; })) card.append(el('div', { class: 'fat-prox-nota uso' }, '* inclui contas fixas previstas · toque numa fatura para ver as compras'));
+        if (!f.soPrevista && !futura) {
           linhasH++;
           ulH.append(el('li', { class: 'hoje-item' + (f.venc < hojeISO() ? ' p-atrasado' : '') },
             el('div', { class: 'hoje-item-info' }, el('span', { class: 'hoje-prazo' }, (f.venc < hojeISO() ? 'Venceu ' : 'Vence ') + dataBR(f.venc)), el('span', { class: 'hoje-desc' }, ico('card', 'ico-inline'), ' ' + c.nome)),
@@ -9028,6 +9138,7 @@
         }
       } else {
         plast.append(el('div', { class: 'fat-valor zero' }, 'Nenhuma compra em aberto'));
+        if (c.ativo) card.append(el('div', { class: 'fat-acoes-cartao' }, el('button', { type: 'button', class: 'btn', 'data-cart-compra': c.id }, '+ Compra neste cartão')));
       }
       var lim = limiteDoCartao(c);
       if (lim) plast.append(el('div', { class: 'fat-limite' },
@@ -9040,13 +9151,62 @@
         card.append(el('div', { class: 'fat-paga' }, '✓ Fatura de ' + dataBR(r.ultimaPaga.venc) + ' paga (' + moeda(r.ultimaPaga.total / 100) + ')',
           ult ? el('button', { type: 'button', class: 'btn link', 'data-mvp-estornar': ult.id }, 'Desfazer pagamento') : null));
       }
-      card.append(el('div', { class: 'fat-rodape' }, el('span', null, 'Fecha dia ' + c.diaFechamento + ' · vence dia ' + c.diaVencimento),
+      card.append(el('div', { class: 'fat-rodape' }, el('span', null, textoRegraFatura(c, true)),
         el('span', null, el('button', { type: 'button', class: 'btn link', 'data-fat-acao': 'editar', 'data-id': c.id }, 'Editar'),
           el('button', { type: 'button', class: 'btn link', 'data-fat-acao': 'ativo', 'data-id': c.id }, c.ativo ? 'Desativar' : 'Reativar'))));
       box.append(card);
     });
     if (linhasH) hj.append(ulH);
     else hj.append(el('div', { class: 'hoje-vazio' }, '✓ Nenhuma fatura em aberto.'));
+  }
+  var faturaVista = {}, comprasAbertas = {};
+  /* Nova compra já no cartão escolhido */
+  function novaCompraNoCartao(cartaoId) {
+    abrirForm(null, { data: hojeISO(), tipo: 'despesa', meioPagamento: MEIO_CARTAO, cartaoId: cartaoId, status: 'Pendente' });
+    atualizarModoLanc();
+    focoAuto($('f_valor'));
+  }
+  /* Mover uma compra (com todas as parcelas) para a fatura anterior/seguinte */
+  function moverCompraFatura(id, d) {
+    var l = lancamentoPorId(id); if (!l) return;
+    if (temPagamentoAtivo(l)) { avisar('Esta compra já tem pagamento registrado. Desfaça o pagamento da fatura antes de mover.', 'erro'); return; }
+    var novo = (l.ajusteFatura || 0) + d;
+    if (novo < -3 || novo > 3) { avisar('Dá para mover no máximo 3 faturas para frente ou para trás.', 'erro'); return; }
+    var c = cartaoPorId(l.cartaoId), cy = cicloDaCompra(c, l.data, novo);
+    var foto = fotografia();
+    if (novo) l.ajusteFatura = novo; else delete l.ajusteFatura;
+    l.atualizadoEm = new Date().toISOString();
+    marcarAlterado(); render();
+    avisar('“' + l.descricao + '” agora entra na fatura que vence em ' + (cy ? dataBR(cy.venc) : '—') + (l.parcelamento ? ' (e as parcelas seguintes acompanham)' : '') + '.', 'sucesso', desfazerPara(foto));
+  }
+  /* Ajustar fechamento e vencimento de uma fatura específica */
+  function ajustarDatasFatura(cartaoId, venc) {
+    var c = cartaoPorId(cartaoId); if (!c) return;
+    var cy = cicloPorVenc(c, venc); if (!cy) { avisar('Não encontrei esta fatura no calendário do cartão.', 'erro'); return; }
+    var aj = c.ajustesFatura && c.ajustesFatura[cy.ym];
+    abrirGen('Datas da fatura de ' + rotuloMes(cy.ym), [
+      { tipo: 'html', conteudo: el('div', { class: 'dica-form' }, 'Copie do app do banco as datas desta fatura. As compras feitas até o fechamento (inclusive) entram nela; as outras meses não mudam.') },
+      { id: 'fech', rotulo: 'Fechamento', tipo: 'date', obrig: true, valor: cy.fech },
+      { id: 'venc', rotulo: 'Vencimento', tipo: 'date', obrig: true, valor: cy.venc },
+      aj ? { tipo: 'html', conteudo: el('label', { class: 'check-linha' }, el('input', { type: 'checkbox', id: 'g_voltarAuto' }), ' Voltar às datas automáticas do cartão') } : null
+    ].filter(Boolean), function (v) {
+      var volta = $('g_voltarAuto') && $('g_voltarAuto').checked;
+      var novoAj = Object.assign({}, c.ajustesFatura || {});
+      if (volta) delete novoAj[cy.ym];
+      else {
+        if (!dataValida(v.fech) || !dataValida(v.venc)) return ['Informe as duas datas.'];
+        if (v.fech >= v.venc) return ['O fechamento precisa ser antes do vencimento.'];
+        var ant = cicloFatura(Object.assign({}, c, { ajustesFatura: novoAj }), somarMesYM(cy.ym, -1)), seg = cicloFatura(Object.assign({}, c, { ajustesFatura: novoAj }), somarMesYM(cy.ym, 1));
+        if (v.fech <= ant.fech) return ['O fechamento precisa ser depois do fechamento da fatura anterior (' + dataBR(ant.fech) + ').'];
+        if (v.fech >= seg.fech) return ['O fechamento precisa ser antes do fechamento da fatura seguinte (' + dataBR(seg.fech) + ').'];
+        novoAj[cy.ym] = { fechamento: v.fech, vencimento: v.venc };
+      }
+      if (Object.keys(novoAj).length) c.ajustesFatura = novoAj; else delete c.ajustesFatura;
+      faturaVista[c.id] = volta ? cicloFatura(c, cy.ym).venc : v.venc;
+      marcarAlterado(); render();
+      avisar(volta ? 'Fatura de ' + rotuloMes(cy.ym) + ' voltou às datas automáticas.' : 'Datas da fatura de ' + rotuloMes(cy.ym) + ' ajustadas. As compras foram redistribuídas.', 'sucesso');
+      return [];
+    }, 'Salvar datas');
   }
   function ligarEventosMvp2() {
     $('chipsMeio').addEventListener('click', function (e) {
@@ -9092,6 +9252,13 @@
       atualizarBlocoCartao();
     });
     function cliqueFaturas(e) {
+      var q;
+      if ((q = e.target.closest('[data-cart-compra]'))) { novaCompraNoCartao(q.getAttribute('data-cart-compra')); return; }
+      if ((q = e.target.closest('[data-cart-datas]'))) { var vd = q.getAttribute('data-cart-datas').split('|'); ajustarDatasFatura(vd[0], vd[1]); return; }
+      if ((q = e.target.closest('[data-fat-ver]'))) { var vv = q.getAttribute('data-fat-ver').split('|'); faturaVista[vv[0]] = vv[1]; comprasAbertas[vv[0]] = true; render(); return; }
+      if ((q = e.target.closest('[data-fat-mover]'))) { var vm = q.getAttribute('data-fat-mover').split('|'); moverCompraFatura(vm[0], +vm[1]); return; }
+      if ((q = e.target.closest('[data-fat-editar]'))) { var le = lancamentoPorId(q.getAttribute('data-fat-editar')); if (le) abrirForm(le); return; }
+      if ((q = e.target.closest('[data-fat-remover]'))) { excluir(q.getAttribute('data-fat-remover')); return; }
       var p = e.target.closest('[data-mvp-pagar]');
       if (p) { var v = p.getAttribute('data-mvp-pagar').split('|'); abrirPagamentoFatura(v[0], v[1]); return; }
       var x = e.target.closest('[data-mvp-estornar]');
@@ -10983,7 +11150,7 @@
       cont.append(el('details', { class: 'cartao-dash', 'data-cartao': c.id },
         el('summary', null,
           el('div', { class: 'cd-nome' }, el('strong', null, c.nome), c.final4 ? ' •••• ' + c.final4 : '', c.ativo ? '' : el('span', { class: 'selo s-cancelado' }, 'Inativo'),
-            el('div', { class: 'uso' }, (c.banco ? c.banco + ' · ' : '') + 'fecha dia ' + c.diaFechamento + ', vence dia ' + c.diaVencimento)),
+            el('div', { class: 'uso' }, (c.banco ? c.banco + ' · ' : '') + textoRegraFatura(c))),
           el('div', { class: 'cd-num' }, el('span', null, 'Próximo vencimento'), el('strong', { class: 'cd-prox-venc' }, proxVenc ? dataBR(proxVenc) : '—')),
           el('div', { class: 'cd-num' }, el('span', null, 'Próxima fatura (estimada)'), el('strong', { class: 'cd-prox-valor' }, moeda(valorProx / 100))),
           el('div', { class: 'cd-num' }, el('span', null, 'Parcelas futuras'), el('strong', { class: 'cd-parcelas' }, moeda(somaItens(parcelas) / 100)))),
