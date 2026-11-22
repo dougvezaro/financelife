@@ -1068,6 +1068,7 @@
   .rm-item-txt .uso { font-size: .8rem; }
   .rm-item-v { font-weight: 700; white-space: nowrap; }
   .rm-nota { font-size: .8rem; margin-top: 4px; }
+  .rm-obs { font-size: .8rem; font-style: italic; color: var(--suave); white-space: normal; }
   /* ---- Cabeçalho (igual em todos os modos) ---- */
   .topo .cab { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; flex-wrap: nowrap; }
   .cab-marca { display: flex; align-items: center; gap: 12px; min-width: 0; }
@@ -1813,6 +1814,7 @@
   .extra-item input.interruptor:disabled { cursor: default; }
   .hoje-mais { display: flex; flex-wrap: wrap; gap: 8px; }
   .hoje-mais-btn { flex: 1 1 140px; }
+  .campo-obs textarea { min-height: 54px; resize: vertical; }
   .chip-autor { background: var(--primaria-suave); color: var(--texto); }
   .lp-ou { display: flex; align-items: center; gap: 10px; margin: 18px 0 10px; color: var(--suave); font-size: .84rem; }
   .lp-ou::before, .lp-ou::after { content: ''; flex: 1; height: 1px; background: var(--borda-suave); }
@@ -2739,16 +2741,16 @@
         </div>
       </div>
       <div class="largo dica-form" id="dicaStatus" hidden></div>
+      <label class="largo campo-obs">Observação <span class="uso">(opcional)</span><textarea id="f_obs" rows="2" maxlength="1000" placeholder="Ex.: dividido com a Ana, nota fiscal no e-mail, presente de aniversário…"></textarea></label>
       <div class="largo hist-pag" id="histPagamentos" hidden></div>
       <details class="largo mais-detalhes" id="detalhesLanc" data-modulo="detalhes">
-        <summary>Mais detalhes <span class="uso" id="resumoDetalhes">pessoa, classificação, subcategoria, observações…</span></summary>
+        <summary>Mais detalhes <span class="uso" id="resumoDetalhes">pessoa, classificação, subcategoria…</span></summary>
         <div class="grade">
           <label>Pessoa<select id="f_pessoa"></select></label>
           <label>Classificação<select id="f_classif"><option value="">Não definida</option><option value="individual">Individual</option><option value="compartilhada">Compartilhada</option></select></label>
           <label>Subcategoria <span class="uso">(opcional, um detalhe da categoria)</span><input type="text" id="f_subcategoria" maxlength="100" list="dlSubcat" placeholder="Ex.: Restaurante, Combustível, Luz"></label><datalist id="dlSubcat"></datalist>
           <label>Responsável<select id="f_responsavel"></select></label>
           <label>Fonte de recurso<select id="f_fonte"></select></label>
-          <label class="largo">Observações<textarea id="f_obs" rows="2" maxlength="1000"></textarea></label>
         </div>
       </details>
     </div>
@@ -4551,7 +4553,7 @@
             ? el('span', { class: 'selo-apagar' + (l.tipo === 'receita' ? ' areceber' : '') + (l.data < hojeISO() ? ' vencido' : '') }, l.data < hojeISO() ? (l.tipo === 'receita' ? 'Atrasado' : 'Vencido') : txtCaixa(l.tipo).selo) : null),
           el('div', { class: 'info-pag' }, chips),
           infoMes ? el('div', { class: 'desc-sub so-simples' }, ico('card', 'ico-inline'), ' ' + infoMes.txt) : null,
-          l.observacoes ? el('div', { class: 'obs-linha' }, l.observacoes) : null),
+          l.observacoes ? el('div', { class: 'obs-linha' }, '📝 ' + l.observacoes) : null),
         el('td', { 'data-rotulo': 'Categoria', class: 'cat' + (l.categoria ? '' : ' vazio-cel') }, l.categoria || '', l.subcategoria ? el('div', { class: 'uso' }, l.subcategoria) : null),
         parcMes ? el('td', { 'data-rotulo': 'Valor', class: 'num valor-cel v-despesa' }, '− ' + moeda(parcMes.centavos / 100), el('div', { class: 'valor-total' }, 'de ' + moeda(l.valor)))
           : celula('Valor', l.valor < 0 ? [ico('undo', 'ico-inline'), ' ' + moeda(Math.abs(l.valor))] : sinal + moeda(l.valor), 'num valor-cel ' + (l.valor < 0 ? 'v-receita valor-credito' : 'v-' + l.tipo)),
@@ -4753,7 +4755,7 @@
     $('categoriaWrap').hidden = tipo === 'transferencia';
     $('rotData').textContent = tipo === 'receita' ? 'Data do recebimento' : (tipo === 'transferencia' ? 'Data' : (tg === 'parcelado' ? 'Data da compra' : (tg === 'recorrente' ? 'Vencimento (deste mês)' : 'Data')));
     // Resumo do que foi preenchido em "Mais detalhes"
-    var extras = [['f_pessoa', 'pessoa'], ['f_classif', 'classificação'], ['f_subcategoria', 'subcategoria'], ['f_responsavel', 'responsável'], ['f_fonte', 'fonte'], ['f_obs', 'observações']]
+    var extras = [['f_pessoa', 'pessoa'], ['f_classif', 'classificação'], ['f_subcategoria', 'subcategoria'], ['f_responsavel', 'responsável'], ['f_fonte', 'fonte']]
       .filter(function (x) { return $(x[0]).value; }).map(function (x) { return x[1]; });
     $('resumoDetalhes').textContent = extras.length ? 'preenchido: ' + extras.join(', ') : 'pessoa, classificação, subcategoria, observações…';
     atualizarBlocoCartao();
@@ -8072,7 +8074,7 @@
      fica escondido (os dados continuam no arquivo e voltam a aparecer quando o módulo for ligado).
      Para ver tudo (testes ou uso avançado): localStorage 'controle-financeiro-nivel' = 7. */
   /* Versão do app: atualize a cada entrega (o sw.js usa o mesmo número no nome do cache). */
-  var VERSAO_APP = { numero: '44', data: '2026-11-22', novidade: 'escolha em qual fatura a compra entra (e de onde começa o parcelado)' };
+  var VERSAO_APP = { numero: '45', data: '2026-11-22', novidade: 'campo de observação nos gastos e recebimentos' };
   var CHAVE_VERSAO_VISTA = 'controle-financeiro-versao-vista';
   function textoVersao() { return 'Versão ' + VERSAO_APP.numero + ' · atualizada em ' + dataBR(VERSAO_APP.data) + '.'; }
   /* Procurar atualização: confere se há internet, apaga só a cópia do app (código e ícones; os dados
@@ -8476,7 +8478,7 @@
           var cc = l.categoria || 'Sem categoria', cart = cartaoPorId(l.cartaoId);
           t.saiu += i.centavos; t.cats[cc] = (t.cats[cc] || 0) + i.centavos;
           t.itens.push({ tipo: 'despesa', desc: l.descricao, cat: cc, centavos: i.centavos, data: l.data, lancId: l.id, cartao: cart ? cart.nome : 'Cartão',
-            venc: i.venc, parcela: i.n ? i.k + '/' + i.n : '', credito: !!i.credito, pendente: !(i.pago >= i.centavos) });
+            venc: i.venc, parcela: i.n ? i.k + '/' + i.n : '', credito: !!i.credito, pendente: !(i.pago >= i.centavos), obs: l.observacoes || '' });
         });
         return;
       }
@@ -8485,7 +8487,7 @@
       if (l.tipo === 'receita') t.entrou += v;
       else if (l.tipo === 'despesa') { t.saiu += v; var c = l.categoria || 'Sem categoria'; t.cats[c] = (t.cats[c] || 0) + v; }
       if (l.tipo === 'receita' || l.tipo === 'despesa') t.itens.push({ tipo: l.tipo, desc: l.descricao, cat: l.categoria || 'Sem categoria', centavos: v, data: l.data, lancId: l.id,
-        pendente: l.status === 'Pendente', meio: l.meioPagamento || '' });
+        pendente: l.status === 'Pendente', meio: l.meioPagamento || '', obs: l.observacoes || '' });
     });
     return t;
   }
@@ -8500,7 +8502,8 @@
       else if (i.meio) tags.push(i.meio);
       var selo = i.prevista ? el('span', { class: 'selo s-prevista' }, 'prevista') : i.pendente && !i.cartao ? el('span', { class: 'selo s-pendente' }, i.tipo === 'receita' ? 'a receber' : 'a pagar') : null;
       var neg = i.tipo === 'despesa';
-      var conteudo = [el('span', { class: 'rm-item-txt' }, el('b', null, i.desc), el('span', { class: 'uso' }, dataBR(i.data) + (tags.length ? ' · ' + tags.join(' · ') : ''), selo ? ' ' : '', selo)),
+      var conteudo = [el('span', { class: 'rm-item-txt' }, el('b', null, i.desc), el('span', { class: 'uso' }, dataBR(i.data) + (tags.length ? ' · ' + tags.join(' · ') : ''), selo ? ' ' : '', selo),
+        i.obs ? el('span', { class: 'rm-obs' }, '📝 ' + i.obs) : ''),
         el('span', { class: 'rm-item-v' + (neg ? ' rm-neg' : ' rm-pos') }, (i.credito ? '+' : neg ? '−' : '+') + moeda(Math.abs(i.centavos) / 100))];
       return el('li', null, i.lancId ? el('button', { type: 'button', class: 'rm-item', 'data-rm-editar': i.lancId, title: 'Abrir este lançamento' }, conteudo)
         : el('div', { class: 'rm-item rm-item-fixa', title: 'Conta fixa prevista' }, conteudo));
@@ -9328,7 +9331,7 @@
       faturasDoCartao(c.id).forEach(function (f) {
         if (!f.venc || f.venc < desde) return;
         f.itens.forEach(function (i) {
-          var txt = normalizar([i.lanc.descricao, i.lanc.categoria, i.lanc.subcategoria, i.lanc.observacao].filter(Boolean).join(' '));
+          var txt = normalizar([i.lanc.descricao, i.lanc.categoria, i.lanc.subcategoria, i.lanc.observacoes].filter(Boolean).join(' '));
           if (txt.indexOf(q) >= 0) achados.push({ c: c, f: f, i: i });
         });
       });
