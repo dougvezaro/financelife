@@ -1034,6 +1034,40 @@
     html.modo-simples .hoje-grade > .hoje-largo { grid-column: auto; }
   }
   @media (max-width: 900px) { html.modo-simples .topo-titulo .status-salv { display: none; } }
+  /* Resumo do mês */
+  .mes-clicavel { cursor: pointer; border-radius: 12px; transition: background .15s; }
+  .mes-clicavel:hover, .mes-clicavel:focus-visible { background: rgba(255,255,255,.07); outline: none; }
+  .mes-clicavel strong::after { content: '›'; font-weight: 400; opacity: .55; margin-left: 6px; font-size: .8em; }
+  #modalGen.gen-resumo .modal { max-width: 640px; }
+  #modalGen.gen-resumo #btnGenCancelar, #modalGen.gen-resumo .modal-rodape .btn:not(#btnGenOk) { display: none; }
+  .rm-totais { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+  .rm-totais button { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 10px 12px; border-radius: 14px; border: 1px solid var(--borda); background: var(--superficie); color: inherit; font: inherit; cursor: pointer; text-align: left; }
+  .rm-totais button span { font-size: .78rem; color: var(--suave); }
+  .rm-totais button b { font-size: 1rem; white-space: nowrap; }
+  .rm-totais button.ativo { border-color: var(--ocre); box-shadow: 0 0 0 1px var(--ocre) inset; }
+  .rm-pos { color: var(--receita); } .rm-neg { color: var(--despesa); }
+  .rm-grupo { margin-bottom: 16px; }
+  .rm-grupo-topo { display: flex; justify-content: space-between; align-items: baseline; margin: 4px 0 8px; }
+  .rm-grupo-topo h4 { margin: 0; font-size: 1rem; }
+  .rm-cat { border: 1px solid var(--borda); border-radius: 14px; margin-bottom: 8px; background: var(--superficie); overflow: hidden; }
+  .rm-cat summary { display: flex; align-items: center; gap: 10px; padding: 10px 12px; cursor: pointer; list-style: none; }
+  .rm-cat summary::-webkit-details-marker { display: none; }
+  .rm-cat-ic { font-size: 1.2rem; width: 28px; text-align: center; flex: none; }
+  .rm-cat-nome { flex: 1; min-width: 0; display: flex; flex-direction: column; font-weight: 600; }
+  .rm-cat-nome small { font-weight: 400; color: var(--suave); font-size: .78rem; }
+  .rm-cat-v { font-weight: 700; white-space: nowrap; }
+  .rm-cat summary::after { content: '›'; transform: rotate(90deg); transition: transform .15s; color: var(--suave); margin-left: 2px; }
+  .rm-cat:not([open]) summary::after { transform: none; }
+  .rm-barra { height: 4px; margin: 0 12px 8px; background: var(--borda-suave, var(--borda)); border-radius: 4px; overflow: hidden; }
+  .rm-barra span { display: block; height: 100%; background: var(--ocre); border-radius: 4px; }
+  .rm-lista { list-style: none; margin: 0; padding: 0 6px 6px; }
+  .rm-item { display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 6px; border: 0; border-top: 1px solid var(--borda-suave, var(--borda)); background: transparent; color: inherit; font: inherit; text-align: left; }
+  button.rm-item { cursor: pointer; } button.rm-item:hover { background: var(--sup-2); }
+  .rm-item-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .rm-item-txt b { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .rm-item-txt .uso { font-size: .8rem; }
+  .rm-item-v { font-weight: 700; white-space: nowrap; }
+  .rm-nota { font-size: .8rem; margin-top: 4px; }
   /* ---- Cabeçalho (igual em todos os modos) ---- */
   .topo .cab { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; flex-wrap: nowrap; }
   .cab-marca { display: flex; align-items: center; gap: 12px; min-width: 0; }
@@ -1950,9 +1984,9 @@
    <button type="button" class="seta" id="mesProx" aria-label="Próximo mês">›</button>
   </div>
   <div class="mes-resumo">
-   <div class="mes-sobra"><span>Sobrou no mês</span><strong id="mSobra">R$ 0,00</strong><button type="button" class="olho" id="btnOcultar" aria-pressed="false" aria-label="Esconder valores" title="Esconder valores"><i class="ico-ph" data-ico="eye"></i></button></div>
-   <div><span class="m-entrou">Entrou</span><strong id="mEntrou">R$ 0,00</strong></div>
-   <div><span class="m-saiu">Saiu</span><strong id="mSaiu">R$ 0,00</strong></div>
+   <div class="mes-sobra mes-clicavel" data-mes-resumo="sobra" role="button" tabindex="0" aria-label="Ver o resumo do mês"><span>Sobrou no mês</span><strong id="mSobra">R$ 0,00</strong><button type="button" class="olho" id="btnOcultar" aria-pressed="false" aria-label="Esconder valores" title="Esconder valores"><i class="ico-ph" data-ico="eye"></i></button></div>
+   <div class="mes-clicavel" data-mes-resumo="entrou" role="button" tabindex="0" aria-label="Ver tudo o que entrou no mês"><span class="m-entrou">Entrou</span><strong id="mEntrou">R$ 0,00</strong></div>
+   <div class="mes-clicavel" data-mes-resumo="saiu" role="button" tabindex="0" aria-label="Ver tudo o que saiu no mês"><span class="m-saiu">Saiu</span><strong id="mSaiu">R$ 0,00</strong></div>
   </div>
   <p class="mes-comp" id="mesComp" hidden></p>
   <button type="button" class="mes-apagar" id="mesApagar" hidden></button>
@@ -6618,6 +6652,7 @@
   /* campos: {id, rotulo, tipo: text|date|select|textarea|number|valor|html, opcoes:[[valor, texto]], valor, obrig, largo, ajuda} */
   function abrirGen(titulo, campos, aoSalvar, okTexto) {
     genCtx = { campos: campos, aoSalvar: aoSalvar };
+    $('modalGen').classList.remove('gen-resumo');
     $('tituloGen').textContent = titulo;
     $('btnGenOk').textContent = okTexto || 'Salvar';
     var grade = el('div', { class: 'grade' });
@@ -7998,7 +8033,7 @@
      fica escondido (os dados continuam no arquivo e voltam a aparecer quando o módulo for ligado).
      Para ver tudo (testes ou uso avançado): localStorage 'controle-financeiro-nivel' = 7. */
   /* Versão do app: atualize a cada entrega (o sw.js usa o mesmo número no nome do cache). */
-  var VERSAO_APP = { numero: '42', data: '2026-11-22', novidade: 'filtros e busca de compras na tela de Cartões' };
+  var VERSAO_APP = { numero: '43', data: '2026-11-22', novidade: 'toque em Entrou, Saiu ou Sobrou para ver o resumo do mês' };
   var CHAVE_VERSAO_VISTA = 'controle-financeiro-versao-vista';
   function textoVersao() { return 'Versão ' + VERSAO_APP.numero + ' · atualizada em ' + dataBR(VERSAO_APP.data) + '.'; }
   /* Procurar atualização: confere se há internet, apaga só a cópia do app (código e ícones; os dados
@@ -8384,11 +8419,13 @@
     return out.sort(function (a, b) { return a.data < b.data ? -1 : a.data > b.data ? 1 : 0; });
   }
   function totaisDoMes(mes) {
-    var t = { entrou: 0, saiu: 0, cats: {}, cartao: false, previsto: 0 };
+    var t = { entrou: 0, saiu: 0, cats: {}, cartao: false, previsto: 0, itens: [] };
     fixasPrevistas(mes).forEach(function (p) {
       if (p.tipo === 'receita') t.entrou += p.centavos;
       else { t.saiu += p.centavos; var c = p.r.categoria || 'Sem categoria'; t.cats[c] = (t.cats[c] || 0) + p.centavos; }
       t.previsto++;
+      t.itens.push({ tipo: p.tipo === 'receita' ? 'receita' : 'despesa', desc: p.r.descricao, cat: p.r.categoria || 'Sem categoria', centavos: p.centavos, data: p.data,
+        prevista: true, cartao: p.cartao ? p.cartao.nome : '', venc: p.venc, regraId: p.r.id });
     });
     estado.lancamentos.forEach(function (l) {
       if (l.status === 'Cancelado') return;
@@ -8397,8 +8434,10 @@
         t.cartao = true;
         itensCompromisso(l).forEach(function (i) {
           if (String(i.venc || l.data).slice(0, 7) !== mes) return;
-          var cc = l.categoria || 'Sem categoria';
+          var cc = l.categoria || 'Sem categoria', cart = cartaoPorId(l.cartaoId);
           t.saiu += i.centavos; t.cats[cc] = (t.cats[cc] || 0) + i.centavos;
+          t.itens.push({ tipo: 'despesa', desc: l.descricao, cat: cc, centavos: i.centavos, data: l.data, lancId: l.id, cartao: cart ? cart.nome : 'Cartão',
+            venc: i.venc, parcela: i.n ? i.k + '/' + i.n : '', credito: !!i.credito, pendente: !(i.pago >= i.centavos) });
         });
         return;
       }
@@ -8406,8 +8445,69 @@
       var v = centavos(l.valor);
       if (l.tipo === 'receita') t.entrou += v;
       else if (l.tipo === 'despesa') { t.saiu += v; var c = l.categoria || 'Sem categoria'; t.cats[c] = (t.cats[c] || 0) + v; }
+      if (l.tipo === 'receita' || l.tipo === 'despesa') t.itens.push({ tipo: l.tipo, desc: l.descricao, cat: l.categoria || 'Sem categoria', centavos: v, data: l.data, lancId: l.id,
+        pendente: l.status === 'Pendente', meio: l.meioPagamento || '' });
     });
     return t;
+  }
+  /* ---- Resumo do mês: tocar em Entrou, Saiu ou Sobrou abre o que compõe cada número ---- */
+  function abrirResumoMes(foco) {
+    var t = totaisDoMes(mesVisao), rot = rotuloMes(mesVisao, true), sobra = t.entrou - t.saiu;
+    var estado2 = { aba: foco === 'entrou' ? 'receita' : foco === 'saiu' ? 'despesa' : 'tudo' };
+    var corpo = el('div', { class: 'rm' });
+    function linhaItem(i) {
+      var tags = [];
+      if (i.cartao) tags.push(i.cartao + (i.parcela ? ' · parcela ' + i.parcela : '') + (i.venc ? ' · fatura ' + dataBR(i.venc) : ''));
+      else if (i.meio) tags.push(i.meio);
+      var selo = i.prevista ? el('span', { class: 'selo s-prevista' }, 'prevista') : i.pendente && !i.cartao ? el('span', { class: 'selo s-pendente' }, i.tipo === 'receita' ? 'a receber' : 'a pagar') : null;
+      var neg = i.tipo === 'despesa';
+      var conteudo = [el('span', { class: 'rm-item-txt' }, el('b', null, i.desc), el('span', { class: 'uso' }, dataBR(i.data) + (tags.length ? ' · ' + tags.join(' · ') : ''), selo ? ' ' : '', selo)),
+        el('span', { class: 'rm-item-v' + (neg ? ' rm-neg' : ' rm-pos') }, (i.credito ? '+' : neg ? '−' : '+') + moeda(Math.abs(i.centavos) / 100))];
+      return el('li', null, i.lancId ? el('button', { type: 'button', class: 'rm-item', 'data-rm-editar': i.lancId, title: 'Abrir este lançamento' }, conteudo)
+        : el('div', { class: 'rm-item rm-item-fixa', title: 'Conta fixa prevista' }, conteudo));
+    }
+    function grupo(tipo) {
+      var its = t.itens.filter(function (i) { return i.tipo === tipo; });
+      var tot = its.reduce(function (a, i) { return a + i.centavos; }, 0);
+      var box = el('section', { class: 'rm-grupo' });
+      box.append(el('div', { class: 'rm-grupo-topo' }, el('h4', null, tipo === 'receita' ? 'Entrou' : 'Saiu'), el('b', { class: tipo === 'receita' ? 'rm-pos' : 'rm-neg' }, moeda(tot / 100))));
+      if (!its.length) { box.append(el('p', { class: 'uso' }, tipo === 'receita' ? 'Nenhuma entrada em ' + rot + '.' : 'Nenhum gasto em ' + rot + '.')); return box; }
+      var porCat = {};
+      its.forEach(function (i) { (porCat[i.cat] = porCat[i.cat] || []).push(i); });
+      Object.keys(porCat).map(function (c) { return { c: c, its: porCat[c], v: porCat[c].reduce(function (a, i) { return a + i.centavos; }, 0) }; })
+        .sort(function (a, b) { return b.v - a.v; })
+        .forEach(function (g) {
+          var pct = tot ? Math.round(g.v * 100 / tot) : 0;
+          var det = el('details', { class: 'rm-cat' }, el('summary', null,
+            el('span', { class: 'rm-cat-ic', 'aria-hidden': 'true' }, emojiCategoria(g.c, tipo)),
+            el('span', { class: 'rm-cat-nome' }, g.c, el('small', null, plural(g.its.length, 'lançamento', 'lançamentos') + ' · ' + pct + '%')),
+            el('span', { class: 'rm-cat-v' }, moeda(g.v / 100))),
+            el('div', { class: 'rm-barra' }, el('span', { style: 'width:' + Math.max(2, pct) + '%' })),
+            el('ul', { class: 'rm-lista' }, g.its.sort(function (a, b) { return a.data < b.data ? 1 : -1; }).map(linhaItem)));
+          box.append(det);
+        });
+      return box;
+    }
+    function desenhar() {
+      corpo.replaceChildren(
+        el('div', { class: 'rm-totais' },
+          el('button', { type: 'button', 'data-rm-aba': 'receita', class: estado2.aba === 'receita' ? 'ativo' : '' }, el('span', null, 'Entrou'), el('b', { class: 'rm-pos' }, moeda(t.entrou / 100))),
+          el('button', { type: 'button', 'data-rm-aba': 'despesa', class: estado2.aba === 'despesa' ? 'ativo' : '' }, el('span', null, 'Saiu'), el('b', { class: 'rm-neg' }, moeda(t.saiu / 100))),
+          el('button', { type: 'button', 'data-rm-aba': 'tudo', class: estado2.aba === 'tudo' ? 'ativo' : '' }, el('span', null, sobra < 0 ? 'Faltou' : 'Sobrou'), el('b', { class: sobra < 0 ? 'rm-neg' : 'rm-pos' }, moeda(sobra / 100)))),
+        estado2.aba !== 'despesa' ? grupo('receita') : '',
+        estado2.aba !== 'receita' ? grupo('despesa') : '',
+        t.cartao || t.previsto ? el('p', { class: 'uso rm-nota' }, [t.cartao ? 'Compras no cartão contam no mês em que a fatura vence.' : '', t.previsto ? 'Contas fixas “previstas” ainda não foram lançadas: entram pelo valor esperado.' : ''].filter(Boolean).join(' ')) : '');
+      Array.prototype.forEach.call(corpo.querySelectorAll('.rm-cat'), function (x) { x.open = true; });
+    }
+    corpo.addEventListener('click', function (e) {
+      var a = e.target.closest('[data-rm-aba]');
+      if (a) { estado2.aba = a.getAttribute('data-rm-aba'); desenhar(); return; }
+      var ed = e.target.closest('[data-rm-editar]');
+      if (ed) { var l = lancamentoPorId(ed.getAttribute('data-rm-editar')); genCtx = null; fechar('modalGen'); if (l) setTimeout(function () { abrirForm(l); }, 50); }
+    });
+    desenhar();
+    abrirGen('Resumo de ' + rot, [{ tipo: 'html', conteudo: corpo }], function () { return []; }, 'Fechar');
+    $('modalGen').classList.add('gen-resumo');
   }
   function renderMvp() {
     if (!modoSimples()) return;
@@ -8893,6 +8993,14 @@
       try { if (novo) localStorage.setItem(CHAVE_OCULTAR, '1'); else localStorage.removeItem(CHAVE_OCULTAR); } catch (e) { /* só nesta sessão */ }
       aplicarOcultar(novo);
     });
+    function abrirDoCard(e) {
+      if (e.target.closest('.olho')) return;
+      var b = e.target.closest('[data-mes-resumo]'); if (!b) return;
+      if (e.type === 'keydown') { if (e.key !== 'Enter' && e.key !== ' ') return; e.preventDefault(); }
+      abrirResumoMes(b.getAttribute('data-mes-resumo'));
+    }
+    $('barraMes').addEventListener('click', abrirDoCard);
+    $('barraMes').addEventListener('keydown', abrirDoCard);
     var evo = $('hojeEvolucao');
     evo.addEventListener('click', function (e) {
       var b = e.target.closest('[data-evo-mes]');
