@@ -1252,7 +1252,12 @@
   .fat-rodape > span:last-child { display: inline-flex; flex: none; gap: 2px; white-space: nowrap; }
   .fat-card.inativo { opacity: .65; }
   .fat-titulo h3 { margin: 0; font-size: 1.05rem; }
-  .fat-grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 16px; align-items: start; }
+  .fat-grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 16px; align-items: stretch; }
+  @media (min-width: 761px) {
+    /* Lado a lado sem quebrar: a lista de compras tem altura máxima e rola por dentro */
+    .fat-compras ul { max-height: 236px; overflow-y: auto; overscroll-behavior: contain; padding-right: 4px; scrollbar-width: thin; }
+    .fat-card > .fat-rodape { margin-top: auto; }
+  }
   .fat-card { background: var(--superficie); border: 1px solid var(--borda-suave); border-radius: 18px; box-shadow: var(--sombra); padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
   .fat-cab { display: flex; align-items: center; gap: 10px; }
   .fat-cab > div { min-width: 0; flex: 1 1 auto; }
@@ -8089,7 +8094,7 @@
      fica escondido (os dados continuam no arquivo e voltam a aparecer quando o módulo for ligado).
      Para ver tudo (testes ou uso avançado): localStorage 'controle-financeiro-nivel' = 7. */
   /* Versão do app: atualize a cada entrega (o sw.js usa o mesmo número no nome do cache). */
-  var VERSAO_APP = { numero: '46', data: '2026-11-23', novidade: 'Cartões: layout melhor no computador e limite somado de todos os cartões' };
+  var VERSAO_APP = { numero: '47', data: '2026-11-23', novidade: 'Cartões lado a lado sem quebrar ao abrir as compras' };
   var CHAVE_VERSAO_VISTA = 'controle-financeiro-versao-vista';
   function textoVersao() { return 'Versão ' + VERSAO_APP.numero + ' · atualizada em ' + dataBR(VERSAO_APP.data) + '.'; }
   /* Procurar atualização: confere se há internet, apaga só a cópia do app (código e ícones; os dados
