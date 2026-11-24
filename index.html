@@ -597,7 +597,7 @@
     font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
   .app { display: grid; grid-template-columns: 240px minmax(0, 1fr); min-height: 100vh; }
   .app-main { min-width: 0; display: flex; flex-direction: column; }
-  .app-main > main { width: 100%; max-width: 1320px; padding: 22px 28px 48px; }
+  .app-main > main { width: 100%; max-width: 1320px; padding: 22px 28px 48px; margin: 0; }
 
   /* Barra lateral */
   .lateral { background: var(--lateral); color: var(--lateral-texto); position: sticky; top: 0; height: 100vh; overflow-y: auto;
@@ -1210,7 +1210,19 @@
   .cf-res-lista li:first-child { border-top: 0; }
   .cf-res-txt { display: flex; flex-direction: column; min-width: 0; flex: 1; }
   .cf-res-txt b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .fat-acoes-cartao { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 10px; }
+  .fat-acoes-cartao { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 2px 4px 0; }
+  .fat-acoes-cartao .btn { min-height: 40px; }
+  .fat-acoes-cartao .btn.primario { flex: 1 1 auto; margin: 0; }
+  .fat-acoes-cartao .btn:not(.primario) { flex: 0 1 auto; }
+  .fat-btn-datas { width: 40px; height: 40px; margin-left: auto; display: inline-flex; align-items: center; justify-content: center; color: var(--suave); }
+  .fat-btn-datas .ico { width: 18px; height: 18px; }
+  .lim-total { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin: -2px 2px 14px; font-size: .84rem; color: var(--suave); }
+  .lim-total .lim-rot { font-weight: 600; text-transform: uppercase; letter-spacing: .05em; font-size: .72rem; }
+  .lim-total .lim-num b { color: var(--texto); font-weight: 700; }
+  .lim-total .lim-barra { flex: 1 1 140px; max-width: 260px; height: 5px; border-radius: 5px; background: var(--borda); overflow: hidden; }
+  .lim-total .lim-barra span { display: block; height: 100%; background: var(--ocre); border-radius: 5px; }
+  html.valores-ocultos .lim-v { filter: blur(6px); user-select: none; }
+  @media (max-width: 760px) { .lim-total { gap: 4px 10px; margin-bottom: 12px; } .lim-total .lim-barra { max-width: none; } }
   .fat-item-fim { display: flex; align-items: center; gap: 8px; flex: none; }
   .fat-item-acoes { display: inline-flex; gap: 4px; }
   .btn-mini { min-width: 32px; height: 32px; padding: 0 8px; border-radius: 8px; border: 1px solid var(--borda); background: var(--fundo-2, transparent); color: var(--texto); font-size: .95rem; line-height: 1; cursor: pointer; }
@@ -1236,9 +1248,11 @@
   html.modo-simples #abaCartoes > .cad-topo, html.modo-simples #listaCartoes { display: none; }
   .fat-rodape { display: flex; align-items: center; justify-content: space-between; gap: 8px; border-top: 1px solid var(--borda-suave); padding-top: 8px; margin-top: auto; font-size: .82rem; color: var(--suave); }
   .fat-rodape .btn.link { padding: 2px 4px; font-size: .85rem; }
+  .fat-rodape > span:first-child { min-width: 0; line-height: 1.35; }
+  .fat-rodape > span:last-child { display: inline-flex; flex: none; gap: 2px; white-space: nowrap; }
   .fat-card.inativo { opacity: .65; }
   .fat-titulo h3 { margin: 0; font-size: 1.05rem; }
-  .fat-grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 12px; }
+  .fat-grade { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 16px; align-items: start; }
   .fat-card { background: var(--superficie); border: 1px solid var(--borda-suave); border-radius: 18px; box-shadow: var(--sombra); padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
   .fat-cab { display: flex; align-items: center; gap: 10px; }
   .fat-cab > div { min-width: 0; flex: 1 1 auto; }
@@ -2585,6 +2599,7 @@
      <button type="button" class="btn link" id="cfLimpar" hidden>Limpar</button>
     </div>
    </div>
+   <div id="cartLimTotal" class="lim-total" hidden></div>
    <div id="cfResultados" class="cf-resultados" hidden></div>
    <div id="cartLista" class="cart-lista" hidden></div>
    <div id="cartFaturas" class="fat-grade"></div>
@@ -8074,7 +8089,7 @@
      fica escondido (os dados continuam no arquivo e voltam a aparecer quando o módulo for ligado).
      Para ver tudo (testes ou uso avançado): localStorage 'controle-financeiro-nivel' = 7. */
   /* Versão do app: atualize a cada entrega (o sw.js usa o mesmo número no nome do cache). */
-  var VERSAO_APP = { numero: '45', data: '2026-11-22', novidade: 'campo de observação nos gastos e recebimentos' };
+  var VERSAO_APP = { numero: '46', data: '2026-11-23', novidade: 'Cartões: layout melhor no computador e limite somado de todos os cartões' };
   var CHAVE_VERSAO_VISTA = 'controle-financeiro-versao-vista';
   function textoVersao() { return 'Versão ' + VERSAO_APP.numero + ' · atualizada em ' + dataBR(VERSAO_APP.data) + '.'; }
   /* Procurar atualização: confere se há internet, apaga só a cópia do app (código e ícones; os dados
@@ -8274,6 +8289,7 @@
     users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
     shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
     bell: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
+    calendar: '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
     dumbbell: '<path d="M6 7v10M3 9v6M18 7v10M21 9v6M6 12h12"/>',
     briefcase: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><path d="M2 13h20"/>',
     wrench: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9z"/>',
@@ -8396,7 +8412,7 @@
   ICO.bus = '<path d="M8 6v6"/><path d="M15 6v6"/><path d="M2 12h19.6"/><path d="M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2 0-.4-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3"/><circle cx="7" cy="18" r="2"/><path d="M9 18h5"/><circle cx="16" cy="18" r="2"/>';
   var EMOJI_ICONE = { food: '🍽️', resto: '🍔', bag: '🛍️', utensils: '🍽️', users: '🧸', droplet: '💧', cart: '🛒', home: '🏠', car: '🚗', bus: '🚌', baby: '🍼', health: '💊', book: '📚',
     ticket: '🎉', plane: '✈️', shirt: '👕', zap: '⚡', phone: '📱', tv: '📺', heart: '🐾', gift: '🎁', file: '🧾', scissors: '💇',
-    shield: '🛡️', bell: '🔔', dumbbell: '🏋️', briefcase: '💼', wrench: '🧰', trending: '📈', 'rotate-ccw': '↩️', key: '🔑', tag: '🏷️',
+    shield: '🛡️', bell: '🔔', calendar: '📅', dumbbell: '🏋️', briefcase: '💼', wrench: '🧰', trending: '📈', 'rotate-ccw': '↩️', key: '🔑', tag: '🏷️',
     award: '🏆', card: '💳', landmark: '🏦', package: '📦', coins: '💰' };
   function emojiCategoria(nome, tipo) {
     return el('span', { class: 'emoji-cat' }, EMOJI_ICONE[nomeIconeCategoria(nome, tipo)] || (tipo === 'receita' ? '💰' : '🏷️'));
@@ -9310,6 +9326,19 @@
     if (filtroCart.sit === 'aberta') { var a = resumoFaturas(c).atual; if (!a || !(totalExib(a) > 0 || a.prevSemValor)) return false; }
     return true;
   }
+  /* Totalizador discreto: soma o limite dos cartões ativos mostrados */
+  function renderLimiteTotal(cartoes, filtrado) {
+    var box = $('cartLimTotal'), tot = 0, usado = 0, n = 0;
+    cartoes.forEach(function (c) { if (!c.ativo) return; var l = limiteDoCartao(c); if (!l) return; tot += l.total; usado += l.usado; n++; });
+    box.hidden = !n; box.replaceChildren();
+    if (!n) return;
+    var pct = tot ? Math.max(0, Math.min(100, Math.round(usado * 100 / tot))) : 0;
+    box.append(
+      el('span', { class: 'lim-rot' }, n > 1 ? 'Limite somado' + (filtrado ? ' (filtro)' : '') + ' · ' + n + ' cartões' : 'Limite do cartão'),
+      el('span', { class: 'lim-num' }, el('b', { class: 'lim-v' }, moeda((tot - usado) / 100)), ' disponível de ', el('span', { class: 'lim-v' }, moeda(tot / 100))),
+      el('span', { class: 'lim-barra', title: pct + '% usado' }, el('span', { style: 'width:' + pct + '%' })),
+      el('span', { class: 'lim-usado' }, 'usado ', el('span', { class: 'lim-v' }, moeda(usado / 100)), ' · ' + pct + '%'));
+  }
   function renderFiltrosCartao(cartoes) {
     $('cartFiltros').hidden = !cartoes.length;
     if (filtroCart.cartao && !cartaoPorId(filtroCart.cartao)) filtroCart.cartao = '';
@@ -9362,6 +9391,7 @@
     var cartoes = ordenarAtivos(estado.cartoes), vista = vistaCartoes();
     renderFiltrosCartao(cartoes);
     var visiveis = cartoes.filter(cartaoPassaFiltro);
+    renderLimiteTotal(visiveis, visiveis.length !== cartoes.length);
     $('vistaCartoes').hidden = !cartoes.length;
     Array.prototype.forEach.call($('vistaCartoes').querySelectorAll('[data-vista]'), function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-vista') === vista ? 'true' : 'false'); });
     box.hidden = vista === 'lista' && cartoes.length > 0;
@@ -9391,10 +9421,10 @@
           el('div', { class: 'fat-datas' }, 'Vence ', el('b', null, dataBR(f.venc)), f.fechamento && c.modoFechamento !== 'manual' ? ' · ' + (f.fechada ? 'fechou' : 'fecha') + ' em ' + dataBR(f.fechamento) : '',
             cyF && cyF.ajustado ? ' · datas ajustadas' : '', f.pago > 0 ? ' · já pago ' + moeda(f.pago / 100) : ''),
           notaPrevista(f) ? el('div', { class: 'fat-datas fat-prev-nota' }, notaPrevista(f)) : '');
-        if (!f.soPrevista) card.append(el('button', { type: 'button', class: 'btn primario', 'data-mvp-pagar': c.id + '|' + f.venc }, 'Pagar fatura'));
-        if (c.ativo) card.append(el('div', { class: 'fat-acoes-cartao' },
-          el('button', { type: 'button', class: 'btn', 'data-cart-compra': c.id }, '+ Compra neste cartão'),
-          cartaoTemDatas(c) ? el('button', { type: 'button', class: 'btn link', 'data-cart-datas': c.id + '|' + f.venc }, 'Ajustar datas desta fatura') : null));
+        card.append(el('div', { class: 'fat-acoes-cartao' },
+          !f.soPrevista ? el('button', { type: 'button', class: 'btn primario', 'data-mvp-pagar': c.id + '|' + f.venc }, 'Pagar fatura') : null,
+          c.ativo ? el('button', { type: 'button', class: 'btn', 'data-cart-compra': c.id }, '+ Compra') : null,
+          c.ativo && cartaoTemDatas(c) ? el('button', { type: 'button', class: 'btn-mini fat-btn-datas', 'data-cart-datas': c.id + '|' + f.venc, title: 'Ajustar as datas desta fatura', 'aria-label': 'Ajustar as datas desta fatura' }, ico('calendar')) : null));
         var ul = el('ul');
         f.itens.slice().sort(function (a, b) { return a.lanc.data < b.lanc.data ? 1 : -1; }).forEach(function (i) {
           var pode = !(i.pago > 0);
@@ -9429,7 +9459,7 @@
         }
       } else {
         plast.append(el('div', { class: 'fat-valor zero' }, 'Nenhuma compra em aberto'));
-        if (c.ativo) card.append(el('div', { class: 'fat-acoes-cartao' }, el('button', { type: 'button', class: 'btn', 'data-cart-compra': c.id }, '+ Compra neste cartão')));
+        if (c.ativo) card.append(el('div', { class: 'fat-acoes-cartao' }, el('button', { type: 'button', class: 'btn', 'data-cart-compra': c.id }, '+ Compra')));
       }
       var lim = limiteDoCartao(c);
       if (lim) plast.append(el('div', { class: 'fat-limite' },
