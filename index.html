@@ -7192,13 +7192,20 @@
         if (c.id === 'comportamento') { c.rotulo = 'O valor muda?'; c.opcoes = [['fixo', 'Não, é sempre o mesmo'], ['variavel', 'Sim, varia (luz, água…)']]; }
         if (c.id === 'valorEsperado') { c.rotulo = 'Valor (R$)'; c.ajuda = 'Para valor que varia, pode deixar em branco: o app pede o valor quando a conta chegar.'; }
         if (c.id === 'dia') c.rotulo = 'Todo dia';
-        if (c.id === 'dataInicial') { c.rotulo = 'A partir de'; }
+        if (c.id === 'dataInicial') {
+          // Escolhe o MÊS da primeira cobrança (a conta conta a partir do mês, não do dia)
+          var mIni = r ? r.dataInicial.slice(0, 7) : mesAtual(), ops = [];
+          for (var k = -12; k <= 12; k++) { var ym = somarMesYM(mesAtual(), k), rt = rotuloMes(ym, true); ops.push([ym, rt.charAt(0).toUpperCase() + rt.slice(1)]); }
+          if (!ops.some(function (o) { return o[0] === mIni; })) ops.unshift([mIni, rotuloMes(mIni, true)]);
+          c.id = 'inicioMes'; c.rotulo = 'Primeira cobrança em'; c.tipo = 'select'; c.opcoes = ops; c.valor = mIni;
+        }
         if (c.id === 'dataFinal') c.rotulo = 'Até (opcional)';
         if (c.id === 'cartaoId') { c.rotulo = 'Cai no cartão? (opcional)'; }
       });
     }
     abrirGen(r ? (simplesRegra ? 'Editar conta fixa' : 'Editar regra recorrente') : (simplesRegra ? 'Nova conta fixa' : 'Nova regra recorrente'), camposRegra, function (v) {
       ['subcategoria', 'pessoaId', 'titularId', 'classificacao', 'contaId', 'cartaoId', 'observacoes'].forEach(function (k) { if (v[k] === undefined) v[k] = r ? (r[k] || '') : ''; });
+      if (v.inicioMes !== undefined) { v.dataInicial = r && r.dataInicial.slice(0, 7) === v.inicioMes ? r.dataInicial : v.inicioMes + '-01'; delete v.inicioMes; }
       if (v.ativo === undefined) v.ativo = r && !r.ativo ? '0' : '1';
       // Receita: não tem cartão nem “responsável” (a pessoa é o titular, quem recebe).
       if (v.tipo === 'receita') { v.cartaoId = ''; v.pessoaId = ''; }
@@ -7216,6 +7223,23 @@
     });
     $('g_tipo').addEventListener('change', ajustarRegraPorTipo);
     ajustarRegraPorTipo();
+    if ($('g_inicioMes')) {
+      var dicaIni = el('div', { class: 'dica-form', id: 'g_inicioDica' });
+      $('g_inicioMes').closest('label').after(dicaIni);
+      var atualizarIni = function () {
+        var ym = $('g_inicioMes').value, dia = inteiroOuNulo($('g_dia').value), rec = $('g_tipo').value === 'receita';
+        if (!ym || !dia) { dicaIni.textContent = 'Escolha o dia e o mês da primeira ' + (rec ? 'entrada' : 'cobrança') + '.'; return; }
+        var d1 = montarData(+ym.slice(0, 4), +ym.slice(5, 7), dia), c = !rec && $('g_cartaoId') ? cartaoPorId($('g_cartaoId').value) : null;
+        var t = (rec ? '1º recebimento: ' : '1ª cobrança: ') + dataBR(d1) + '.';
+        if (c && cartaoTemDatas(c)) t += ' Entra na fatura do ' + c.nome + ' que vence em ' + dataBR(vencimentoPorCartao(d1, c)) + ' (conta no mês ' + rotuloMes(mesISO(vencimentoPorCartao(d1, c)), true) + ').';
+        else if (c) t += ' Complete as datas do cartão para ver em qual fatura entra.';
+        if (!rec && ym === mesAtual() && d1 < hojeISO()) t += ' Como já passou, o app pergunta se a deste mês já foi paga.';
+        if (ym < mesAtual()) t += ' Os meses que já passaram também entram nos lançamentos, como a pagar.';
+        dicaIni.textContent = t;
+      };
+      ['g_inicioMes', 'g_dia', 'g_cartaoId', 'g_tipo'].forEach(function (id) { if ($(id)) { $(id).addEventListener('change', atualizarIni); $(id).addEventListener('input', atualizarIni); } });
+      atualizarIni();
+    }
   }
   /* Os campos da regra mudam conforme o tipo: receita não tem cartão nem responsável. */
   function rotuloCampo(id, txt) {
@@ -8094,7 +8118,7 @@
      fica escondido (os dados continuam no arquivo e voltam a aparecer quando o módulo for ligado).
      Para ver tudo (testes ou uso avançado): localStorage 'controle-financeiro-nivel' = 7. */
   /* Versão do app: atualize a cada entrega (o sw.js usa o mesmo número no nome do cache). */
-  var VERSAO_APP = { numero: '47', data: '2026-11-23', novidade: 'Cartões lado a lado sem quebrar ao abrir as compras' };
+  var VERSAO_APP = { numero: '48', data: '2026-11-24', novidade: 'contas fixas: escolha o mês da primeira cobrança e veja em qual fatura entra' };
   var CHAVE_VERSAO_VISTA = 'controle-financeiro-versao-vista';
   function textoVersao() { return 'Versão ' + VERSAO_APP.numero + ' · atualizada em ' + dataBR(VERSAO_APP.data) + '.'; }
   /* Procurar atualização: confere se há internet, apaga só a cópia do app (código e ícones; os dados
@@ -9915,7 +9939,11 @@
     if (desc) $('g_descricao').value = desc;
     if (isFinite(val) && val > 0) $('g_valorEsperado').value = valorParaCampo(val);
     if (cat && Array.prototype.some.call($('g_categoria').options, function (o) { return o.value === cat; })) $('g_categoria').value = cat;
-    if (dataValida(data)) { $('g_dia').value = +data.slice(8, 10); $('g_dataInicial').value = data.slice(0, 8) + '01'; }
+    if (dataValida(data)) {
+      $('g_dia').value = +data.slice(8, 10);
+      if ($('g_inicioMes')) { $('g_inicioMes').value = data.slice(0, 7); $('g_inicioMes').dispatchEvent(new Event('change')); }
+      else if ($('g_dataInicial')) $('g_dataInicial').value = data.slice(0, 8) + '01';
+    }
   }
   function ligarEventosMvp3() {
     $('btnNovaFixa').addEventListener('click', function () { formRegra(null); });
