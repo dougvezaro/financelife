@@ -1068,6 +1068,7 @@
   .rm-item-txt .uso { font-size: .8rem; }
   .rm-item-v { font-weight: 700; white-space: nowrap; }
   .rm-nota { font-size: .8rem; margin-top: 4px; }
+  .fixa-media { display: block; font-size: .7rem; font-weight: 500; color: var(--suave); text-align: right; }
   .rm-obs { font-size: .8rem; font-style: italic; color: var(--suave); white-space: normal; }
   /* ---- Cabeçalho (igual em todos os modos) ---- */
   .topo .cab { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; flex-wrap: nowrap; }
@@ -2485,7 +2486,7 @@
  <!-- Aba Recorrências -->
  <div id="abaRec" role="tabpanel" aria-labelledby="tabRec" hidden>
   <section class="so-simples fixas-secao" aria-label="Contas fixas">
-   <div class="fat-titulo"><div><h3>Contas fixas</h3><span class="uso">Cadastre uma vez e o app lança todo mês. Valor fixo entra sozinho como <b>A pagar</b> no começo do mês; valor variável (luz, água) só pede o valor quando a conta chegar. Entradas fixas, como salário, entram no dia.</span></div>
+   <div class="fat-titulo"><div><h3>Contas fixas</h3><span class="uso">Cadastre uma vez e o app lança todo mês. Valor fixo entra sozinho como <b>A pagar</b> no começo do mês; valor variável (luz, água) entra na previsão pela média dos últimos 3 meses, e o app pede o valor real perto do vencimento. Entradas fixas, como salário, entram no dia.</span></div>
     <button type="button" class="btn primario" id="btnNovaFixa">+ Nova conta fixa</button></div>
    <div class="fixas-resumo" id="fixasResumo"></div>
    <div id="fixasLista"></div>
@@ -7082,11 +7083,33 @@
     while (ch <= fim && out.length < 600) { out.push(ch); ch = somarMesesChave(ch, passo); }
     return out;
   }
-  function estimarValor(r) {
-    if (r.valorEsperado !== null) return r.valorEsperado;
-    var reais = estado.ocorrencias.filter(function (o) { return o.regraId === r.id && o.valorReal !== null; }).sort(function (a, b) { return a.competencia < b.competencia ? 1 : -1; }).slice(0, 3);
-    if (!reais.length) return null; // variável sem histórico: não inventa valor
-    return dinheiro(reais.reduce(function (t, o) { return t + o.valorReal; }, 0) / reais.length);
+  /* Estimativa da conta fixa:
+     - valor fixo: o valor informado;
+     - valor variável: média dos últimos 3 valores reais; sem histórico, o valor médio informado
+       (ou “a definir”, se não houver nenhum). Perto do vencimento o app pede o valor real. */
+  function infoEstimativa(r) {
+    var reais = estado.ocorrencias.filter(function (o) { return o.regraId === r.id && o.valorReal !== null && o.valorReal !== undefined; })
+      .sort(function (a, b) { return a.competencia < b.competencia ? 1 : -1; }).slice(0, 3);
+    var media = reais.length ? dinheiro(reais.reduce(function (t, o) { return t + Math.abs(o.valorReal); }, 0) / reais.length) : null;
+    if (r.comportamento === 'variavel') {
+      if (media !== null) return { valor: media, fonte: 'media', n: reais.length };
+      return { valor: r.valorEsperado, fonte: r.valorEsperado !== null ? 'informado' : '', n: 0 };
+    }
+    if (r.valorEsperado !== null) return { valor: r.valorEsperado, fonte: 'fixo', n: 0 };
+    return { valor: media, fonte: media !== null ? 'media' : '', n: reais.length };
+  }
+  function estimarValor(r) { return infoEstimativa(r).valor; }
+  /* Atualiza a previsão das contas variáveis ainda não lançadas (do mês atual em diante). */
+  function reestimarPrevistas() {
+    var mes = mesAtual(), n = 0;
+    estado.ocorrencias.forEach(function (o) {
+      if (o.status !== 'prevista' || o.lancamentoId || o.competencia < mes) return;
+      var r = recorrenciaPorId(o.regraId);
+      if (!r || !r.ativo || r.comportamento !== 'variavel') return;
+      var v = estimarValor(r);
+      if (v !== o.valorEstimado) { o.valorEstimado = v; n++; }
+    });
+    return n;
   }
   function ocorrencia(regraId, comp) {
     for (var i = 0; i < estado.ocorrencias.length; i++) { var o = estado.ocorrencias[i]; if (o.regraId === regraId && o.competencia === comp) return o; }
@@ -7128,6 +7151,7 @@
     var l = estado.lancamentos.filter(function (x) { return x.id === lancId; })[0];
     if (!o || !l) return false;
     o.status = 'vinculada'; o.lancamentoId = l.id; o.valorReal = l.valor;
+    setTimeout(function () { if (reestimarPrevistas()) { marcarAlterado(); render(); } }, 0); // novas médias para os próximos meses
     o.historico.push({ data: new Date().toISOString(), evento: 'Vinculada ao lançamento “' + l.descricao + '” (valor real ' + moeda(l.valor) + (o.valorEstimado !== null ? ', previsto ' + moeda(o.valorEstimado) : '') + ')' });
     if (!silencioso) { marcarAlterado(); render(); }
     return true;
@@ -7223,6 +7247,20 @@
     });
     $('g_tipo').addEventListener('change', ajustarRegraPorTipo);
     ajustarRegraPorTipo();
+    if (simplesRegra && $('g_comportamento') && $('g_valorEsperado')) {
+      var ajudaV = $('g_valorEsperado').closest('label').querySelector('.uso');
+      var ajustarValorVar = function () {
+        var vari = $('g_comportamento').value === 'variavel';
+        rotuloCampo('g_valorEsperado', vari ? 'Valor médio estimado (R$)' : 'Valor (R$)');
+        var info = r ? infoEstimativa(Object.assign({}, r, { comportamento: vari ? 'variavel' : 'fixo' })) : null;
+        if (ajudaV) ajudaV.textContent = vari
+          ? (info && info.fonte === 'media' ? 'Já existem valores reais: a previsão usa a média dos últimos ' + plural(info.n, 'mês', 'meses') + ' (~' + moeda(info.valor) + '). Este valor só vale enquanto não houver histórico.'
+            : 'Usado na previsão até existirem valores reais; depois o app usa a média dos últimos 3 meses. Perto do vencimento, ele pede o valor real.')
+          : 'Valor que se repete todo mês.';
+        $('g_valorEsperado').placeholder = vari ? 'Ex.: média das últimas contas' : '0,00';
+      };
+      $('g_comportamento').addEventListener('change', ajustarValorVar); ajustarValorVar();
+    }
     if ($('g_inicioMes')) {
       var dicaIni = el('div', { class: 'dica-form', id: 'g_inicioDica' });
       $('g_inicioMes').closest('label').after(dicaIni);
@@ -8118,7 +8156,7 @@
      fica escondido (os dados continuam no arquivo e voltam a aparecer quando o módulo for ligado).
      Para ver tudo (testes ou uso avançado): localStorage 'controle-financeiro-nivel' = 7. */
   /* Versão do app: atualize a cada entrega (o sw.js usa o mesmo número no nome do cache). */
-  var VERSAO_APP = { numero: '48', data: '2026-11-24', novidade: 'contas fixas: escolha o mês da primeira cobrança e veja em qual fatura entra' };
+  var VERSAO_APP = { numero: '49', data: '2026-11-24', novidade: 'contas variáveis entram na previsão pela média dos últimos 3 meses' };
   var CHAVE_VERSAO_VISTA = 'controle-financeiro-versao-vista';
   function textoVersao() { return 'Versão ' + VERSAO_APP.numero + ' · atualizada em ' + dataBR(VERSAO_APP.data) + '.'; }
   /* Procurar atualização: confere se há internet, apaga só a cópia do app (código e ícones; os dados
@@ -9828,6 +9866,7 @@
     if (!modoSimples() || !moduloAtivo('recorrencias')) return { criados: 0, vinculados: 0 };
     var hoje = hojeISO(), mes = mesAtual(), res = { criados: 0, vinculados: 0 };
     estado.recorrencias.forEach(function (r) { if (r.ativo) gerarOcorrencias(r); });
+    if (reestimarPrevistas()) res.reestimados = true;
     estado.ocorrencias.slice().forEach(function (o) {
       if (o.status !== 'prevista' || o.competencia > mes) return;
       var r = recorrenciaPorId(o.regraId);
@@ -9843,6 +9882,7 @@
   }
   function rotinaFixas() {
     var res = autoLancarFixas();
+    if (res.reestimados && !res.criados && !res.vinculados) { marcarAlterado(); render(); return; }
     if (!res.criados && !res.vinculados) return;
     marcarAlterado(); render();
     avisar(res.criados ? plural(res.criados, 'conta fixa foi lançada', 'contas fixas foram lançadas') + ' para este mês.' : 'Contas fixas do mês vinculadas aos lançamentos que você já tinha.', 'sucesso');
@@ -9888,7 +9928,11 @@
       if (l.status === 'Cancelado') return { txt: 'Cancelada', cls: 'mudo' };
       return { txt: (l.data < hoje ? 'Venceu em ' : 'A pagar · vence ') + dataBR(l.data), cls: l.data < hoje ? 'atraso' : 'pend', lanc: l };
     }
-    if (o.valorEstimado === null || r.comportamento === 'variavel') return { txt: 'Aguardando o valor · vence ' + dataBR(o.vencimento), cls: o.vencimento < hoje ? 'atraso' : 'pend', oc: o, pedir: true };
+    if (o.valorEstimado === null || r.comportamento === 'variavel') {
+      var perto = o.vencimento <= somarDias(hoje, 7);
+      return { txt: (perto ? 'Informe o valor real · vence ' : 'Previsto ' + (o.valorEstimado !== null ? '~' + moeda(o.valorEstimado) + ' · vence ' : '· vence ')) + dataBR(o.vencimento),
+        cls: o.vencimento < hoje ? 'atraso' : perto ? 'pend' : 'mudo', oc: o, pedir: true };
+    }
     return { txt: (rec ? 'Prevista para ' : 'Vence ') + dataBR(o.vencimento), cls: 'mudo', oc: o };
   }
   function renderFixasMvp() {
@@ -9907,9 +9951,10 @@
       if (!lista.length) return;
       var sec = el('section', { class: 'fixas-grupo' }, el('h4', null, g[1]));
       lista.forEach(function (r) {
+        var est = infoEstimativa(r);
         if (r.ativo && r.frequencia === 'mensal') {
-          if (r.valorEsperado !== null) { if (g[0] === 'despesa') totG += centavos(r.valorEsperado); else totE += centavos(r.valorEsperado); }
-          else nVar++;
+          if (est.valor !== null) { if (g[0] === 'despesa') totG += centavos(est.valor); else totE += centavos(est.valor); }
+          if (r.comportamento === 'variavel') nVar++;
         }
         var sit = situacaoFixaMes(r), acoes = el('span', { class: 'fixa-acoes' });
         if (sit.lanc && usaCaixaPagLanc(sit.lanc) && podePagar(sit.lanc)) acoes.append(el('button', { type: 'button', class: 'btn pequeno primario', 'data-fixa-paguei': sit.lanc.id }, txtCaixa(sit.lanc.tipo).rapido));
@@ -9919,7 +9964,9 @@
         sec.append(el('article', { class: 'fixa-item' + (r.ativo ? '' : ' pausada'), 'data-fixa': r.id },
           el('span', { class: 'fixa-ic', 'aria-hidden': 'true' }, iconeCategoria(r.categoria || r.descricao, r.tipo)),
           el('span', { class: 'fixa-nome' }, r.descricao),
-          el('span', { class: 'fixa-valor' + (r.tipo === 'receita' ? ' receita' : '') }, r.valorEsperado !== null ? moeda(r.valorEsperado) : 'varia'),
+          el('span', { class: 'fixa-valor' + (r.tipo === 'receita' ? ' receita' : '') }, r.comportamento === 'variavel'
+            ? (est.valor !== null ? [el('span', null, '~' + moeda(est.valor)), el('small', { class: 'fixa-media' }, est.fonte === 'media' ? 'média de ' + plural(est.n, 'mês', 'meses') : 'valor médio informado')] : 'a definir')
+            : (r.valorEsperado !== null ? moeda(r.valorEsperado) : 'varia')),
           el('span', { class: 'fixa-det' }, textoFrequencia(r) + (r.categoria ? ' · ' + r.categoria : '') + (r.cartaoId && moduloAtivo('cartoes') ? ' · cartão ' + nomeCartao(r.cartaoId) : '') + (r.dataFinal ? ' · até ' + dataBR(r.dataFinal) : '')),
           el('span', null),
           el('div', { class: 'fixa-mes' }, el('span', { class: 'fixa-sit ' + sit.cls }, sit.txt), acoes)));
@@ -9928,7 +9975,7 @@
     });
     res.append(el('span', null, 'Gastos fixos por mês: ', el('b', null, moeda(totG / 100))));
     if (totE) res.append(el('span', null, 'Entradas fixas: ', el('b', null, moeda(totE / 100))));
-    if (nVar) res.append(el('span', null, plural(nVar, 'conta varia', 'contas variam') + ' de valor'));
+    if (nVar) res.append(el('span', null, plural(nVar, 'conta variável', 'contas variáveis') + ' pela média (o valor real é pedido perto do vencimento)'));
   }
   function virarFixa() {
     var desc = $('f_descricao').value.trim(), tipo = $('f_tipo').value === 'receita' ? 'receita' : 'despesa';
@@ -10714,11 +10761,11 @@
         fat[k] = { chave: k, venc: i.venc, desc: 'Fatura ' + (c ? c.nome : 'do cartão'), valor: i.aberto, semValor: false };
         itens.push(fat[k]); return;
       }
-      itens.push({ chave: i.chave, venc: i.venc, desc: i.descricao, valor: i.aberto, semValor: !!i.semValor });
+      itens.push({ chave: i.chave, venc: i.venc, desc: i.descricao, valor: i.aberto, semValor: !!i.semValor, estimado: !!i.oc && i.natureza === 'variavel' });
     });
     return itens.sort(function (a, b) { return a.venc < b.venc ? -1 : a.venc > b.venc ? 1 : 0; });
   }
-  function valorTxt(x) { return x.semValor ? 'valor a definir' : moeda(x.valor / 100); }
+  function valorTxt(x) { return x.semValor ? 'valor a definir' : (x.estimado ? '~' : '') + moeda(x.valor / 100); }
   /* Ao entrar (uma vez por dia neste aparelho): o que venceu, vence hoje ou amanhã. */
   function avisoVencimentosAoEntrar() {
     if (!moduloAtivo('obrigacoes')) return;
@@ -10806,7 +10853,7 @@
       var acao = null;
       if (i.lanc && i.cartaoId) acao = ['Pagar fatura', { 'data-pagar-fatura': i.cartaoId + '|' + i.venc }];
       else if (i.lanc && podePagar(i.lanc)) acao = [usaCaixaPagLanc(i.lanc) ? txtCaixa(i.lanc.tipo).rapido : (i.lanc.tipo === 'receita' ? 'Receber' : 'Pagar'), { 'data-hoje-pagar': i.lanc.id }];
-      else if (i.oc) acao = [modoSimples() && i.semValor ? 'Informar valor' : 'Lançar', { 'data-hoje-lancar': i.oc.id }];
+      else if (i.oc) acao = [modoSimples() && (i.semValor || i.natureza === 'variavel') ? 'Informar valor' : 'Lançar', { 'data-hoje-lancar': i.oc.id }];
       itens.push({ venc: i.venc, desc: i.descricao, valor: i.aberto, estimada: i.situacao === 'estimada', semValor: i.semValor, tipo: 'despesa', acao: acao,
         chave: i.cartaoId ? 'fat|' + i.cartaoId + '|' + i.venc : i.chave });
     });
